@@ -1,0 +1,70 @@
+<div class="checkout-container">
+  <h2>Your Cart</h2>
+
+  <div *ngIf="cart.length === 0" class="empty">Your cart is empty.</div>
+
+  <div *ngIf="cart.length > 0" class="cart-wrapper">
+    <!-- Cart Items Section -->
+    <div class="cart-section">
+      <!-- Header Row -->
+      <div class="cart-header">
+        <div class="col-info">Product Info</div>
+        <div class="col-qty">Quantity</div>
+        <div class="col-price">Price</div>
+        <div class="col-total">Total</div>
+      </div>
+
+      <!-- Cart Items -->
+      <div class="cart-items">
+        <div class="cart-item" *ngFor="let item of cart">
+          <div class="col-info">
+            <img [src]="item.imageUrl || 'assets/placeholder.jpg'" [alt]="item.name" />
+            <div class="product-meta">
+              <div class="name">{{ item.name }}</div>
+              <div class="desc">{{ item.description }}</div>
+            </div>
+          </div>
+
+          <div class="col-qty">
+            <div class="qty-control">
+              <button (click)="updateQty(item.id, item.quantity - 1)">−</button>
+              <span>{{ item.quantity }}</span>
+              <button (click)="updateQty(item.id, item.quantity + 1)">+</button>
+            </div>
+          </div>
+
+          <div class="col-price">${{ item.price | number:'1.2-2' }}</div>
+
+          <div class="col-total">
+            <span class="amount">${{ (item.price * item.quantity) | number:'1.2-2' }}</span>
+            <button class="remove-btn" (click)="removeFromCart(item.id)">Remove</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cart Summary Section -->
+    <div class="cart-summary">
+      <div class="summary-card">
+        <h3>Order Summary</h3>
+        <div class="summary-row">
+          <span>Items in cart:</span>
+          <strong>{{ cart.length }}</strong>
+        </div>
+        <div class="summary-divider"></div>
+        <div class="summary-total">
+          <span>Total Price:</span>
+          <strong>${{ total | number:'1.2-2' }}</strong>
+        </div>
+
+        <form (ngSubmit)="placeOrder()" class="checkout-form">
+          <input type="text" [(ngModel)]="customerName" name="name" placeholder="Full Name" required />
+          <input type="tel" [(ngModel)]="phone" name="phone" placeholder="Phone Number" required />
+          <button type="submit" class="confirm-btn" [disabled]="loading">{{ loading ? 'Processing...' : 'Confirm Order' }}</button>
+        </form>
+
+        <button type="button" class="clear-cart-btn" (click)="clearCart()">Clear Cart</button>
+      </div>
+    </div>
+  </div>
+</div>

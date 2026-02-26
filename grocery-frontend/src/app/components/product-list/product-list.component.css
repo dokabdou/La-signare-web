@@ -1,0 +1,291 @@
+/* --- Base Styles --- */
+.home-container {
+  background-color: #f9f9f9;
+  font-family: 'Poppins', sans-serif;
+  overflow-x: hidden;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.section-header h2 {
+  color: #c76929;
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+
+.section-header p {
+  color: #555;
+  font-size: 1.1rem;
+}
+
+/* --- Hero Banner --- */
+.hero-banner {
+  background: linear-gradient(rgba(27, 67, 50, 0.8), rgba(27, 67, 50, 0.8)), url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=1600') center/cover;
+  color: white;
+  padding: 6rem 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero-content h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.highlight-yellow {
+  color: #f1a81b;
+}
+
+.hero-content .subtitle {
+  font-size: 1.4rem;
+  color: #e2f0e2;
+  margin-bottom: 1.5rem;
+}
+
+.hero-content ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+  color: #a3d9b1;
+}
+
+.hero-btn {
+  background: #f1a81b;
+  color: #111;
+  padding: 14px 30px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.hero-btn:hover {
+  transform: translateY(-3px);
+  background: #e09b17;
+}
+
+/* --- Native CSS Product Carousel --- */
+.product-slider-section {
+  max-width: 1200px;
+  margin: 4rem auto;
+  padding: 0 2rem;
+}
+
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 10px;
+}
+
+.slider-header h2 {
+  color: #1b4332;
+  font-size: 1.8rem;
+  margin: 0;
+}
+
+.slider-header a {
+  color: #c76929;
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.product-carousel {
+  display: flex;
+  overflow-x: auto;
+  gap: 1.5rem;
+  padding-bottom: 1rem;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  scrollbar-color: #40916c #eee;
+}
+
+.product-carousel::-webkit-scrollbar {
+  height: 8px;
+}
+.product-carousel::-webkit-scrollbar-thumb {
+  background-color: #40916c;
+  border-radius: 4px;
+}
+
+.product-card {
+  flex: 0 0 260px;
+  scroll-snap-align: start;
+  background: white; 
+  border-radius: 12px; 
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+  transition: transform 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  border: 1px solid #eee;
+}
+
+.product-card:hover { 
+  transform: translateY(-5px); 
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1); 
+}
+
+.badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 4px 10px;
+  color: white;
+  font-weight: bold;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  z-index: 10;
+}
+.badge.top { background: #f1a81b; color: #111; }
+.badge.new { background: #3498db; }
+
+.img-container { 
+  height: 200px; 
+  background: #fff; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.img-container img { 
+  max-height: 90%; 
+  max-width: 90%; 
+  object-fit: contain; 
+}
+
+.card-info { padding: 1.2rem; text-align: center; }
+.card-info h3 { margin: 0 0 10px 0; color: #111; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.cat-label {
+  display: block;
+  font-size: 0.75rem;
+  color: #c76929;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.price { font-size: 1.3rem; color: #1B4332; margin-bottom: 15px;}
+.price strong { color: #e74c3c; }
+
+.add-btn {
+  background-color: #1B4332; color: white; border: none; padding: 10px;
+  border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; transition: 0.2s;
+}
+.add-btn:hover { background-color: #40916C; }
+
+
+/* --- Dynamic Categories Grid --- */
+.categories-section {
+  padding: 4rem 2rem;
+  background: #fff;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.cat-card {
+  height: 180px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.cat-card:hover { 
+  transform: translateY(-5px); 
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15); 
+}
+
+.cat-card h3 {
+  position: relative;
+  z-index: 10;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-align: center;
+  padding: 0 1rem;
+}
+
+/* Give dynamic categories rotating distinct colors so they aren't boring */
+.dynamic-bg:nth-child(6n+1) { background: linear-gradient(135deg, #1b4332, #40916c); }
+.dynamic-bg:nth-child(6n+2) { background: linear-gradient(135deg, #c76929, #e09b17); }
+.dynamic-bg:nth-child(6n+3) { background: linear-gradient(135deg, #2c3e50, #3498db); }
+.dynamic-bg:nth-child(6n+4) { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+.dynamic-bg:nth-child(6n+5) { background: linear-gradient(135deg, #8e44ad, #9b59b6); }
+.dynamic-bg:nth-child(6n+6) { background: linear-gradient(135deg, #27ae60, #2ecc71); }
+
+
+
+/* --- Footer --- */
+.main-footer {
+  background: #111;
+  color: #fff;
+  padding: 4rem 2rem 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 2rem;
+}
+
+.footer-col h3 {
+  color: #f1a81b;
+  margin-bottom: 1.5rem;
+  font-size: 1.2rem;
+}
+
+.footer-col p {
+  color: #bbb;
+  line-height: 1.6;
+  font-size: 0.9rem;
+}
+
+.footer-col ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-col ul li {
+  margin-bottom: 0.8rem;
+}
+
+.footer-col ul li a {
+  color: #bbb;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-col ul li a:hover {
+  color: #fff;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+  .hero-content h1 { font-size: 2.2rem; }
+  .section-header h2 { font-size: 1.8rem; }
+  .product-card { flex: 0 0 80%; }
+  .main-footer { flex-direction: column; text-align: center; }
+}

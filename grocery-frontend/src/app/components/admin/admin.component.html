@@ -1,0 +1,68 @@
+<div class="admin-container">
+  <h2>Inventory Management</h2>
+
+  <!-- Add/Edit Form -->
+  <form class="add-form" (ngSubmit)="save()">
+    <input [(ngModel)]="name" name="name" placeholder="Name" required />
+    <input [(ngModel)]="description" name="description" placeholder="Description" />
+    <input [(ngModel)]="price" name="price" type="number" placeholder="Price" step="0.1" />
+    <input [(ngModel)]="category" name="category" placeholder="Category" />
+    
+    <input [(ngModel)]="imageUrl" name="imageUrl" placeholder="Image URL" />
+    <input type="file" (change)="onFileSelected($event)" accept="image/*" class="file-input" />
+    
+    <div class="image-preview" *ngIf="imageUrl">
+      <img [src]="imageUrl" alt="Preview" />
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn-primary">{{ editingId ? 'Update Product' : 'Add Product' }}</button>
+      <button *ngIf="editingId" type="button" (click)="cancelEdit()" class="btn-cancel">Cancel</button>
+    </div>
+  </form>
+
+  <!-- Category Filter -->
+  <h3>Products</h3>
+  <div class="category-filter">
+    <button 
+      *ngFor="let cat of categories" 
+      (click)="filterByCategory(cat)"
+      [class.active]="selectedCategory === cat"
+      class="category-btn"
+    >
+      {{ cat | titlecase }}
+    </button>
+    <button 
+      *ngIf="selectedCategory" 
+      (click)="filterByCategory('')"
+      class="category-btn clear-filter"
+    >
+      Clear Filter
+    </button>
+  </div>
+
+  <!-- Products List -->
+  <ng-container *ngIf="products$ | async as products">
+    <div *ngIf="getDisplayedProducts(products).length === 0" class="empty">
+      {{ selectedCategory ? 'No products in this category.' : 'No products available.' }}
+    </div>
+
+    <div class="product-list">
+      <div class="product-row" *ngFor="let p of getDisplayedProducts(products)">
+        <div class="left" (click)="goToProduct(p.id)">
+          <img [src]="p.imageUrl || 'assets/placeholder.jpg'" [alt]="p.name" />
+          <div class="meta">
+            <div class="name">{{ p.name }}</div>
+            <div class="cat">{{ p.category }}</div>
+            <div class="desc">{{ p.description }}</div>
+          </div>
+        </div>
+        <div class="right">
+          <div class="price">${{ p.price | number:'1.2-2' }}</div>
+          <button (click)="startEdit(p)" class="btn-edit">Edit</button>
+          <button (click)="deleteProduct(p.id)" class="btn-delete">Delete</button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

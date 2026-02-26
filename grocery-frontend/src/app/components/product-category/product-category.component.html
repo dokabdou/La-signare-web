@@ -1,0 +1,39 @@
+<!-- <div class="category-container">
+  <h1>{{ category | titlecase }}</h1>
+  <div class="products-grid">
+    <div *ngFor="let product of products" class="product-card" (click)="goToProduct(product.id)">
+      <img [src]="product.imageUrl" [alt]="product.name" />
+      <h3 (click)="goToProduct(product.id)">{{ product.name }}</h3>
+      <p>{{ product.description }}</p>
+      <p class="price">${{ product.price }}</p>
+      <button (click)="addToCart(product)">Add to Cart</button>
+    </div>
+  </div>
+  <div *ngIf="products.length === 0" class="no-products">
+    No products found in this category.
+  </div>
+</div>
+ -->
+<div class="page-container">
+  <div class="page-header">
+    <h2>{{ category | titlecase }}</h2>
+  </div>
+
+  <div class="product-grid" *ngIf="products.length > 0; else empty">
+    <div class="product-card" *ngFor="let product of products" (click)="goToProduct(product.id)">
+      <div class="img-container">
+        <img [src]="product.imageUrl || 'assets/placeholder.jpg'" [alt]="product.name">
+      </div>
+      <div class="card-info">
+        <span class="cat-label">{{ product.category | uppercase }}</span>
+        <h3>{{ product.name }}</h3>
+        <p class="price"><strong>${{ product.price | number:'1.2-2' }}</strong></p>
+        <button class="add-btn" (click)="addToCart($event, product)">Add to cart</button>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #empty>
+    <div class="empty-state">Loading best sellers...</div>
+  </ng-template>
+</div>

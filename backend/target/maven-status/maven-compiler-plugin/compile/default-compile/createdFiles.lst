@@ -1,0 +1,13 @@
+com\grocery\service\OrderService.class
+com\grocery\model\Product.class
+com\grocery\service\CategoryService.class
+com\grocery\GroceryApplication.class
+com\grocery\controller\ProductController.class
+com\grocery\controller\OrderController.class
+com\grocery\repository\CategoryRepository.class
+com\grocery\model\Order.class
+com\grocery\model\OrderItem.class
+com\grocery\repository\ProductRepository.class
+com\grocery\model\Category.class
+com\grocery\service\ProductService.class
+com\grocery\repository\OrderRepository.class

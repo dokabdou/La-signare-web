@@ -1,0 +1,258 @@
+/* Container & Layout */
+.product-page {
+  display: flex;
+  justify-content: space-between; /* Creates the gap between left and right */
+  align-items: center;
+  max-width: 1200px;
+  margin: 3rem auto;
+  padding: 0 2rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Left Side: Info */
+.info-side {
+  flex-basis: 45%;
+  background: #fff;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+}
+
+.info-side h1 {
+  margin: 0 0 8px 0;
+  font-size: 2.2rem;
+  color: #111;
+  line-height: 1.2;
+}
+
+.info-side .category {
+  color: #40916c;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.info-side .price {
+  font-size: 1.8rem;
+  color: #1b4332;
+  margin: 0 0 1.5rem 0;
+  font-weight: 800;
+}
+
+.info-side .desc {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  font-size: 1.05rem;
+}
+
+/* Purchase Actions */
+.purchase-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.qty-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8f9fa;
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid #eee;
+}
+
+.qty-control button {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: none;
+  background: #fff;
+  font-size: 1.4rem;
+  color: #333;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  transition: all 0.2s;
+}
+
+.qty-control button:hover {
+  background: #1b4332;
+  color: #fff;
+}
+
+.qty-control span {
+  min-width: 30px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.add-btn {
+  flex: 1;
+  background-color: #1b4332;
+  color: white;
+  padding: 16px 24px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1.1rem;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.add-btn:hover { 
+  background-color: #0f5132; 
+  transform: translateY(-2px);
+}
+
+/* Right Side: Image */
+.image-side {
+  flex-basis: 50%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.image-side img {
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  border-radius: 20px;
+  object-fit: cover;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+}
+
+/* --- Related Products Section --- */
+.related-section {
+  max-width: 1200px;
+  margin: 4rem auto 2rem;
+  padding: 0 2rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.related-section h2 {
+  color: #1b4332;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.related-scroll {
+  display: flex;
+  overflow-x: auto;
+  gap: 1.5rem;
+  padding-bottom: 1.5rem;
+  scroll-snap-type: x mandatory;
+  /* Hide scrollbar for cleaner look */
+  scrollbar-width: none; 
+}
+.related-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Reusing Home Page Card Design */
+.product-card {
+  flex: 0 0 240px; /* Fixed width for horizontal scrolling */
+  scroll-snap-align: start;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid #f0f0f0;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.card-img-wrapper {
+  height: 200px;
+  background: #fafafa;
+}
+
+.card-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-body {
+  padding: 1rem;
+}
+
+.card-cat {
+  font-size: 0.75rem;
+  color: #40916c;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.card-name {
+  font-size: 1rem;
+  color: #111;
+  margin: 4px 0 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-price {
+  font-weight: 800;
+  color: #1b4332;
+  font-size: 1.1rem;
+}
+
+/* Loading & Error States */
+.loading-state, .error-state {
+  text-align: center;
+  padding: 5rem 2rem;
+  font-family: 'Poppins', sans-serif;
+  color: #666;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 1rem;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #40916c;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 900px) {
+  .product-page { 
+    flex-direction: column; /* Stacks items */
+    gap: 2rem;
+  }
+  
+  /* Forces the image to appear ABOVE the text on mobile screens */
+  .image-side {
+    order: -1; 
+  }
+
+  .info-side, .image-side { 
+    flex-basis: 100%; 
+    width: 100%;
+    justify-content: center;
+  }
+
+  .purchase-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .qty-control {
+    justify-content: space-between;
+  }
+}

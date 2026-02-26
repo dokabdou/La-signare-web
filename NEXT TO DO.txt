@@ -1,0 +1,25 @@
+NEXT TO DO : 
+
+/!\ When something doesnt load with the page set it as an observable/subject(if it will be updated), like products in AdminComponent and NavbarComponent
+on admin when the page is reloaded the products disappear : ReplaySubject =>
+The issue is that products$ is a Subject that doesn't replay values. When the component subscribes with the async pipe, if the value was emitted before subscription, it won't receive it. Use ReplaySubject instead
+
+
+- manage a user and an admin page. the user page is the page that will see the products etc, and the admin will also see the products but will also manage the inventory
+	- Add a log in option, users and admin, can be toggled and thus showing different pages afterwards
+	- admin access to add products
+_ ___ _
+- pull all the products ONCE and keep then and then look through them when fetching for a product; this is to avoid constant API calls  == IMPORTANT 
+- inventory management : 
+	- add an modify button on the product to modify its fields
+	- sort the products by category and clicking on the category will display the products in a category in a list 
+	- if the product quantity is less than 10 make the product card unclickeable
+	- create a new arrivals sections at the top of the home page
+	- with the product amount and time since it was replenished calculate the top sales and display it on a section on the home page
+	- best seller per category = low importance
+
+
+PROBLEMS :: 
+
+When clicking on th "Add to cart" button from the home page or the category list the product info page is openend, this is sbecaus
+currently clicking on any part of the a card including the "add to cart" button opens the product page, I dont want that. clicking on any part of the cart BUT the cart button should open the product page, but the cart button should nagivate to the cart page :

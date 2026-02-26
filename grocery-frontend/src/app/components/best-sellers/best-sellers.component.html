@@ -1,0 +1,25 @@
+<div class="page-container">
+  <div class="page-header">
+    <h2>Best Sellers</h2>
+    <p>Shop our most popular items, featuring the best from every category.</p>
+  </div>
+
+  <div class="product-grid" *ngIf="bestSellers.length > 0; else empty">
+    <div class="product-card" *ngFor="let product of bestSellers" (click)="goToProduct(product.id)">
+      <div class="badge top">TOP</div>
+      <div class="img-container">
+        <img [src]="product.imageUrl || 'assets/placeholder.jpg'" [alt]="product.name">
+      </div>
+      <div class="card-info">
+        <span class="cat-label">{{ product.category | uppercase }}</span>
+        <h3>{{ product.name }}</h3>
+        <p class="price"><strong>${{ product.price | number:'1.2-2' }}</strong></p>
+        <button class="add-btn" (click)="addToCart($event, product)">Add to cart</button>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #empty>
+    <div class="empty-state">Loading best sellers...</div>
+  </ng-template>
+</div>

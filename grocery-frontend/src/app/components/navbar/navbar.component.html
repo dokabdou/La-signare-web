@@ -1,0 +1,53 @@
+<nav class="navbar">
+  <div class="logo" (click)="goHome()" style="cursor:pointer">🛒 Diallo Groceries</div>
+
+  <div class="categories" *ngIf="categories$ | async as cats">
+    <ng-container *ngIf="cats.length <= 5; else many">
+      <a *ngFor="let cat of cats" (click)="goToCategory(cat)" class="cat-link">
+        {{ cat | titlecase }}
+      </a>
+    </ng-container>
+
+    <ng-template #many>
+      <a *ngFor="let cat of cats | slice:0:5" (click)="goToCategory(cat)" class="cat-link">
+        {{ cat | titlecase }}
+      </a>
+
+      <div class="dropdown-wrapper">
+        <button class="more-btn" (click)="toggleDropdown()">More ▾</button>
+        <div class="dropdown-menu" *ngIf="dropdownOpen" (clickOutside)="closeDropdown()">
+          <a *ngFor="let cat of cats | slice:5" (click)="goToCategory(cat)" class="dropdown-item">
+            {{ cat | titlecase }}
+          </a>
+        </div>
+      </div>
+    </ng-template>
+	</div>
+  
+
+  <div class="actions">
+    <input type="text" placeholder="Search products..." #searchInput (keyup.enter)="search(searchInput.value)">
+    <button class="cart-btn" routerLink="/checkout">🛒 Cart <span *ngIf="cartCount>0">({{ cartCount }})</span></button>
+    <button class="admin-btn" (click)="goAdmin()">⚙️ Admin</button>
+  </div>
+</nav>
+
+
+
+<div class="conveyor-wrapper" *ngIf="conveyorProducts$ | async as cp">
+  <div class="conveyor-track" *ngIf="cp.length > 0">
+    
+    <div class="conveyor-item" *ngFor="let p of cp" (click)="goToProduct(p.id)">
+      <img [src]="p.imageUrl || 'assets/placeholder.jpg'" [alt]="p.name" />
+      <span class="p-name">{{ p.name }}</span>
+      <span class="p-price">${{ p.price | number:'1.2-2' }}</span>
+    </div>
+    
+    <div class="conveyor-item" *ngFor="let p of cp" (click)="goToProduct(p.id)">
+      <img [src]="p.imageUrl || 'assets/placeholder.jpg'" [alt]="p.name" />
+      <span class="p-name">{{ p.name }}</span>
+      <span class="p-price">${{ p.price | number:'1.2-2' }}</span>
+    </div>
+
+  </div>
+</div>

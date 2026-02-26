@@ -1,0 +1,96 @@
+<div class="home-container">
+
+  <section class="hero-banner">
+    <div class="hero-content">
+      <h1><span class="highlight-yellow">Order Online</span> & Pay when you collect</h1>
+      <p class="subtitle">We will prepare your order</p>
+      <ul>
+        <li>✔️ Save Time</li>
+        <li>✔️ ---- </li>
+      </ul>
+      <button class="hero-btn" routerLink="/">View our products</button>
+    </div>
+  </section>
+
+  <section class="product-slider-section" *ngIf="newArrivals.length > 0">
+    <div class="slider-header">
+      <h2>New Arrivals</h2>
+      <a routerLink="/new-arrivals">See all ▾</a>
+    </div>
+    <div class="product-carousel">
+      <div class="product-card" *ngFor="let product of newArrivals" (click)="goToProduct(product.id)">
+        <div class="badge new">NEW</div>
+        <div class="img-container">
+          <img [src]="product.imageUrl || 'assets/placeholder.jpg'" [alt]="product.name">
+        </div>
+        <div class="card-info">
+          <span class="cat-label">{{ product.category | uppercase }}</span>
+          <h3>{{ product.name }}</h3>
+          <p class="price"><strong>${{ product.price | number:'1.2-2' }}</strong></p>
+          <button class="add-btn" (click)="addToCart($event, product)">Add to cart</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="categories-section" *ngIf="categories.length > 0">
+    <div class="section-header">
+      <h2>OUR PRODUCT CATEGORIES</h2>
+      <p>Each product is an invitation to travel, selected for its history and origins.</p>
+    </div>
+    <div class="categories-grid">
+      <div class="cat-card dynamic-bg" *ngFor="let cat of categories" (click)="goToCategory(cat)">
+        <h3>{{ cat | uppercase }}</h3>
+      </div>
+    </div>
+  </section>
+
+  <section class="product-slider-section" *ngIf="bestSellers.length > 0">
+    <div class="slider-header">
+      <h2>Best Sellers</h2>
+      <a routerLink="/best-sellers">See all ▾</a>
+    </div>
+    <div class="product-carousel">
+      <div class="product-card" *ngFor="let product of bestSellers" (click)="goToProduct(product.id)">
+        <div class="badge top">TOP</div>
+        <div class="img-container">
+          <img [src]="product.imageUrl || 'assets/placeholder.jpg'" [alt]="product.name">
+        </div>
+        <div class="card-info">
+          <span class="cat-label">{{ product.category | uppercase }}</span>
+          <h3>{{ product.name }}</h3>
+          <p class="price"><strong>${{ product.price | number:'1.2-2' }}</strong></p>
+          <button class="add-btn" (click)="addToCart($event, product)">Add to cart</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="main-footer">
+    <div class="footer-col">
+      <h3>🛒 Diallo Groceries</h3>
+      <p>-----------</p>
+      <p>📞 </p>
+      <p>✉️ contact@diallogroceries.com</p>
+      <p>📍 ---------------</p>
+    </div>
+    <div class="footer-col">
+      <h3>Our Products</h3>
+      <ul>
+        <li *ngFor="let cat of categories | slice:0:6">
+          <a (click)="goToCategory(cat)" style="cursor:pointer">{{ cat | titlecase }}</a>
+        </li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h3>Learn More</h3>
+      <ul>
+        <li><a routerLink="/">Contact Us</a></li>
+        <li><a routerLink="/">Legal Notice</a></li>
+        <li><a routerLink="/">Delivery</a></li>
+        <li><a routerLink="/">Terms & Conditions</a></li>
+      </ul>
+    </div>
+  </footer>
+
+</div>

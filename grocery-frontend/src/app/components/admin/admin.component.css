@@ -1,0 +1,301 @@
+.admin-container {
+  max-width: 1200px;
+  margin: 2.5rem auto;
+  padding: 1.5rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+  font-family: 'Poppins', sans-serif;
+}
+
+.admin-container h2 {
+  margin: 0 0 1.5rem;
+  color: #1b4332;
+  font-size: 1.5rem;
+}
+
+.admin-container h3 {
+  margin: 2rem 0 1rem;
+  color: #1b4332;
+  font-size: 1.1rem;
+}
+
+/* Add/Edit Form */
+.add-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f9f9f9;
+  border-radius: 10px;
+  border: 1px solid #f0f0f0;
+}
+
+.add-form input {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.add-form input:focus {
+  outline: none;
+  border-color: #40916c;
+  box-shadow: 0 0 0 3px rgba(64, 145, 108, 0.1);
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+  grid-column: 1 / -1;
+}
+
+.btn-primary,
+.btn-cancel {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: #1b4332;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #0f5132;
+  transform: translateY(-2px);
+}
+
+.btn-cancel {
+  background: #f5f5f5;
+  color: #666;
+  border: 1px solid #ddd;
+}
+
+.btn-cancel:hover {
+  background: #efefef;
+}
+
+/* Category Filter */
+.category-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.category-btn {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.category-btn:hover {
+  border-color: #40916c;
+  color: #40916c;
+}
+
+.category-btn.active {
+  background: #1b4332;
+  color: #fff;
+  border-color: #1b4332;
+}
+
+.clear-filter {
+  background: #ffe5e5;
+  color: #c00;
+  border-color: #ffb3b3;
+}
+
+.clear-filter:hover {
+  background: #ffcccc;
+}
+
+/* Product List */
+.product-list {
+  margin-top: 1rem;
+  display: grid;
+  gap: 12px;
+}
+
+.product-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #f0f0f0;
+  background: #fafafa;
+  transition: all 0.2s;
+}
+
+.product-row:hover {
+  background: #f0f7f0;
+  border-color: #e0e0e0;
+}
+
+.product-row .left {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.product-row img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #f0f0f0;
+}
+
+.product-row .meta {
+  min-width: 0;
+  flex: 1;
+}
+
+.product-row .meta .name {
+  font-weight: 700;
+  color: #1b4332;
+  margin-bottom: 4px;
+}
+
+.product-row .meta .cat {
+  color: #40916c;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.product-row .meta .desc {
+  color: #999;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.product-row .right {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.product-row .price {
+  font-weight: 700;
+  color: #1b4332;
+  min-width: 70px;
+  text-align: right;
+}
+
+.btn-edit {
+  background: #40916c;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+
+.btn-edit:hover {
+  background: #357a56;
+  transform: translateY(-2px);
+}
+
+.btn-delete {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+
+.btn-delete:hover {
+  background: #c0392b;
+  transform: translateY(-2px);
+}
+
+.empty {
+  color: #999;
+  padding: 2rem;
+  text-align: center;
+  font-style: italic;
+}
+
+
+/* File Upload Styles */
+.file-input {
+  padding: 8px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.file-input::file-selector-button {
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  padding: 6px 12px;
+  border-radius: 6px;
+  color: #f8eded;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+  margin-right: 10px;
+}
+
+.file-input::file-selector-button:hover {
+  background: #e0e0e0;
+}
+
+/* Image Preview */
+.image-preview {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  margin: 10px 0;
+}
+
+.image-preview img {
+  max-width: 150px;
+  max-height: 150px;
+  border-radius: 8px;
+  border: 1px solid #fff;
+  object-fit: contain;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .product-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .product-row .right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .category-filter {
+    flex-direction: column;
+  }
+
+  .category-btn {
+    width: 100%;
+  }
+}

@@ -1,0 +1,53 @@
+<ng-container *ngIf="product$ | async as product; else loadingOrError">
+  
+  <div class="product-page">
+    <div class="info-side">
+      <h1>{{ product.name }}</h1>
+      <p class="category">{{ product.category | titlecase }}</p>
+      <p class="price">${{ product.price | number:'1.2-2' }}</p>
+      <p class="desc">{{ product.description }}</p>
+
+      <div class="purchase-actions">
+        <div class="qty-control">
+          <button (click)="dec()">-</button>
+          <span>{{ qty }}</span>
+          <button (click)="inc()">+</button>
+        </div>
+        <button class="add-btn" (click)="addToCart(product)">Add to cart</button>
+      </div>
+    </div>
+
+    <div class="image-side">
+      <img [src]="product.imageUrl || 'assets/placeholder.jpg'" [alt]="product.name" />
+    </div>
+  </div>
+
+  <div class="related-section" *ngIf="(relatedProducts$ | async) as relatedProducts">
+    <ng-container *ngIf="relatedProducts.length > 0">
+      <h2>You might also like</h2>
+      
+      <div class="related-scroll">
+        <div class="product-card" *ngFor="let rp of relatedProducts" (click)="goToProduct(rp.id)">
+          <div class="card-img-wrapper">
+            <img [src]="rp.imageUrl || 'assets/placeholder.jpg'" [alt]="rp.name">
+          </div>
+          <div class="card-body">
+            <span class="card-cat">{{ rp.category | titlecase }}</span>
+            <h3 class="card-name">{{ rp.name }}</h3>
+            <span class="card-price">${{ rp.price | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+</ng-container>
+
+<ng-template #loadingOrError>
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading product...</p>
+    <br>
+    <button routerLink="/" style="margin-top: 20px; padding: 10px 20px; cursor: pointer;">Return to Store</button>
+  </div>
+</ng-template>
