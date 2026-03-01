@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ProductService } from '../../services/product.service';
 import { CartService } from '../../services/cart.service';
+import { AuthService } from '../../services/auth.service';
 import { switchMap, takeUntil, catchError } from 'rxjs/operators';
 import { Subject, of } from 'rxjs';
 
@@ -25,6 +26,7 @@ export class ProductCategoryComponent implements OnInit, OnDestroy {
     private cartService: CartService,
     private cdr: ChangeDetectorRef,
     private router: Router,
+	public authService: AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -61,6 +63,11 @@ export class ProductCategoryComponent implements OnInit, OnDestroy {
 
   addToCart(event: Event, product: any): void {
     event.stopPropagation();
+    if (!this.authService.isLoggedIn()) {
+      this.authService.openLoginModal();
+      return;
+    }
+
     this.cartService.addToCart(product, 1);
   }
 }

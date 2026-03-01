@@ -1,68 +1,184 @@
-<div class="admin-container">
-  <h2>Inventory Management</h2>
+<div class="admin-tabs no-print">
+  <button [class.active]="activeTab === 'stocks'" (click)="switchTab('stocks')">Stocks</button>
+  <button [class.active]="activeTab === 'orders'" (click)="switchTab('orders')">Orders</button>
+  <button [class.active]="activeTab === 'receipts'" (click)="switchTab('receipts')">Receipts</button>
+</div>
 
-  <!-- Add/Edit Form -->
-  <form class="add-form" (ngSubmit)="save()">
-    <input [(ngModel)]="name" name="name" placeholder="Name" required />
-    <input [(ngModel)]="description" name="description" placeholder="Description" />
-    <input [(ngModel)]="price" name="price" type="number" placeholder="Price" step="0.1" />
-    <input [(ngModel)]="category" name="category" placeholder="Category" />
-    
-    <input [(ngModel)]="imageUrl" name="imageUrl" placeholder="Image URL" />
-    <input type="file" (change)="onFileSelected($event)" accept="image/*" class="file-input" />
-    
-    <div class="image-preview" *ngIf="imageUrl">
-      <img [src]="imageUrl" alt="Preview" />
+<div class="admin-container no-print">
+
+  <div *ngIf="activeTab === 'stocks'">
+    <h2>Inventory Management</h2>
+    <form class="add-form" (ngSubmit)="save()">
+      <input [(ngModel)]="name" name="name" placeholder="Name" required />
+      <input [(ngModel)]="description" name="description" placeholder="Description" />
+      <input [(ngModel)]="price" name="price" type="number" placeholder="Price" step="0.1" />
+      <input [(ngModel)]="category" name="category" placeholder="Category" />
+      
+      <input [(ngModel)]="imageUrl" name="imageUrl" placeholder="Image URL" />
+      <input type="file" (change)="onFileSelected($event)" accept="image/*" class="file-input" />
+      
+      <div class="image-preview" *ngIf="imageUrl">
+        <img [src]="imageUrl" alt="Preview" />
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-primary">{{ editingId ? 'Update Product' : 'Add Product' }}</button>
+        <button *ngIf="editingId" type="button" (click)="cancelEdit()" class="btn-cancel">Cancel</button>
+      </div>
+    </form>
+
+    <h3>Products</h3>
+    <div class="category-filter">
+      <button *ngFor="let cat of categories" (click)="filterByCategory(cat)"
+              [class.active]="selectedCategory === cat" class="category-btn">
+        {{ cat | titlecase }}
+      </button>
+      <button *ngIf="selectedCategory" (click)="filterByCategory('')" class="category-btn clear-filter">
+        Clear Filter
+      </button>
     </div>
 
-    <div class="form-actions">
-      <button type="submit" class="btn-primary">{{ editingId ? 'Update Product' : 'Add Product' }}</button>
-      <button *ngIf="editingId" type="button" (click)="cancelEdit()" class="btn-cancel">Cancel</button>
-    </div>
-  </form>
+    <ng-container *ngIf="products$ | async as products">
+      <div *ngIf="getDisplayedProducts(products).length === 0" class="empty">
+        {{ selectedCategory ? 'No products in this category.' : 'No products available.' }}
+      </div>
 
-  <!-- Category Filter -->
-  <h3>Products</h3>
-  <div class="category-filter">
-    <button 
-      *ngFor="let cat of categories" 
-      (click)="filterByCategory(cat)"
-      [class.active]="selectedCategory === cat"
-      class="category-btn"
-    >
-      {{ cat | titlecase }}
-    </button>
-    <button 
-      *ngIf="selectedCategory" 
-      (click)="filterByCategory('')"
-      class="category-btn clear-filter"
-    >
-      Clear Filter
-    </button>
-  </div>
-
-  <!-- Products List -->
-  <ng-container *ngIf="products$ | async as products">
-    <div *ngIf="getDisplayedProducts(products).length === 0" class="empty">
-      {{ selectedCategory ? 'No products in this category.' : 'No products available.' }}
-    </div>
-
-    <div class="product-list">
-      <div class="product-row" *ngFor="let p of getDisplayedProducts(products)">
-        <div class="left" (click)="goToProduct(p.id)">
-          <img [src]="p.imageUrl || 'assets/placeholder.jpg'" [alt]="p.name" />
-          <div class="meta">
-            <div class="name">{{ p.name }}</div>
-            <div class="cat">{{ p.category }}</div>
-            <div class="desc">{{ p.description }}</div>
+      <div class="product-list">
+        <div class="product-row" *ngFor="let p of getDisplayedProducts(products)">
+          <div class="left" (click)="goToProduct(p.id)">
+            <img [src]="p.imageUrl || 'assets/placeholder.jpg'" [alt]="p.name" />
+            <div class="meta">
+              <div class="name">{{ p.name }}</div>
+              <div class="cat">{{ p.category }}</div>
+              <div class="desc">{{ p.description }}</div>
+            </div>
+          </div>
+          <div class="right">
+            <div class="price">${{ p.price | number:'1.2-2' }}</div>
+            <button (click)="startEdit(p)" class="btn-edit">Edit</button>
+            <button (click)="deleteProduct(p.id)" class="btn-delete">Delete</button>
           </div>
         </div>
-        <div class="right">
-          <div class="price">${{ p.price | number:'1.2-2' }}</div>
-          <button (click)="startEdit(p)" class="btn-edit">Edit</button>
-          <button (click)="deleteProduct(p.id)" class="btn-delete">Delete</button>
-        </div>
       </div>
+    </ng-container>
+  </div>
+
+  <div *ngIf="activeTab === 'orders'">
+    <div class="order-header-row">
+      <h2>Order Management</h2>
+      <input type="text" [(ngModel)]="orderSearchTerm" placeholder="Search by name, email, phone, or date..." class="order-search-input">
     </div>
-  </ng-container>
+    
+    <div *ngIf="ordersLoading" class="loading-spinner">Loading orders...</div>
+    <div *ngIf="!ordersLoading && getFilteredOrders().length === 0" class="empty">No orders found.</div>
+
+    <div class="table-container" *ngIf="!ordersLoading && getFilteredOrders().length > 0">
+      <table>
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Date</th>
+            <th>Customer</th>
+            <th>Status</th>
+            <th>Total</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let order of getFilteredOrders()">
+            <td style="font-size: 0.8rem; color: #666;">{{ order.id | slice:0:8 }}...</td>
+            <td>{{ order.createdAt | date:'short' }}</td>
+            <td>{{ order.customerName || 'N/A' }}</td> 
+            <td>
+              <select 
+                [ngModel]="order.status || 'Pending'" 
+                (ngModelChange)="updateOrderStatus(order.id, $event)"
+                class="status-select">
+                <option value="Pending">Pending</option>
+                <option value="Processing">Processing</option>
+                <option value="Shipped">Shipped</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </td>
+            <td class="price">${{ order.total | number:'1.2-2' }}</td>
+            <td>
+              <button (click)="deleteOrder(order.id)" class="btn-delete" style="padding: 4px 8px; font-size: 0.8rem;">
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div *ngIf="activeTab === 'receipts'">
+    <h2>Completed Orders (Receipts)</h2>
+    <div *ngIf="ordersLoading" class="loading-spinner">Loading receipts...</div>
+    <div *ngIf="!ordersLoading && receipts.length === 0" class="empty">No delivered orders available to print.</div>
+
+    <div class="table-container" *ngIf="!ordersLoading && receipts.length > 0">
+      <table>
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Date</th>
+            <th>Customer</th>
+            <th>Total</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let receipt of receipts">
+            <td style="font-size: 0.8rem; color: #666;">{{ receipt.id | slice:0:8 }}...</td>
+            <td>{{ receipt.createdAt | date:'short' }}</td>
+            <td>{{ receipt.customerName || 'N/A' }}</td>
+            <td class="price">${{ receipt.total | number:'1.2-2' }}</td>
+            <td>
+              <button (click)="printReceipt(receipt)" class="btn-primary" style="padding: 6px 12px; font-size: 0.9rem;">
+                Print Receipt
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<div class="print-only receipt-print-container" *ngIf="selectedReceiptToPrint">
+  <div class="receipt-header">
+    <h2>Grocery Store</h2>
+    <p>123 Main Street</p>
+    <p>Receipt #: {{ selectedReceiptToPrint.id | slice:0:8 }}</p>
+    <p>Date: {{ selectedReceiptToPrint.createdAt | date:'short' }}</p>
+    <p *ngIf="selectedReceiptToPrint.customerName">Customer: {{ selectedReceiptToPrint.customerName }}</p>
+  </div>
+  
+  <table class="receipt-items">
+    <thead>
+      <tr>
+        <th style="text-align: left;">Item</th>
+        <th>Qty</th>
+        <th style="text-align: right;">Price</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of getReceiptItems(selectedReceiptToPrint)">
+        <td style="text-align: left;">{{ item.name || 'Product' }}</td>
+        <td style="text-align: center;">{{ item.quantity || 1 }}</td>
+        <td style="text-align: right;">${{ ((item.price || 0) * (item.quantity || 1)) | number:'1.2-2' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="receipt-total" style="margin-top: 15px; text-align: right;">
+    <h3>TOTAL: ${{ selectedReceiptToPrint.total | number:'1.2-2' }}</h3>
+  </div>
+  
+  <div class="receipt-footer" style="margin-top: 30px; text-align: center; font-size: 0.9em;">
+    <p>Thank you for shopping with us!</p>
+  </div>
 </div>

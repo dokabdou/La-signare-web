@@ -8,6 +8,7 @@ import { CheckoutComponent } from './components/checkout/checkout.component';
 import { AdminComponent } from './components/admin/admin.component';
 import { NewArrivalsComponent } from './components/new-arrivals/new-arrivals.component';
 import { BestSellersComponent } from './components/best-sellers/best-sellers.component';
+import { AccountComponent } from './components/account/account.component';
 
 export const routes: Routes = [
   { path: '', component: ProductListComponent },
@@ -17,6 +18,7 @@ export const routes: Routes = [
   { path: 'admin', component: AdminComponent },
   { path: 'new-arrivals', component: NewArrivalsComponent },
   { path: 'best-sellers', component: BestSellersComponent },
+  { path: 'account', component: AccountComponent },
   { path: '**', redirectTo: '' },
 ];
 

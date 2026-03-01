@@ -24,6 +24,30 @@ public class OrderService {
         return repository.findAll();
     }
 
+	public List<Order> getOrdersByCustomerName(String customerName) {
+		return repository.findAll().stream()
+				.filter(order -> order.getCustomerName().equalsIgnoreCase(customerName))
+				.toList();
+	}
+
+	public List<Order> getOrdersByEmail(String email) {
+		return repository.findAll().stream()
+				.filter(order -> order.getEmail().equalsIgnoreCase(email))
+				.toList();
+	}
+
+	public List<Order> getOrdersByPhone(String phone) {
+		return repository.findAll().stream()
+				.filter(order -> order.getPhone().equalsIgnoreCase(phone))
+				.toList();
+	}
+
+	public List<Order> getOrdersByDateRange(LocalDateTime start, LocalDateTime end) {
+		return repository.findAll().stream()
+				.filter(order -> order.getCreatedAt().isAfter(start) && order.getCreatedAt().isBefore(end))
+				.toList();
+	}
+
     public Order getOrderById(String id) {
         return repository.findById(id).orElse(null);
     }
@@ -33,6 +57,8 @@ public class OrderService {
                 .map(existing -> {
                     existing.setCustomerName(updated.getCustomerName());
                     existing.setPhone(updated.getPhone());
+					existing.setEmail(updated.getEmail());
+					existing.setCreatedAt(updated.getCreatedAt());
                     existing.setItems(updated.getItems());
                     existing.setTotal(updated.getTotal());
                     return repository.save(existing);

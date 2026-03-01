@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProductService } from '../../services/product.service';
 import { CartService } from '../../services/cart.service';
+import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { Subject, of } from 'rxjs';
 import { takeUntil, catchError } from 'rxjs/operators';
@@ -22,6 +23,7 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
     private cartService: CartService,
     private cdr: ChangeDetectorRef,
     private router: Router,
+	public authService: AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -35,7 +37,6 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
         }),
       )
       .subscribe((products) => {
-        // Simulate new arrivals by reversing the entire array
         this.newArrivals = [...(products || [])].reverse();
         this.cdr.detectChanges();
       });
@@ -53,6 +54,11 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
 
   addToCart(event: Event, product: any): void {
     event.stopPropagation();
+    if (!this.authService.isLoggedIn()) {
+      this.authService.openLoginModal();
+      return;
+    }
+
     this.cartService.addToCart(product, 1);
   }
 }

@@ -1,7 +1,6 @@
-/* Container & Layout */
 .product-page {
   display: flex;
-  justify-content: space-between; /* Creates the gap between left and right */
+  justify-content: space-between;
   align-items: center;
   max-width: 1200px;
   margin: 3rem auto;
@@ -9,7 +8,6 @@
   font-family: 'Poppins', sans-serif;
 }
 
-/* Left Side: Info */
 .info-side {
   flex-basis: 45%;
   background: #fff;
@@ -48,7 +46,6 @@
   font-size: 1.05rem;
 }
 
-/* Purchase Actions */
 .purchase-actions {
   display: flex;
   gap: 1rem;
@@ -108,7 +105,6 @@
   transform: translateY(-2px);
 }
 
-/* Right Side: Image */
 .image-side {
   flex-basis: 50%;
   display: flex;
@@ -124,7 +120,6 @@
   box-shadow: 0 12px 40px rgba(0,0,0,0.1);
 }
 
-/* --- Related Products Section --- */
 .related-section {
   max-width: 1200px;
   margin: 4rem auto 2rem;
@@ -144,16 +139,14 @@
   gap: 1.5rem;
   padding-bottom: 1.5rem;
   scroll-snap-type: x mandatory;
-  /* Hide scrollbar for cleaner look */
   scrollbar-width: none; 
 }
 .related-scroll::-webkit-scrollbar {
   display: none;
 }
 
-/* Reusing Home Page Card Design */
 .product-card {
-  flex: 0 0 240px; /* Fixed width for horizontal scrolling */
+  flex: 0 0 240px;
   scroll-snap-align: start;
   background: #fff;
   border-radius: 12px;
@@ -206,7 +199,6 @@
   font-size: 1.1rem;
 }
 
-/* Loading & Error States */
 .loading-state, .error-state {
   text-align: center;
   padding: 5rem 2rem;
@@ -229,10 +221,9 @@
   100% { transform: rotate(360deg); }
 }
 
-/* Mobile Responsiveness */
 @media (max-width: 900px) {
   .product-page { 
-    flex-direction: column; /* Stacks items */
+    flex-direction: column;
     gap: 2rem;
   }
   

@@ -13,15 +13,17 @@ public class Order {
     private String id;
     private String customerName;
     private String phone;
-    private List<Object> items; // Keeping it flexible for the frontend payload
+	private String email;
+    private List<Object> items;
     private double total;
     private LocalDateTime createdAt;
 
 	public Order() {}
 
-	public Order(String customerName, String phone, List<Object> items, double total) {
+	public Order(String customerName, String phone, String email, List<Object> items, double total) {
 		this.customerName = customerName;
 		this.phone = phone;
+		this.email = email;
 		this.items = items;
 		this.total = total;
 		this.createdAt = LocalDateTime.now();
@@ -49,6 +51,14 @@ public class Order {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public List<Object> getItems() {

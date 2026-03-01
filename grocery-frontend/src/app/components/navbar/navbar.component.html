@@ -1,5 +1,5 @@
 <nav class="navbar">
-  <div class="logo" (click)="goHome()" style="cursor:pointer">🛒 Diallo Groceries</div>
+  <div class="logo" (click)="goHome()" style="cursor:pointer">🛒 La signare - Épicerie du Monde</div>
 
   <div class="categories" *ngIf="categories$ | async as cats">
     <ng-container *ngIf="cats.length <= 5; else many">
@@ -22,17 +22,31 @@
         </div>
       </div>
     </ng-template>
-	</div>
+  </div>
   
-
   <div class="actions">
     <input type="text" placeholder="Search products..." #searchInput (keyup.enter)="search(searchInput.value)">
-    <button class="cart-btn" routerLink="/checkout">🛒 Cart <span *ngIf="cartCount>0">({{ cartCount }})</span></button>
-    <button class="admin-btn" (click)="goAdmin()">⚙️ Admin</button>
+    
+    <button *ngIf="isLoggedIn" class="cart-btn" routerLink="/checkout">
+      🛒 Cart <span *ngIf="cartCount > 0">({{ cartCount }})</span>
+    </button>
+    
+    <button *ngIf="isAdmin" class="admin-btn" (click)="goAdmin()">⚙️ Admin</button>
+
+    <div class="dropdown-wrapper" *ngIf="isLoggedIn">
+      <button class="admin-btn account-btn" (click)="accountDropdownOpen = !accountDropdownOpen">
+        👋 Hello, {{ currentUser?.name ? currentUser.name.split(' ')[0] : 'User' }} ▾
+      </button>
+      
+      <div class="dropdown-menu account-menu" *ngIf="accountDropdownOpen" (clickOutside)="accountDropdownOpen = false">
+        <a routerLink="/account" class="dropdown-item" (click)="accountDropdownOpen = false">👤 Account Info</a>
+        <a (click)="logout(); accountDropdownOpen = false" class="dropdown-item logout-item">🚪 Log Out</a>
+      </div>
+    </div>
+
+    <button *ngIf="!isLoggedIn" class="admin-btn login-btn" (click)="authService.openLoginModal()">Log In</button>
   </div>
 </nav>
-
-
 
 <div class="conveyor-wrapper" *ngIf="conveyorProducts$ | async as cp">
   <div class="conveyor-track" *ngIf="cp.length > 0">
@@ -49,5 +63,47 @@
       <span class="p-price">${{ p.price | number:'1.2-2' }}</span>
     </div>
 
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showLoginModal">
+  <div class="modal-content" (clickOutside)="closeModal()">
+    <span class="close-btn" (click)="closeModal()">&times;</span>
+    
+    <h2>{{ isRegisterMode ? 'Create an Account' : 'Welcome Back' }}</h2>
+    <p class="modal-sub">{{ isRegisterMode ? 'Join us to start shopping!' : 'Log in to access your cart.' }}</p>
+
+    <div class="error-msg" *ngIf="authError">{{ authError }}</div>
+
+    <form (ngSubmit)="submitAuth()">
+      <div class="input-group" *ngIf="isRegisterMode">
+        <label>Full Name</label>
+        <input type="text" [(ngModel)]="authName" name="authName" required>
+      </div>
+      
+      <div class="input-group" *ngIf="isRegisterMode">
+        <label>Phone Number (Optional)</label>
+        <input type="text" [(ngModel)]="authPhone" name="authPhone">
+      </div>
+      
+      <div class="input-group">
+        <label>Email Address</label>
+        <input type="email" [(ngModel)]="authEmail" name="authEmail" required>
+      </div>
+
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" [(ngModel)]="authPassword" name="authPassword" required>
+      </div>
+
+      <button type="submit" class="submit-btn" [disabled]="authLoading">
+        {{ authLoading ? 'Please wait...' : (isRegisterMode ? 'Register' : 'Log In') }}
+      </button>
+    </form>
+
+    <div class="toggle-mode">
+      <p *ngIf="!isRegisterMode">Don't have an account? <a (click)="toggleAuthMode()">Sign up</a></p>
+      <p *ngIf="isRegisterMode">Already have an account? <a (click)="toggleAuthMode()">Log in</a></p>
+    </div>
   </div>
 </div>

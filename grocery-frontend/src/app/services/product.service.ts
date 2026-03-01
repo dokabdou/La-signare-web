@@ -14,7 +14,6 @@ export class ProductService {
 
   private textHeaders = new HttpHeaders({ 'Content-Type': 'text/plain' });
 
-  // REACTIVE STATE CACHE
   private productsSubject = new BehaviorSubject<any[]>([]);
   public products$ = this.productsSubject.asObservable();
 
@@ -22,8 +21,6 @@ export class ProductService {
 
   constructor(private http: HttpClient) {
     interval(3000).subscribe(() => {
-      // FIX: Check if 'document' exists (Browser) before using it.
-      // If it doesn't exist (Server/SSR), it safely skips this block.
       if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
         this.fetchAllProducts();
       }
@@ -38,7 +35,6 @@ export class ProductService {
     });
   }
 
-  // --- FETCH DATA IN THE BACKGROUND ---
   private fetchAllProducts(): void {
     if (this.isFetching) return;
     this.isFetching = true;
@@ -60,31 +56,45 @@ export class ProductService {
     forkJoin([java$, sheets$])
       .pipe(finalize(() => (this.isFetching = false)))
       .subscribe(([javaData, sheetsData]) => {
-        // 1. COMBINE DATA (Sheets is placed LAST so it OVERWRITES Java on duplicate IDs)
+
+		if (sheetsData.length === 0 && javaData.length > 0) {
+			console.warn('⚠️ Google Sheet is empty! Repopulating from Java DB...');
+			javaData.forEach((javaItem) => {
+				const payload = {
+				key: this.apiKey,
+				route: 'products',
+				action: 'CREATE',
+				data: javaItem,
+				};
+				this.http
+				.post<any>(this.sheetsUrl, JSON.stringify(payload), { headers: this.textHeaders })
+				.pipe(catchError(() => of(null)))
+				.subscribe();
+			});
+
+			this.productsSubject.next(javaData);
+			return;
+		}
+
         const combined = [...javaData, ...sheetsData];
         const uniqueProducts = Array.from(
           new Map(combined.map((item) => [item.id, item])).values(),
         );
 
-        // Instantly update UI with the prioritized Sheets data
         this.productsSubject.next(uniqueProducts);
 
-        // 2. AUTO-SYNC: Make Java backend match the Sheets Master Data
         const javaMap = new Map(javaData.map((j) => [j.id, j]));
         const sheetsMap = new Map(sheetsData.map((s) => [s.id, s]));
 
-        // Check if Sheets has updated or new data that Java doesn't have
         sheetsData.forEach((sheetItem) => {
           const javaItem = javaMap.get(sheetItem.id);
 
           if (!javaItem) {
-            // Exists in Sheets, missing in Java -> Create in Java
             this.http
               .post<any>(this.javaUrl, sheetItem)
               .pipe(catchError(() => of(null)))
               .subscribe();
           } else {
-            // Compare properties to see if Sheets data was edited (e.g. Price changed)
             const isDifferent =
               javaItem.name !== sheetItem.name ||
               Number(javaItem.price) !== Number(sheetItem.price) ||
@@ -93,7 +103,6 @@ export class ProductService {
               javaItem.imageUrl !== sheetItem.imageUrl;
 
             if (isDifferent) {
-              // Exists in both, but Sheets has new edits -> Update Java
               this.http
                 .put<any>(`${this.javaUrl}/${sheetItem.id}`, sheetItem)
                 .pipe(catchError(() => of(null)))
@@ -102,7 +111,6 @@ export class ProductService {
           }
         });
 
-        // Check if item was deleted from Sheets, but still exists in Java
         javaData.forEach((javaItem) => {
           if (!sheetsMap.has(javaItem.id)) {
             // Deleted from Sheets Master -> Delete from Java
@@ -115,7 +123,6 @@ export class ProductService {
       });
   }
 
-  // --- READS ---
   getProducts(category?: string, search?: string): Observable<any[]> {
     this.fetchAllProducts();
 
@@ -141,7 +148,6 @@ export class ProductService {
     return this.products$.pipe(map((products) => products.find((p) => p.id === id)));
   }
 
-  // --- WRITES: Optimistic UI Updates ---
 
   createProduct(product: any): Observable<any> {
     product.id = product.id || this.generateId();
@@ -150,7 +156,6 @@ export class ProductService {
     const currentProducts = this.productsSubject.value;
     this.productsSubject.next([...currentProducts, product]);
 
-    // Fire & Forget to both
     this.http
       .post<any>(this.sheetsUrl, JSON.stringify(sheetsPayload), { headers: this.textHeaders })
       .pipe(catchError(() => of(null)))
@@ -178,7 +183,6 @@ export class ProductService {
     );
     this.productsSubject.next(currentProducts);
 
-    // Fire & Forget to both
     this.http
       .post<any>(this.sheetsUrl, JSON.stringify(sheetsPayload), { headers: this.textHeaders })
       .pipe(catchError(() => of(null)))
@@ -197,7 +201,6 @@ export class ProductService {
     const currentProducts = this.productsSubject.value.filter((p) => p.id !== id);
     this.productsSubject.next(currentProducts);
 
-    // Fire & Forget to both
     this.http
       .post<void>(this.sheetsUrl, JSON.stringify(sheetsPayload), { headers: this.textHeaders })
       .pipe(catchError(() => of(null)))

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ProductService } from '../../services/product.service';
 import { CartService } from '../../services/cart.service';
+import { AuthService } from '../../services/auth.service';
 import { Observable, of } from 'rxjs';
 import { map, switchMap, catchError, tap } from 'rxjs/operators';
 
@@ -23,6 +24,7 @@ export class ProductPageComponent implements OnInit {
     private router: Router,
     private productService: ProductService,
     private cart: CartService,
+	public authService: AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -78,6 +80,11 @@ export class ProductPageComponent implements OnInit {
 
   addToCart(product: any) {
     if (!product) return;
+
+	if (!this.authService.isLoggedIn()) {
+		this.authService.openLoginModal();
+		return;
+	}
     this.cart.addToCart(product, this.qty);
     this.qty = 1;
   }
