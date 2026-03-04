@@ -20,6 +20,23 @@
   font-size: 1.1rem;
 }
 
+.tab-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.tab-header h2 {
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
 .add-form {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -70,6 +87,12 @@
 .btn-primary:hover {
   background: #0f5132;
   transform: translateY(-2px);
+}
+
+.btn-primary:disabled {
+  background: #95a5a6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .btn-cancel {
@@ -358,6 +381,95 @@ tr:hover { background-color: #f0f7f0; }
   box-shadow: 0 0 0 3px rgba(64, 145, 108, 0.1);
 }
 
+.sync-tab-container {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.sync-tab-container h2 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.sync-tab-container p {
+  color: #666;
+  margin-bottom: 2.5rem;
+}
+
+.sync-actions-grid {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.sync-card {
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  width: 250px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+  transition: transform 0.2s;
+}
+
+.sync-card:hover {
+  transform: translateY(-4px);
+  border-color: #d0d0d0;
+}
+
+.sync-card h3 {
+  margin: 0 0 0.5rem;
+  color: #1b4332;
+  font-size: 1.25rem;
+}
+
+.sync-card p {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 1.25rem;
+}
+
+.sync-card .btn-primary {
+  width: 100%;
+}
+
+.sync-actions-large {
+  margin-top: 1rem;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 2rem;
+}
+
+.sync-actions-large .large-btn {
+  padding: 16px 32px;
+  font-size: 1.2rem;
+  border-radius: 12px;
+}
+
+.sync-message {
+  margin-top: 1.5rem;
+  padding: 1rem 2rem;
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-radius: 8px;
+  font-weight: 600;
+  display: inline-block;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.btn-primary:disabled {
+  background: #95a5a6 !important;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
 .print-only { display: none; }
 .receipt-print-container {
   width: 300px;
@@ -371,12 +483,7 @@ tr:hover { background-color: #f0f7f0; }
 .receipt-items { width: 100%; border-top: 1px dashed #000; border-bottom: 1px dashed #000; margin-bottom: 1rem; }
 .receipt-items th, .receipt-items td { padding: 5px 0; border: none; font-size: 0.9rem; }
 
-@media print {
-  :host ::ng-deep .no-print, .no-print { display: none !important; }
-  .print-only { display: block !important; }
-  @page { margin: 0; }
-  body { background: #fff; margin: 1cm; }
-}
+
 
 @media (max-width: 768px) {
   .product-row {
@@ -397,7 +504,7 @@ tr:hover { background-color: #f0f7f0; }
     width: 100%;
   }
 
-  .order-header-row {
+  .order-header-row, .tab-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;

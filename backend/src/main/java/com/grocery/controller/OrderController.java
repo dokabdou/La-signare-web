@@ -36,6 +36,11 @@ public class OrderController {
         return service.updateOrder(id, order);
     }
 
+    @PutMapping("/{id}/status")
+    public Order updateOrderStatus(@PathVariable String id, @RequestBody String status) {
+        return service.updateOrderStatus(id, status);
+    }
+
     @DeleteMapping("/{id}")
     public void deleteOrder(@PathVariable String id) {
         service.deleteOrder(id);

@@ -20,7 +20,6 @@ import { ClickOutsideDirective } from '../../directives/click-outside.directive'
 export class NavbarComponent implements OnInit {
   cartCount = 0;
   categories$: Observable<string[]>;
-  conveyorProducts$: Observable<any[]>;
   dropdownOpen = false;
   accountDropdownOpen = false;
 
@@ -52,14 +51,6 @@ export class NavbarComponent implements OnInit {
           ),
         ),
       );
-
-    this.conveyorProducts$ = this.productService.getProducts().pipe(
-      map((products) => {
-        if (!products) return [];
-        const shuffled = [...products].sort(() => 0.5 - Math.random());
-        return shuffled.slice(0, 10);
-      }),
-    );
   }
 
   ngOnInit() {

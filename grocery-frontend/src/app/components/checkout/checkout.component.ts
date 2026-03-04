@@ -19,6 +19,7 @@ export class CheckoutComponent implements OnInit {
   phone = '';
   loading = false;
   message = '';
+  currentUser: any = null;
 
   constructor(
     private cartService: CartService,
@@ -31,6 +32,7 @@ export class CheckoutComponent implements OnInit {
       this.cart = cart;
       this.total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
     });
+	this.currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
   }
 
   updateQty(productId: string, qty: number): void {
@@ -46,18 +48,16 @@ export class CheckoutComponent implements OnInit {
   }
 
   placeOrder(): void {
-    if (!this.customerName || !this.phone) {
-      this.message = 'Please fill in all fields.';
-      return;
-    }
-
     this.loading = true;
     const order = {
-      customerName: this.customerName,
-      phone: this.phone,
+      customerName: this.currentUser.name,
+      phone: this.currentUser.phone,
+	  email: this.currentUser.email,
       items: this.cart,
       total: this.total,
     };
+
+	console.log('Placing order:', order);
 
     this.orderService.createOrder(order).subscribe({
       next: (res) => {

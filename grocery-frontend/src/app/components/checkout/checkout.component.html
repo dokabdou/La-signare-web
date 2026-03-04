@@ -1,9 +1,7 @@
 <div class="checkout-container">
   <h2>Your Cart</h2>
-
-  <div *ngIf="cart.length === 0" class="empty">Your cart is empty.</div>
-
-  <div *ngIf="cart.length > 0" class="cart-wrapper">
+  
+  <div class="cart-wrapper">
     <!-- Cart Items Section -->
     <div class="cart-section">
       <!-- Header Row -->
@@ -58,8 +56,6 @@
         </div>
 
         <form (ngSubmit)="placeOrder()" class="checkout-form">
-          <input type="text" [(ngModel)]="customerName" name="name" placeholder="Full Name" required />
-          <input type="tel" [(ngModel)]="phone" name="phone" placeholder="Phone Number" required />
           <button type="submit" class="confirm-btn" [disabled]="loading">{{ loading ? 'Processing...' : 'Confirm Order' }}</button>
         </form>
 

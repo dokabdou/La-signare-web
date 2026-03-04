@@ -184,7 +184,6 @@
 }
 .add-btn:hover { background-color: #40916C; }
 
-
 .categories-section {
   padding: 4rem 2rem;
   background: #fff;
@@ -233,8 +232,6 @@
 .dynamic-bg:nth-child(6n+5) { background: linear-gradient(135deg, #8e44ad, #9b59b6); }
 .dynamic-bg:nth-child(6n+6) { background: linear-gradient(135deg, #27ae60, #2ecc71); }
 
-
-
 .main-footer {
   background: #111;
   color: #fff;
@@ -274,6 +271,19 @@
 
 .footer-col ul li a:hover {
   color: #fff;
+}
+
+/* Map link styling */
+.map-link {
+  color: #bbb;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  transition: color 0.2s;
+}
+
+.map-link:hover {
+  color: #f1a81b;
+  text-decoration-style: solid;
 }
 
 @media (max-width: 768px) {

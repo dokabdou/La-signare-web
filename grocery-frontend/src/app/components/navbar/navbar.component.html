@@ -48,24 +48,6 @@
   </div>
 </nav>
 
-<div class="conveyor-wrapper" *ngIf="conveyorProducts$ | async as cp">
-  <div class="conveyor-track" *ngIf="cp.length > 0">
-    
-    <div class="conveyor-item" *ngFor="let p of cp" (click)="goToProduct(p.id)">
-      <img [src]="p.imageUrl || 'assets/placeholder.jpg'" [alt]="p.name" />
-      <span class="p-name">{{ p.name }}</span>
-      <span class="p-price">${{ p.price | number:'1.2-2' }}</span>
-    </div>
-    
-    <div class="conveyor-item" *ngFor="let p of cp" (click)="goToProduct(p.id)">
-      <img [src]="p.imageUrl || 'assets/placeholder.jpg'" [alt]="p.name" />
-      <span class="p-name">{{ p.name }}</span>
-      <span class="p-price">${{ p.price | number:'1.2-2' }}</span>
-    </div>
-
-  </div>
-</div>
-
 <div class="modal-overlay" *ngIf="showLoginModal">
   <div class="modal-content" (clickOutside)="closeModal()">
     <span class="close-btn" (click)="closeModal()">&times;</span>

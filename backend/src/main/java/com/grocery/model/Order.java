@@ -17,6 +17,7 @@ public class Order {
     private List<Object> items;
     private double total;
     private LocalDateTime createdAt;
+	private String status = "Pending";
 
 	public Order() {}
 
@@ -84,4 +85,12 @@ public class Order {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
 }

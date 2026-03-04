@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable, forkJoin, of, interval } from 'rxjs';
-import { map, tap, catchError, finalize, timeout } from 'rxjs/operators';
+import { BehaviorSubject, Observable, forkJoin, interval, of } from 'rxjs';
+import { map, catchError, finalize, timeout } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -19,13 +19,12 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<any>(this.loadUser());
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  // Triggers the Login Modal to pop up from anywhere in the app
   public showLoginModal$ = new BehaviorSubject<boolean>(false);
 
   private isFetching = false;
 
   constructor(private http: HttpClient) {
-    interval(3000).subscribe(() => {
+    interval(10000).subscribe(() => {
       if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
         this.fetchAllCustomers();
       }
@@ -48,7 +47,7 @@ export class AuthService {
 
   isAdmin(): boolean {
     const user = this.currentUserSubject.value;
-    return user && (user.admin === true || user.admin === 'TRUE' || user.admin === 'true');
+    return user && (user.admin === true || user.admin === 'true');
   }
 
   openLoginModal() {
@@ -71,133 +70,41 @@ export class AuthService {
     if (this.isFetching) return;
     this.isFetching = true;
 
-    const cacheBuster = new Date().getTime();
-
-    const java$ = this.http.get<any[]>(this.javaUrl).pipe(
-      timeout(8000),
-      catchError(() => of([])),
-    );
-
-    const sheets$ = this.http
-      .get<any[]>(`${this.sheetsUrl}?key=${this.apiKey}&route=customers&cb=${cacheBuster}`)
+    this.http
+      .get<any[]>(this.javaUrl)
       .pipe(
         timeout(8000),
         catchError(() => of([])),
-      );
+        finalize(() => (this.isFetching = false)),
+      )
+      .subscribe((javaData) => {
+        this.customersSubject.next(javaData);
 
-    forkJoin([java$, sheets$])
-      .pipe(finalize(() => (this.isFetching = false)))
-      .subscribe(([javaData, sheetsData]) => {
-        if (sheetsData.length === 0 && javaData.length > 0) {
-          console.warn('⚠️ Google Sheet is empty! Repopulating from Java DB...');
-          javaData.forEach((javaItem) => {
-            const payload = {
-              key: this.apiKey,
-              route: 'customers',
-              action: 'CREATE',
-              data: javaItem,
-            };
-            this.http
-              .post<any>(this.sheetsUrl, JSON.stringify(payload), { headers: this.textHeaders })
-              .pipe(catchError(() => of(null)))
-              .subscribe();
-          });
-
-          this.customersSubject.next(javaData);
-          return; 
-        }
-
-        const combined = [...javaData, ...sheetsData];
-        const uniqueCustomers = Array.from(
-          new Map(combined.map((item) => [item.id, item])).values(),
-        );
-
-        this.customersSubject.next(uniqueCustomers);
-
-        const javaMap = new Map(javaData.map((j) => [j.id, j]));
-        const sheetsMap = new Map(sheetsData.map((s) => [s.id, s]));
-
-        sheetsData.forEach((sheetItem) => {
-          const javaItem = javaMap.get(sheetItem.id);
-
-          const sheetAdminStatus =
-            sheetItem.admin === true || sheetItem.admin === 'TRUE' || sheetItem.admin === 'true';
-          const cleanSheetItem = { ...sheetItem, admin: sheetAdminStatus };
-
-          if (!javaItem) {
-            // Exists in Sheets, missing in Java -> Create in Java
-            this.http
-              .post<any>(this.javaUrl, cleanSheetItem)
-              .pipe(catchError(() => of(null)))
-              .subscribe();
-          } else {
-            const javaAdminStatus =
-              javaItem.admin === true || javaItem.admin === 'TRUE' || javaItem.admin === 'true';
-
-            // Compare properties to see if Sheets data was edited
-            const isDifferent =
-              javaItem.name !== sheetItem.name ||
-              javaItem.phone !== sheetItem.phone ||
-              javaItem.email !== sheetItem.email ||
-              javaItem.password !== sheetItem.password ||
-              javaAdminStatus !== sheetAdminStatus;
-
-            if (isDifferent) {
-              // Exists in both, but Sheets has new edits -> Update Java
-              this.http
-                .put<any>(`${this.javaUrl}/${sheetItem.id}`, cleanSheetItem)
-                .pipe(catchError(() => of(null)))
-                .subscribe();
-            }
-          }
-        });
-
-        // Check if user was deleted from Sheets, but still exists in Java
-        javaData.forEach((javaItem) => {
-          if (!sheetsMap.has(javaItem.id)) {
-            this.http
-              .delete<void>(`${this.javaUrl}/${javaItem.id}`)
-              .pipe(catchError(() => of(null)))
-              .subscribe();
-          }
-        });
-
-        // 3. UPDATE CURRENT USER SESSION (If an admin changes roles in Google Sheets)
         const currentLoggedUser = this.currentUserSubject.value;
         if (currentLoggedUser) {
-          const updatedUserFromSync = uniqueCustomers.find((c) => c.id === currentLoggedUser.id);
+          const updatedUserFromSync = javaData.find((c) => c.id === currentLoggedUser.id);
 
           if (updatedUserFromSync) {
-            updatedUserFromSync.admin =
-              updatedUserFromSync.admin === true ||
-              updatedUserFromSync.admin === 'TRUE' ||
-              updatedUserFromSync.admin === 'true';
-
-            // If details changed, update the active session
             if (JSON.stringify(currentLoggedUser) !== JSON.stringify(updatedUserFromSync)) {
-              if (this.isBrowser)
+              if (this.isBrowser) {
                 localStorage.setItem('currentUser', JSON.stringify(updatedUserFromSync));
+              }
               this.currentUserSubject.next(updatedUserFromSync);
             }
           } else {
-            // User was deleted from Google Sheets completely, log them out.
             this.logout();
           }
         }
       });
   }
 
-
   login(email: string, password: string): Observable<any> {
-    // Instantly trigger a background sync to ensure data is fresh
     this.fetchAllCustomers();
 
     return this.http.get<any[]>(this.javaUrl).pipe(
       map((customers) => {
         const user = customers.find((c) => c.email === email && c.password === password);
         if (user) {
-          user.admin = user.admin === true || user.admin === 'TRUE' || user.admin === 'true';
-
           if (this.isBrowser) localStorage.setItem('currentUser', JSON.stringify(user));
           this.currentUserSubject.next(user);
           return user;
@@ -209,17 +116,11 @@ export class AuthService {
 
   register(user: any): Observable<any> {
     user.id = user.id || this.generateId();
-    user.admin = false; // Default new users to non-admin
-
-    const sheetsPayload = { key: this.apiKey, route: 'customers', action: 'CREATE', data: user };
+    user.admin = false;
 
     const currentCustomers = this.customersSubject.value;
     this.customersSubject.next([...currentCustomers, user]);
 
-    this.http
-      .post<any>(this.sheetsUrl, JSON.stringify(sheetsPayload), { headers: this.textHeaders })
-      .pipe(catchError(() => of(null)))
-      .subscribe();
     this.http
       .post<any>(this.javaUrl, user)
       .pipe(catchError(() => of(null)))
@@ -232,23 +133,11 @@ export class AuthService {
   }
 
   updateUser(id: string, updatedData: any): Observable<any> {
-    const sheetsPayload = {
-      key: this.apiKey,
-      route: 'customers',
-      action: 'UPDATE',
-      id: id,
-      data: updatedData,
-    };
-
     const currentCustomers = this.customersSubject.value.map((c) =>
       c.id === id ? { ...c, ...updatedData } : c,
     );
     this.customersSubject.next(currentCustomers);
 
-    this.http
-      .post<any>(this.sheetsUrl, JSON.stringify(sheetsPayload), { headers: this.textHeaders })
-      .pipe(catchError(() => of(null)))
-      .subscribe();
     this.http
       .put<any>(`${this.javaUrl}/${id}`, updatedData)
       .pipe(catchError(() => of(null)))
@@ -267,5 +156,19 @@ export class AuthService {
   logout() {
     if (this.isBrowser) localStorage.removeItem('currentUser');
     this.currentUserSubject.next(null);
+  }
+
+  syncToGoogleSheets(): Observable<any> {
+    const items = this.customersSubject.value;
+    if (items.length === 0) return of(null);
+
+    const requests = items.map((item) => {
+      const payload = { key: this.apiKey, route: 'customers', action: 'CREATE', data: item };
+      return this.http
+        .post<any>(this.sheetsUrl, JSON.stringify(payload), { headers: this.textHeaders })
+        .pipe(catchError(() => of(null)));
+    });
+
+    return forkJoin(requests);
   }
 }

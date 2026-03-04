@@ -2,12 +2,14 @@
   <button [class.active]="activeTab === 'stocks'" (click)="switchTab('stocks')">Stocks</button>
   <button [class.active]="activeTab === 'orders'" (click)="switchTab('orders')">Orders</button>
   <button [class.active]="activeTab === 'receipts'" (click)="switchTab('receipts')">Receipts</button>
+  <button [class.active]="activeTab === 'sync'" (click)="switchTab('sync')">Sync Data</button>
 </div>
 
 <div class="admin-container no-print">
 
   <div *ngIf="activeTab === 'stocks'">
     <h2>Inventory Management</h2>
+    
     <form class="add-form" (ngSubmit)="save()">
       <input [(ngModel)]="name" name="name" placeholder="Name" required />
       <input [(ngModel)]="description" name="description" placeholder="Description" />
@@ -79,6 +81,7 @@
             <th>Order ID</th>
             <th>Date</th>
             <th>Customer</th>
+            <th>Email</th>
             <th>Status</th>
             <th>Total</th>
             <th>Actions</th>
@@ -88,17 +91,15 @@
           <tr *ngFor="let order of getFilteredOrders()">
             <td style="font-size: 0.8rem; color: #666;">{{ order.id | slice:0:8 }}...</td>
             <td>{{ order.createdAt | date:'short' }}</td>
-            <td>{{ order.customerName || 'N/A' }}</td> 
+            <td>{{ order.customerName || 'N/A' }}<br><small>{{ order.phone }}</small></td> 
+            <td>{{ order.email || 'N/A' }}</td> 
             <td>
               <select 
                 [ngModel]="order.status || 'Pending'" 
                 (ngModelChange)="updateOrderStatus(order.id, $event)"
                 class="status-select">
                 <option value="Pending">Pending</option>
-                <option value="Processing">Processing</option>
-                <option value="Shipped">Shipped</option>
-                <option value="Delivered">Delivered</option>
-                <option value="Cancelled">Cancelled</option>
+                <option value="Ready">Ready</option>
               </select>
             </td>
             <td class="price">${{ order.total | number:'1.2-2' }}</td>
@@ -114,30 +115,39 @@
   </div>
 
   <div *ngIf="activeTab === 'receipts'">
-    <h2>Completed Orders (Receipts)</h2>
-    <div *ngIf="ordersLoading" class="loading-spinner">Loading receipts...</div>
-    <div *ngIf="!ordersLoading && receipts.length === 0" class="empty">No delivered orders available to print.</div>
+    <div class="order-header-row">
+      <h2>Completed Orders (Receipts)</h2>
+      <input type="text" [(ngModel)]="receiptSearchTerm" placeholder="Search by name, email, phone, or date..." class="order-search-input">
+    </div>
 
-    <div class="table-container" *ngIf="!ordersLoading && receipts.length > 0">
+    <div *ngIf="ordersLoading" class="loading-spinner">Loading receipts...</div>
+    <div *ngIf="!ordersLoading && getFilteredReceipts().length === 0" class="empty">No Ready orders available to print.</div>
+
+    <div class="table-container" *ngIf="!ordersLoading && getFilteredReceipts().length > 0">
       <table>
         <thead>
           <tr>
             <th>Order ID</th>
             <th>Date</th>
             <th>Customer</th>
+            <th>Email</th>
             <th>Total</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let receipt of receipts">
+          <tr *ngFor="let receipt of getFilteredReceipts()">
             <td style="font-size: 0.8rem; color: #666;">{{ receipt.id | slice:0:8 }}...</td>
             <td>{{ receipt.createdAt | date:'short' }}</td>
-            <td>{{ receipt.customerName || 'N/A' }}</td>
+            <td>{{ receipt.customerName || 'N/A' }}<br><small>{{ receipt.phone }}</small></td>
+            <td>{{ receipt.email || 'N/A' }}</td>
             <td class="price">${{ receipt.total | number:'1.2-2' }}</td>
-            <td>
+            <td style="display: flex; gap: 8px;">
               <button (click)="printReceipt(receipt)" class="btn-primary" style="padding: 6px 12px; font-size: 0.9rem;">
                 Print Receipt
+              </button>
+              <button (click)="updateOrderStatus(receipt.id, 'Pending')" class="btn-cancel" style="padding: 6px 12px; font-size: 0.9rem;" title="Move back to Orders">
+                ↺ Revert
               </button>
             </td>
           </tr>
@@ -146,16 +156,51 @@
     </div>
   </div>
 
+  <div *ngIf="activeTab === 'sync'" class="sync-tab-container">
+    <h2>System Synchronization</h2>
+    <p>Sync the mongodb data with Google Sheets.</p>
+    
+    <div class="sync-actions-grid">
+      <div class="sync-card">
+        <h3>📦 Stocks</h3>
+        <p>Push inventory updates</p>
+        <button class="btn-primary" (click)="syncProducts()" [disabled]="syncingProducts || syncingAll">
+          {{ syncingProducts ? 'Syncing...' : 'Sync Stocks' }}
+        </button>
+      </div>
+
+      <div class="sync-card">
+        <h3>🛒 Orders</h3>
+        <p>Push order history</p>
+        <button class="btn-primary" (click)="syncOrders()" [disabled]="syncingOrders || syncingAll">
+          {{ syncingOrders ? 'Syncing...' : 'Sync Orders' }}
+        </button>
+      </div>
+    </div>
+
+    <div class="sync-actions-large">
+      <button class="btn-primary large-btn" (click)="syncAll()" [disabled]="syncingAll || syncingProducts || syncingOrders">
+        {{ syncingAll ? 'Syncing All Data...' : 'Sync All Services' }}
+      </button>
+    </div>
+
+    <div *ngIf="syncMessage" class="sync-message">
+      {{ syncMessage }}
+    </div>
+  </div>
+
 </div>
 
 <div class="print-only receipt-print-container" *ngIf="selectedReceiptToPrint">
   <div class="receipt-header">
-    <h2>Grocery Store</h2>
-    <p>123 Main Street</p>
+    <h2>🛒 La signare - Épicerie du Monde</h2>
+    <p>LA SIGNARE - Épicerie Du Monde, 11 Rue de Bernières, 14000 Caen</p>
+	<p> +33 6 36 02 23 91 </p>
     <p>Receipt #: {{ selectedReceiptToPrint.id | slice:0:8 }}</p>
     <p>Date: {{ selectedReceiptToPrint.createdAt | date:'short' }}</p>
-    <p *ngIf="selectedReceiptToPrint.customerName">Customer: {{ selectedReceiptToPrint.customerName }}</p>
+    <b *ngIf="selectedReceiptToPrint.customerName">Customer: {{ selectedReceiptToPrint.customerName }}</b>
   </div>
+  <p *ngIf="selectedReceiptToPrint.phone">Customer Phone Number: {{ selectedReceiptToPrint.phone }}</p>
   
   <table class="receipt-items">
     <thead>
