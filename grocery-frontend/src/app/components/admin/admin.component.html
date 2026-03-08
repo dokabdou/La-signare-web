@@ -98,8 +98,10 @@
                 [ngModel]="order.status || 'Pending'" 
                 (ngModelChange)="updateOrderStatus(order.id, $event)"
                 class="status-select">
+                <option value="UnProcessed">UnProcessed</option>
                 <option value="Pending">Pending</option>
                 <option value="Ready">Ready</option>
+				<option value="Cancelled">Cancelled</option>
               </select>
             </td>
             <td class="price">${{ order.total | number:'1.2-2' }}</td>

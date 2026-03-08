@@ -61,7 +61,7 @@ export class OrderService {
   createOrder(order: any): Observable<any> {
     order.id = order.id || this.generateId();
     order.createdAt = order.createdAt || new Date().toISOString();
-    order.status = 'Pending';
+    order.status = 'UnProcessed';
 
     const currentOrders = this.ordersSubject.value;
     this.ordersSubject.next([...currentOrders, order]);
@@ -71,6 +71,7 @@ export class OrderService {
       .pipe(catchError(() => of(null)))
       .subscribe();
 
+	console.log('Created order:', order);
     return of(order);
   }
 
@@ -87,6 +88,7 @@ export class OrderService {
       .pipe(catchError(() => of(null)))
       .subscribe();
 
+	console.log('Updated order:', order);
     return of(order);
   }
 

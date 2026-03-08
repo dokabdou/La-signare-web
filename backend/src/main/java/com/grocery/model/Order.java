@@ -17,7 +17,7 @@ public class Order {
     private List<Object> items;
     private double total;
     private LocalDateTime createdAt;
-	private String status = "Pending";
+	private String status = "UnProcessed"; // initial status is UnProcessed, then Pending, Ready, or Cancelled
 
 	public Order() {}
 
