@@ -86,10 +86,8 @@ export class AdminComponent implements OnInit, OnDestroy {
     const displayed = this.getDisplayedProducts(this.currentProducts);
     console.log('Displayed products for select all:', displayed);
     if (this.selectedProductIds.size === displayed.length) {
-      // If all are selected, deselect all
       this.selectedProductIds.clear();
     } else {
-      // Select all currently displayed products
       displayed.forEach((p) => this.selectedProductIds.add(p.id));
     }
   }
@@ -97,7 +95,6 @@ export class AdminComponent implements OnInit, OnDestroy {
   applyMassUpdate() {
     if (this.selectedProductIds.size === 0) return;
 
-    // Ensure at least one value is provided
     if (this.massEditPrice === null && this.massEditQuantity === null) {
       alert('Please provide a new Price or Quantity to update.');
       return;
@@ -109,12 +106,11 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.massUpdating = true;
     const updateRequests: any[] = [];
 
-    // Find the products to update from our local array to build the payload
     this.selectedProductIds.forEach((id) => {
       const product = this.currentProducts.find((p) => p.id === id);
       if (product) {
         const payload = {
-          ...product, // Keep existing name, category, etc.
+          ...product, 
           price: this.massEditPrice !== null ? this.massEditPrice : product.price,
           quantity: this.massEditQuantity !== null ? this.massEditQuantity : product.quantity,
         };
@@ -122,13 +118,12 @@ export class AdminComponent implements OnInit, OnDestroy {
       }
     });
 
-    // Execute all updates simultaneously
     forkJoin(updateRequests).subscribe(() => {
       this.massUpdating = false;
       this.selectedProductIds.clear();
       this.massEditPrice = null;
       this.massEditQuantity = null;
-      this.loadProducts(); // Refresh the list
+      this.loadProducts();
     });
   }
 
@@ -333,6 +328,7 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.price = product.price;
     this.category = product.category;
     this.imageUrl = product.imageUrl;
+	this.quantity = product.quantity;
   }
 
   cancelEdit(): void {
@@ -342,6 +338,7 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.price = 0;
     this.category = '';
     this.imageUrl = '';
+	this.quantity = 0;
   }
 
   save(): void {

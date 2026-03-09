@@ -145,7 +145,11 @@ export class NavbarComponent implements OnInit {
     this.router.navigate(['/']);
   }
   search(term: string) {
-    if (term?.trim()) this.router.navigate(['/'], { queryParams: { search: term } });
+    if (term?.trim()) {
+      this.router.navigate(['/all-products'], { queryParams: { search: term } });
+    } else {
+      this.router.navigate(['/all-products']); 
+    }
   }
   goToProduct(id: string) {
     this.router.navigate(['/product', id]);
