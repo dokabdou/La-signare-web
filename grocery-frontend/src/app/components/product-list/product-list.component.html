@@ -8,16 +8,23 @@
         <li>✔️ Save Time</li>
         <li>✔️ ------ </li>
       </ul>
-      <button class="hero-btn" routerLink="/">View our products</button>
+      <button class="hero-btn" (click)="goToAllProducts()">View our products</button>
     </div>
   </section>
 
-  <section class="product-slider-section" *ngIf="newArrivals.length > 0">
+  <section class="product-slider-section">
     <div class="slider-header">
       <h2>New Arrivals</h2>
       <a routerLink="/new-arrivals">See all ▾</a>
     </div>
     <div class="product-carousel">
+      <div class="product-card empty-state-card" *ngIf="newArrivals.length === 0">
+        <div class="empty-state-content">
+          <h3>No products yet</h3>
+          <p>Check back soon!</p>
+        </div>
+      </div>
+
       <div class="product-card" *ngFor="let product of newArrivals" (click)="goToProduct(product.id)">
         <div class="badge new">NEW</div>
         <div class="img-container">
@@ -38,19 +45,30 @@
       <h2>OUR PRODUCT CATEGORIES</h2>
       <p>___ ---- _____</p>
     </div>
-    <div class="categories-grid">
-      <div class="cat-card dynamic-bg" *ngFor="let cat of categories" (click)="goToCategory(cat)">
-        <h3>{{ cat | uppercase }}</h3>
-      </div>
+        <div class="categories-grid">
+        <div class="cat-card dynamic-bg" *ngFor="let cat of displayedCategories" (click)="goToCategory(cat)">
+            <h3>{{ cat | uppercase }}</h3>
+        </div>
+        
+        <div class="cat-card all-products-card" (click)="goToAllProducts()">
+            <h3>ALL PRODUCTS ➔</h3>
+        </div>
     </div>
   </section>
 
-  <section class="product-slider-section" *ngIf="bestSellers.length > 0">
+  <section class="product-slider-section">
     <div class="slider-header">
       <h2>Best Sellers</h2>
       <a routerLink="/best-sellers">See all ▾</a>
     </div>
     <div class="product-carousel">
+      <div class="product-card empty-state-card" *ngIf="bestSellers.length === 0">
+        <div class="empty-state-content">
+          <h3>No products yet</h3>
+          <p>Check back soon!</p>
+        </div>
+      </div>
+
       <div class="product-card" *ngFor="let product of bestSellers" (click)="goToProduct(product.id)">
         <div class="badge top">TOP</div>
         <div class="img-container">

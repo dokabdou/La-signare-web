@@ -135,6 +135,12 @@ export class NavbarComponent implements OnInit {
     this.dropdownOpen = false;
     this.router.navigate(['/category', cat]);
   }
+
+  goToAllProducts() {
+    this.router.navigate(['/all-products']);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   goHome() {
     this.router.navigate(['/']);
   }

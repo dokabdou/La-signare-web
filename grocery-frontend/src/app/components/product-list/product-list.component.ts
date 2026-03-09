@@ -16,10 +16,11 @@ import { Subject, of } from 'rxjs';
 })
 export class ProductListComponent implements OnInit, OnDestroy {
   products: any[] = [];
-
   newArrivals: any[] = [];
   bestSellers: any[] = [];
   categories: string[] = [];
+
+  displayedCategories: string[] = [];
 
   private destroy$ = new Subject<void>();
 
@@ -56,6 +57,8 @@ export class ProductListComponent implements OnInit, OnDestroy {
           new Set(this.products.map((item: any) => item.category).filter(Boolean)),
         ).sort((a, b) => a.localeCompare(b));
 
+        this.displayedCategories = this.categories.slice(0, 5);
+
         this.newArrivals = [...this.products].reverse().slice(0, 8);
 
         this.bestSellers = [];
@@ -83,6 +86,11 @@ export class ProductListComponent implements OnInit, OnDestroy {
 
   goToCategory(cat: string) {
     this.router.navigate(['/category', cat]);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  goToAllProducts() {
+    this.router.navigate(['/all-products']);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 

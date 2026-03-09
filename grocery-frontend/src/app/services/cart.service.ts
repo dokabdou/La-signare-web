@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, Subject, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { OrderService } from './order.service';
 import { AuthService } from './auth.service';
@@ -14,6 +14,9 @@ export class CartService {
   private isBrowser = typeof window !== 'undefined';
   private cartSubject = new BehaviorSubject<any[]>(this.load());
   cart$ = this.cartSubject.asObservable();
+
+  private itemAddedSource = new Subject<string>();
+  itemAdded$ = this.itemAddedSource.asObservable();
 
   private draftOrderKey = 'activeDraftOrderId'; // kind of like a bridge between cart and orders to keep track of the backend draft order ID
   private orderId = '';
@@ -58,6 +61,8 @@ export class CartService {
     if (existing) existing.quantity += quantity;
     else cart.push({ ...product, quantity });
     this.save(cart);
+
+    this.itemAddedSource.next(product.name);
   }
 
   updateQuantity(productId: string, quantity: number) {

@@ -20,9 +20,18 @@ export class AdminComponent implements OnInit, OnDestroy {
   name = '';
   description = '';
   price = 0;
+  quantity = 0;
   category = '';
   imageUrl = '';
+
+  selectedProductIds: Set<string> = new Set();
+  massEditPrice: number | null = null;
+  massEditQuantity: number | null = null;
+  massUpdating = false;
+
   products$ = new ReplaySubject<any[]>(1);
+  currentProducts: any[] = [];
+
   loading = false;
   error = '';
   editingId: string | null = null;
@@ -63,6 +72,70 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   switchTab(tab: 'stocks' | 'orders' | 'receipts' | 'sync') {
     this.activeTab = tab;
+  }
+
+  toggleSelection(productId: string) {
+    if (this.selectedProductIds.has(productId)) {
+      this.selectedProductIds.delete(productId);
+    } else {
+      this.selectedProductIds.add(productId);
+    }
+  }
+
+  toggleSelectAll() {
+    const displayed = this.getDisplayedProducts(this.currentProducts);
+    console.log('Displayed products for select all:', displayed);
+    if (this.selectedProductIds.size === displayed.length) {
+      // If all are selected, deselect all
+      this.selectedProductIds.clear();
+    } else {
+      // Select all currently displayed products
+      displayed.forEach((p) => this.selectedProductIds.add(p.id));
+    }
+  }
+
+  applyMassUpdate() {
+    if (this.selectedProductIds.size === 0) return;
+
+    // Ensure at least one value is provided
+    if (this.massEditPrice === null && this.massEditQuantity === null) {
+      alert('Please provide a new Price or Quantity to update.');
+      return;
+    }
+
+    if (!confirm(`Are you sure you want to update ${this.selectedProductIds.size} products?`))
+      return;
+
+    this.massUpdating = true;
+    const updateRequests: any[] = [];
+
+    // Find the products to update from our local array to build the payload
+    this.selectedProductIds.forEach((id) => {
+      const product = this.currentProducts.find((p) => p.id === id);
+      if (product) {
+        const payload = {
+          ...product, // Keep existing name, category, etc.
+          price: this.massEditPrice !== null ? this.massEditPrice : product.price,
+          quantity: this.massEditQuantity !== null ? this.massEditQuantity : product.quantity,
+        };
+        updateRequests.push(this.ps.updateProduct(id, payload).pipe(catchError(() => of(null))));
+      }
+    });
+
+    // Execute all updates simultaneously
+    forkJoin(updateRequests).subscribe(() => {
+      this.massUpdating = false;
+      this.selectedProductIds.clear();
+      this.massEditPrice = null;
+      this.massEditQuantity = null;
+      this.loadProducts(); // Refresh the list
+    });
+  }
+
+  cancelMassEdit() {
+    this.selectedProductIds.clear();
+    this.massEditPrice = null;
+    this.massEditQuantity = null;
   }
 
   loadOrders(): void {
@@ -138,7 +211,7 @@ export class AdminComponent implements OnInit, OnDestroy {
         const printWindow = window.open(
           '',
           '_blank',
-          'left=0,top=0,width=800,height=600,toolbar=0,scrollbars=0,status=0',
+          'left=0,top=0,width=400,height=600,toolbar=0,scrollbars=0,status=0',
         );
         if (printWindow) {
           printWindow.document.write(`
@@ -146,17 +219,20 @@ export class AdminComponent implements OnInit, OnDestroy {
               <head>
                 <title>Receipt - ${receipt.id}</title>
                 <style>
-                  @page { margin: 0; }
+                  @page { 
+                    size: 110mm 220mm; 
+                    margin: 5mm; 
+                  }
                   body { 
                     font-family: 'Courier New', Courier, monospace; 
                     color: #000; 
-                    width: 300px; 
+                    width: 100mm; 
                     margin: 0 auto; 
-                    padding: 10px;
+                    padding: 0;
                     background: #fff;
                   }
                   .receipt-header, .receipt-footer { text-align: center; margin-bottom: 1rem; }
-                  .receipt-header h2 { margin: 0; font-size: 1.5rem; }
+                  .receipt-header h2 { margin: 0; font-size: 1.2rem; }
                   .receipt-items { 
                     width: 100%; 
                     border-top: 1px dashed #000; 
@@ -167,9 +243,9 @@ export class AdminComponent implements OnInit, OnDestroy {
                   .receipt-items th, .receipt-items td { 
                     padding: 5px 0; 
                     border: none; 
-                    font-size: 0.9rem; 
+                    font-size: 0.85rem; 
                   }
-                  .receipt-total { margin-top: 15px; text-align: right; }
+                  .receipt-total { margin-top: 15px; text-align: right; font-size: 0.95rem; }
                 </style>
               </head>
               <body>
@@ -219,9 +295,9 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.ps.getProducts().subscribe({
       next: (p) => {
-        const products = p || [];
-        this.products$.next(products);
-        this.extractCategories(products);
+        this.currentProducts = p || [];
+        this.products$.next(this.currentProducts);
+        this.extractCategories(this.currentProducts);
         this.loading = false;
         this.cdr.detectChanges();
       },
@@ -247,6 +323,7 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   filterByCategory(cat: string): void {
     this.selectedCategory = this.selectedCategory === cat ? '' : cat;
+    this.selectedProductIds.clear();
   }
 
   startEdit(product: any): void {
@@ -274,6 +351,7 @@ export class AdminComponent implements OnInit, OnDestroy {
       price: this.price,
       category: this.category,
       imageUrl: this.imageUrl,
+      quantity: this.quantity,
     };
     if (this.editingId) {
       this.ps.updateProduct(this.editingId, payload).subscribe({
@@ -283,6 +361,11 @@ export class AdminComponent implements OnInit, OnDestroy {
         },
       });
     } else {
+      if (!payload.name || !payload.price || !payload.category) {
+        this.error = 'Name, Price and Category are required.';
+        alert(this.error);
+        return;
+      }
       this.ps.createProduct(payload).subscribe({
         next: () => {
           this.cancelEdit();
@@ -292,8 +375,9 @@ export class AdminComponent implements OnInit, OnDestroy {
     }
   }
 
-  goToProduct(id: string) {
-    this.router.navigate(['/product', id]);
+  goToProduct(product: any) {
+    if (product.quantity < 10) return;
+    this.router.navigate(['/product', product.id]);
   }
 
   deleteProduct(id: string): void {

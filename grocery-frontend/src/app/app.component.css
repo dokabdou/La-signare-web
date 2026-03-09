@@ -1,0 +1,36 @@
+.global-toast {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  background: #166534;
+  color: white;
+  padding: 14px 24px;
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  box-shadow: 0 10px 25px rgba(22, 101, 52, 0.3);
+  z-index: 10000;
+  cursor: pointer;
+  border-left: 5px solid #4ade80;
+  animation: slideInRight 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: opacity 0.2s;
+}
+
+.global-toast:hover {
+  opacity: 0.85;
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(120%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@media (max-width: 640px) {
+  .global-toast {
+    top: 20px;
+    right: 10px;
+    left: 10px;
+    text-align: center;
+  }
+}

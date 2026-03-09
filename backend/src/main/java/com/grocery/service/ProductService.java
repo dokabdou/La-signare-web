@@ -59,6 +59,7 @@ public class ProductService {
                     existing.setDescription(updated.getDescription());
                     existing.setPrice(updated.getPrice());
                     existing.setImageUrl(updated.getImageUrl());
+					existing.setQuantity(updated.getQuantity());
                     if (updated.getCategory() != null) {
                         Category cat = categoryRepository.findByNameIgnoreCase(updated.getCategory())
                                 .orElseGet(() -> categoryRepository.save(new Category(updated.getCategory())));

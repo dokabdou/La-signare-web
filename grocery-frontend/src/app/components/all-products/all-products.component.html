@@ -1,0 +1,41 @@
+<div class="all-products-container">
+  
+  <div class="header-section">
+    <h2>All Products</h2>
+    <p>-----___------</p>
+  </div>
+
+  <div class="category-filter">
+    <button class="category-btn" 
+            [class.active]="selectedCategory === ''" 
+            (click)="filterByCategory('')">
+      All
+    </button>
+    <button *ngFor="let cat of categories" 
+            (click)="filterByCategory(cat)"
+            [class.active]="selectedCategory === cat" 
+            class="category-btn">
+      {{ cat | titlecase }}
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading">Loading products...</div>
+  <div *ngIf="!loading && getDisplayedProducts().length === 0" class="empty">
+    No products found in this category.
+  </div>
+
+  <div class="products-grid" *ngIf="!loading && getDisplayedProducts().length > 0">
+    <div class="product-card" *ngFor="let product of getDisplayedProducts()" (click)="goToProduct(product.id)">
+      <div class="img-container">
+        <img [src]="product.imageUrl || 'assets/placeholder.jpg'" [alt]="product.name">
+      </div>
+      <div class="card-info">
+        <span class="cat-label">{{ product.category | uppercase }}</span>
+        <h3>{{ product.name }}</h3>
+        <p class="price"><strong>${{ product.price | number:'1.2-2' }}</strong></p>
+        <button class="add-btn" (click)="addToCart($event, product)">Add to cart</button>
+      </div>
+    </div>
+  </div>
+
+</div>

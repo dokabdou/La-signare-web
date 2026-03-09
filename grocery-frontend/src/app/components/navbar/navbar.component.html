@@ -2,6 +2,7 @@
   <div class="logo" (click)="goHome()" style="cursor:pointer">🛒 La signare - Épicerie du Monde</div>
 
   <div class="categories" *ngIf="categories$ | async as cats">
+	<a (click)="goToAllProducts()" class="cat-link">All Products</a>
     <ng-container *ngIf="cats.length <= 5; else many">
       <a *ngFor="let cat of cats" (click)="goToCategory(cat)" class="cat-link">
         {{ cat | titlecase }}
