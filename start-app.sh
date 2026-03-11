@@ -21,7 +21,7 @@ BACKEND_PID=$!
 # start the angular frontend
 echo "Starting Angular frontend..."
 cd ~/La-signare-web/grocery-frontend || exit
-ng serve --host 0.0.0.0 &
+ng serve --host 0.0.0.0 --configuration production & &
 FRONTEND_PID=$!
 
 

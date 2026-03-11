@@ -2,10 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, forkJoin, interval, of } from 'rxjs';
 import { map, catchError, finalize, timeout } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class OrderService {
-  private javaUrl = 'http://localhost:8080/api/orders';
+  private javaUrl = `${environment.apiUrl}/orders`;
   private sheetsUrl =
     'https://script.google.com/macros/s/AKfycbzAE4pvZ1tug4JO5ANwVZAlg1EnrSqxSNPhd-1_QtnwvEkIm8ahpYKUEPf3gf9wKWGrHw/exec';
   private apiKey = 'grocery_secret_2026';
