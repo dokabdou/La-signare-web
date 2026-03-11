@@ -64,7 +64,11 @@
               "buildTarget": "grocery-frontend:build:development"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "development",
+          "options" : {
+            "allowedHosts": ["lasignare.abdoudiallo.fr"],
+            "port": 4200,
+          }
         },
         "extract-i18n": {
           "builder": "@angular/build:extract-i18n"
