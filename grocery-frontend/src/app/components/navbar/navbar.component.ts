@@ -8,12 +8,11 @@ import { ProductService } from '../../services/product.service';
 import { AuthService } from '../../services/auth.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ClickOutsideDirective } from '../../directives/click-outside.directive';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, ClickOutsideDirective],
+  imports: [CommonModule, RouterModule, FormsModule ],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css'],
 })
