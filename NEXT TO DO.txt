@@ -12,3 +12,17 @@ cd ~/La-signare-web/backend
 mvn clean package -DskipTests
 
 jar name : grocery-backend-0.0.1-SNAPSHOT.jar
+
+
+precompile frontend as well : 
+cd ~/La-signare-web/grocery-frontend
+npm run build -> creates dist folder
+
+# 1. force upload
+git add dist/ -f
+
+# 2. Commit the files
+git commit -m "Force adding production dist folder"
+
+# 3. Push it to GitHub
+git push origin main
