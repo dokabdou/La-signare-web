@@ -6,3 +6,9 @@ The issue is that products$ is a Subject that doesn't replay values. When the co
 
 
 Only authenticated users (with a VIP pass, usually a JWT token) can see /api/customers and /api/orders.
+
+Compile Java backend into a .jar file :
+cd ~/La-signare-web/backend
+mvn clean package -DskipTests
+
+jar name : grocery-backend-0.0.1-SNAPSHOT.jar

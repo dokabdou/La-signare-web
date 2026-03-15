@@ -12,20 +12,22 @@ cleanup() {
 # detects the ctrl C to start the cleanup function
 trap cleanup SIGINT
 
-# start the java backend
-echo "Starting Spring Boot backend..."
+echo "Pulling latest code from GitHub..."
+cd ~/La-signare-web || exit
+git pull origin main
+
+echo "Starting Spring Boot backend (Production Mode)..."
 cd ~/La-signare-web/backend || exit
-mvn spring-boot:run &
+# Run the compiled JAR directly! Adjust the filename if yours is slightly different.
+java -jar target/grocery-backend-0.0.1-SNAPSHOT.jar &
 BACKEND_PID=$!
 
-# Give Java a brief head-start to print its initial logs
-sleep 2
+# Give Java 5 seconds to boot up
+sleep 5
 
-# start the angular frontend
 echo "Starting Angular frontend..."
 cd ~/La-signare-web/grocery-frontend || exit
-
-# ADDED HOST=0.0.0.0 RIGHT HERE!
+# Ensure Node listens to the outside world!
 HOST=0.0.0.0 PORT=4200 node dist/grocery-frontend/server/server.mjs &
 FRONTEND_PID=$!
 
