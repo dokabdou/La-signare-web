@@ -48,9 +48,7 @@ export class CheckoutComponent implements OnInit {
       this.authService.openLoginModal();
     }
 
-    if (typeof window !== 'undefined') {
-      this.currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    }
+	this.currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
   }
 
   switchTab(tab: 'cart' | 'past-orders') {
@@ -93,8 +91,11 @@ export class CheckoutComponent implements OnInit {
       return;
     }
 
+	console.log('user : ', this.currentUser);
+
     if (!this.currentUser || !this.currentUser.name || !this.currentUser.phone) {
       this.message = 'Please log in to place an order.';
+	  console.log('user : ', this.currentUser);
 	  console.log('returnnn');
       return;
     }
