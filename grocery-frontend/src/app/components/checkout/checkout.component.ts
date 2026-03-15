@@ -76,7 +76,6 @@ export class CheckoutComponent implements OnInit {
   }
 
   placeOrder(): void {
-	console.log('placing ORDER');
     this.orderError = false;
     this.orderSuccess = false;
     this.errorMessage = '';
@@ -87,22 +86,17 @@ export class CheckoutComponent implements OnInit {
       setTimeout(() => {
         this.emptyCartError = false;
       }, 3000);
-	  console.log("returnnhèèè");
       return;
     }
 
-	console.log('user : ', this.currentUser);
-
     if (!this.currentUser || !this.currentUser.name || !this.currentUser.phone) {
+		this.orderError = true;
       this.message = 'Please log in to place an order.';
-	  console.log('user : ', this.currentUser);
-	  console.log('returnnn');
       return;
     }
 
     this.loading = true;
     const draftId = this.cartService.getDraftOrderId();
-	console.log('draftId : ', draftId);
 
     const finalizedOrder = {
       customerName: this.currentUser.name,
@@ -114,16 +108,13 @@ export class CheckoutComponent implements OnInit {
       createdAt: new Date().toISOString(),
     };
 
-	console.log('finalizedOrder - ', finalizedOrder);
 
     if (draftId) {
-		console.log("in draftId condition");
       this.orderService.updateOrder(draftId, finalizedOrder).subscribe({
         next: (res) => {
           this.loading = false;
           this.orderSuccess = true;
           this.cartService.finalizeCheckout();
-		  console.log('--after cart finalizecheckout');
 
           setTimeout(() => {
             this.orderSuccess = false;
@@ -131,11 +122,9 @@ export class CheckoutComponent implements OnInit {
           }, 2000);
         },
         error: (err) => {
-			console.log('error sending order');
           this.loading = false;
           this.orderError = true;
           this.errorMessage = 'Error placing order. Please try again.';
-          console.error('Order creation failed:', err);
         },
       });
     }

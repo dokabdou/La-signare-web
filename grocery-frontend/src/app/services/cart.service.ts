@@ -29,7 +29,6 @@ export class CartService {
   ) {
     if (this.isBrowser) {
       this.orderId = localStorage.getItem(this.draftOrderKey) || '';
-      console.log('CartService initialized with draft order ID:', this.orderId);
 
       this.authService.currentUser$.subscribe((user) => {
         this.currentUser = user;
@@ -92,7 +91,6 @@ export class CartService {
   }
 
   finalizeCheckout() {
-	console.log('in finalizeCheckout');
     if (this.isBrowser) localStorage.removeItem('cart');
     this.cartSubject.next([]);
     this.clearOrderId();
@@ -111,9 +109,6 @@ export class CartService {
     if (!this.isBrowser) return;
 
     if (!this.currentUser || !this.currentUser.email) return;
-
-    console.log('Syncing cart with backend. Current cart:', cart);
-    console.log('id : ', this.orderId);
 
     // If cart is completely emptied, delete the backend draft order
     if (cart.length === 0 && this.orderId) {

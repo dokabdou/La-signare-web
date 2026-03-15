@@ -84,7 +84,6 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   toggleSelectAll() {
     const displayed = this.getDisplayedProducts(this.currentProducts);
-    console.log('Displayed products for select all:', displayed);
     if (this.selectedProductIds.size === displayed.length) {
       this.selectedProductIds.clear();
     } else {
