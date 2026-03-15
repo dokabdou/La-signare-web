@@ -103,12 +103,15 @@ export class OrderService {
   }
 
   updateOrder(id: string, order: any): Observable<any> {
+	console.log('udpateOrder');
     order.id = id;
 
     const currentOrders = this.ordersSubject.value.map((o) =>
       o.id === id ? { ...o, ...order } : o,
     );
     this.ordersSubject.next(currentOrders);
+
+	console.log('order : ', order);
 
     this.http
       .put<any>(`${this.javaUrl}/${id}`, order)

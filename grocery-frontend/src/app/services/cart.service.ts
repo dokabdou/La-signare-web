@@ -92,6 +92,7 @@ export class CartService {
   }
 
   finalizeCheckout() {
+	console.log('in finalizeCheckout');
     if (this.isBrowser) localStorage.removeItem('cart');
     this.cartSubject.next([]);
     this.clearOrderId();

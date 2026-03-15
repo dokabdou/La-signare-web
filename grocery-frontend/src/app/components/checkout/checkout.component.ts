@@ -78,6 +78,7 @@ export class CheckoutComponent implements OnInit {
   }
 
   placeOrder(): void {
+	console.log('placing ORDER')
     this.orderError = false;
     this.orderSuccess = false;
     this.errorMessage = '';
@@ -110,11 +111,13 @@ export class CheckoutComponent implements OnInit {
     };
 
     if (draftId) {
+		console.log("in draftId condition");
       this.orderService.updateOrder(draftId, finalizedOrder).subscribe({
         next: (res) => {
           this.loading = false;
           this.orderSuccess = true;
           this.cartService.finalizeCheckout();
+		  console.log('--after cart finalizecheckout');
 
           setTimeout(() => {
             this.orderSuccess = false;
@@ -122,6 +125,7 @@ export class CheckoutComponent implements OnInit {
           }, 2000);
         },
         error: (err) => {
+			console.log('error sending order');
           this.loading = false;
           this.orderError = true;
           this.errorMessage = 'Error placing order. Please try again.';
