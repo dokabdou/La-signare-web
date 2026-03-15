@@ -19,7 +19,7 @@ git pull origin main
 echo "Starting Spring Boot backend (Production Mode)..."
 cd ~/La-signare-web/backend || exit
 # Run the compiled JAR directly! Adjust the filename if yours is slightly different.
-java -jar target/grocery-backend-0.0.1-SNAPSHOT.jar &
+java -jar target/grocery-backend-0.0.1-SNAPSHOT.jar -Djava.security.egd=file:/dev/./urandom &
 BACKEND_PID=$!
 
 # Give Java 5 seconds to boot up
