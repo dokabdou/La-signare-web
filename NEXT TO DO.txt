@@ -25,4 +25,4 @@ git add dist/ -f
 git commit -m "Force adding production dist folder"
 
 # 3. Push it to GitHub
-git push origin main
+git push
