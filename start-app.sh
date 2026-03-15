@@ -18,16 +18,23 @@ git pull origin main
 
 echo "Starting Spring Boot backend (Production Mode)..."
 cd ~/La-signare-web/backend || exit
-# Run the compiled JAR directly! Adjust the filename if yours is slightly different.
-java -jar target/grocery-backend-0.0.1-SNAPSHOT.jar -Djava.security.egd=file:/dev/./urandom &
+# FIXED: The -D flag must go BEFORE the -jar flag!
+java -Djava.security.egd=file:/dev/./urandom -jar target/grocery-backend-0.0.1-SNAPSHOT.jar &
 BACKEND_PID=$!
 
 # Give Java 5 seconds to boot up
 sleep 5
 
-echo "Starting Angular frontend..."
+echo "Building and Starting Angular frontend..."
 cd ~/La-signare-web/grocery-frontend || exit
-# Ensure Node listens to the outside world!
+
+# 1. Install any new dependencies
+npm install
+
+# 2. Compile the production version of the app (This creates the fresh dist/ folder!)
+npm run build
+
+# 3. Serve the freshly built app to the outside world
 HOST=0.0.0.0 PORT=4200 node dist/grocery-frontend/server/server.mjs &
 FRONTEND_PID=$!
 
