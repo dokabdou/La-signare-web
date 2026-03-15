@@ -48,7 +48,9 @@ export class CheckoutComponent implements OnInit {
       this.authService.openLoginModal();
     }
 
-    this.currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    if (typeof window !== 'undefined') {
+      this.currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    }
   }
 
   switchTab(tab: 'cart' | 'past-orders') {

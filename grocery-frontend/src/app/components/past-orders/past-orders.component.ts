@@ -24,9 +24,12 @@ export class PastOrdersComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    if (this.currentUser && this.currentUser.email) {
-      this.loadPastOrders();
+    if (typeof window !== 'undefined') {
+      this.currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
+      if (this.currentUser && this.currentUser.email) {
+        this.loadPastOrders();
+      }
     }
   }
 
@@ -75,7 +78,7 @@ export class PastOrdersComponent implements OnInit {
   }
 
   reorder(order: any, event?: Event) {
-    if (event) event.stopPropagation(); 
+    if (event) event.stopPropagation();
 
     const items = this.getOrderItems(order);
 
