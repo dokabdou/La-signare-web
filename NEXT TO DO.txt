@@ -26,3 +26,22 @@ git commit -m "Force adding production dist folder"
 
 # 3. Push it to GitHub
 git push
+
+
+access mongodb in terminal : 
+
+mongosh -> enter shell
+use grocerydb  -> enter db
+show collections -> shows tables
+db.customers.find() -> view all customers
+db.customers.find().pretty()  -> append .pretty() to make it format nicely like standard JSON!
+
+sets user to admin : 
+db.customers.updateOne(
+  { email: "abdou@1203" }, 
+  { $set: { isAdmin: true } }
+)
+= should reply with { acknowledged: true, modifiedCount: 1 }
+
+
+exit -> exit db
