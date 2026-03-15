@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable, forkJoin, interval, of } from 'rxjs';
-import { map, catchError, finalize, timeout } from 'rxjs/operators';
+import { BehaviorSubject, Observable, forkJoin, of } from 'rxjs';
+import { map, catchError, finalize } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -12,19 +12,15 @@ export class ProductService {
   private sheetsUrl =
     'https://script.google.com/macros/s/AKfycbzAE4pvZ1tug4JO5ANwVZAlg1EnrSqxSNPhd-1_QtnwvEkIm8ahpYKUEPf3gf9wKWGrHw/exec';
   private apiKey = 'grocery_secret_2026';
-  private textHeaders = new HttpHeaders({ 'Content-Type': 'text/plain' });
+  //private textHeaders = new HttpHeaders({ 'Content-Type': 'text/plain' });
 
   private productsSubject = new BehaviorSubject<any[]>([]);
   public products$ = this.productsSubject.asObservable();
-  private isFetching = false;
 
-  constructor(private http: HttpClient) {
-    interval(10000).subscribe(() => {
-      if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
-        this.fetchAllProducts();
-      }
-    });
-  }
+  private isFetching = false;
+  private hasFetched = false; // THE CACHE FLAG
+
+  constructor(private http: HttpClient) {}
 
   private generateId(): string {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -34,24 +30,31 @@ export class ProductService {
     });
   }
 
+  // Only fetches from Java if it hasn't fetched already
   private fetchAllProducts(): void {
-    if (this.isFetching) return;
+    if (this.isFetching || this.hasFetched) return;
     this.isFetching = true;
 
     this.http
       .get<any[]>(this.javaUrl)
       .pipe(
-        timeout(8000),
         catchError(() => of([])),
         finalize(() => (this.isFetching = false)),
       )
       .subscribe((javaData) => {
         this.productsSubject.next(javaData);
+        this.hasFetched = true; // Mark as successfully cached!
       });
   }
 
-  getProducts(category?: string, search?: string): Observable<any[]> {
+  // Call this if an Admin adds a product and you want to force a redownload
+  public refreshProducts(): void {
+    this.hasFetched = false;
     this.fetchAllProducts();
+  }
+
+  getProducts(category?: string, search?: string): Observable<any[]> {
+    this.fetchAllProducts(); // Triggers the lazy load
 
     return this.products$.pipe(
       map((products) => {
@@ -118,7 +121,7 @@ export class ProductService {
     return of(undefined);
   }
 
-  syncToGoogleSheets(): Observable<any> {
+  /* syncToGoogleSheets(): Observable<any> {
     const items = this.productsSubject.value;
     if (items.length === 0) return of(null);
 
@@ -126,6 +129,28 @@ export class ProductService {
       const payload = { key: this.apiKey, route: 'products', action: 'CREATE', data: item };
       return this.http
         .post<any>(this.sheetsUrl, JSON.stringify(payload), { headers: this.textHeaders })
+        .pipe(catchError(() => of(null)));
+    });
+
+    return forkJoin(requests);
+  } */
+
+  syncToGoogleSheets(): Observable<any> {
+    const items = this.productsSubject.value;
+    if (items.length === 0) return of(null);
+
+    const requests = items.map((item) => {
+      // Use URLSearchParams to format the data exactly how Google wants it to avoid CORS!
+      const body = new URLSearchParams();
+      body.set('key', this.apiKey);
+      body.set('route', 'products');
+      body.set('action', 'CREATE');
+      body.set('data', JSON.stringify(item));
+
+      return this.http
+        .post<any>(this.sheetsUrl, body.toString(), {
+          headers: new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' }),
+        })
         .pipe(catchError(() => of(null)));
     });
 

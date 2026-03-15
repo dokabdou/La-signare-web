@@ -6,3 +6,6 @@ spring:
   data:
     mongodb:
       uri: mongodb://localhost:27017/grocerydb
+
+jwt:
+  secret: grocery_secret_key_must_be_very_long_and_secure_2026

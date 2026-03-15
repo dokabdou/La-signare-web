@@ -1,8 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable, forkJoin, interval, of } from 'rxjs';
-import { map, catchError, finalize, timeout } from 'rxjs/operators';
+import { BehaviorSubject, Observable, forkJoin, of, Subscription } from 'rxjs';
+import { map, catchError, finalize } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+
+// Make sure this path is correct for your project!
+import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class OrderService {
@@ -10,17 +13,26 @@ export class OrderService {
   private sheetsUrl =
     'https://script.google.com/macros/s/AKfycbzAE4pvZ1tug4JO5ANwVZAlg1EnrSqxSNPhd-1_QtnwvEkIm8ahpYKUEPf3gf9wKWGrHw/exec';
   private apiKey = 'grocery_secret_2026';
-  private textHeaders = new HttpHeaders({ 'Content-Type': 'text/plain' });
 
   private ordersSubject = new BehaviorSubject<any[]>([]);
   public orders$ = this.ordersSubject.asObservable();
 
   private isFetching = false;
+  private hasFetched = false;
 
-  constructor(private http: HttpClient) {
-    interval(3000).subscribe(() => {
-      if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
-        this.fetchAllOrders();
+  // need to know if someone is actually logged in before fetching!
+  private currentUser: any = null;
+
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService,
+  ) {
+    // Listen to the auth state. If they log out, wipe the orders.
+    // If they log in, we now have permission to fetch!
+    this.authService.currentUser$.subscribe((user) => {
+      this.currentUser = user;
+      if (!user) {
+        this.clearCache();
       }
     });
   }
@@ -34,19 +46,34 @@ export class OrderService {
   }
 
   private fetchAllOrders(): void {
-    if (this.isFetching) return;
+    // ONLY fetch if we have a logged-in user, we aren't currently fetching, and haven't fetched yet
+    if (!this.currentUser || this.isFetching || this.hasFetched) return;
+
     this.isFetching = true;
 
     this.http
       .get<any[]>(this.javaUrl)
       .pipe(
-        timeout(8000),
-        catchError(() => of([])),
+        catchError((err) => {
+          console.warn('Failed to fetch orders (Auth Token might be missing/expired):', err.status);
+          return of([]); // Silently fail and return empty array
+        }),
         finalize(() => (this.isFetching = false)),
       )
       .subscribe((javaData) => {
         this.ordersSubject.next(javaData);
+        this.hasFetched = true;
       });
+  }
+
+  public refreshOrders(): void {
+    this.hasFetched = false;
+    this.fetchAllOrders();
+  }
+
+  public clearCache(): void {
+    this.ordersSubject.next([]);
+    this.hasFetched = false;
   }
 
   getOrders(): Observable<any[]> {
@@ -72,7 +99,6 @@ export class OrderService {
       .pipe(catchError(() => of(null)))
       .subscribe();
 
-	console.log('Created order:', order);
     return of(order);
   }
 
@@ -89,7 +115,6 @@ export class OrderService {
       .pipe(catchError(() => of(null)))
       .subscribe();
 
-	console.log('Updated order:', order);
     return of(order);
   }
 
@@ -105,7 +130,7 @@ export class OrderService {
     return of(undefined);
   }
 
-  syncToGoogleSheets(): Observable<any> {
+  /* syncToGoogleSheets(): Observable<any> {
     const items = this.ordersSubject.value;
     if (items.length === 0) return of(null);
 
@@ -113,6 +138,27 @@ export class OrderService {
       const payload = { key: this.apiKey, route: 'orders', action: 'CREATE', data: item };
       return this.http
         .post<any>(this.sheetsUrl, JSON.stringify(payload), { headers: this.textHeaders })
+        .pipe(catchError(() => of(null)));
+    });
+
+    return forkJoin(requests);
+  } */
+
+  syncToGoogleSheets(): Observable<any> {
+    const items = this.ordersSubject.value;
+    if (items.length === 0) return of(null);
+
+    const requests = items.map((item) => {
+      const body = new URLSearchParams();
+      body.set('key', this.apiKey);
+      body.set('route', 'orders');
+      body.set('action', 'CREATE');
+      body.set('data', JSON.stringify(item));
+
+      return this.http
+        .post<any>(this.sheetsUrl, body.toString(), {
+          headers: new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' }),
+        })
         .pipe(catchError(() => of(null)));
     });
 

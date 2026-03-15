@@ -1,19 +1,22 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable, forkJoin, interval, of } from 'rxjs';
-import { map, catchError, finalize, timeout } from 'rxjs/operators';
+import { BehaviorSubject, Observable, forkJoin, of } from 'rxjs';
+import { map, catchError, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private javaUrl = `${environment.apiUrl}/customers`;
+  private authUrl = `${environment.apiUrl}/auth`;
+  private customersUrl = `${environment.apiUrl}/customers`;
+
   private sheetsUrl =
     'https://script.google.com/macros/s/AKfycbzAE4pvZ1tug4JO5ANwVZAlg1EnrSqxSNPhd-1_QtnwvEkIm8ahpYKUEPf3gf9wKWGrHw/exec';
   private apiKey = 'grocery_secret_2026';
-  private textHeaders = new HttpHeaders({ 'Content-Type': 'text/plain' });
+  //private textHeaders = new HttpHeaders({ 'Content-Type': 'text/plain' });
 
   private isBrowser = typeof window !== 'undefined';
 
+  // Restored: Caches the customer list ONLY when an Admin requests it
   private customersSubject = new BehaviorSubject<any[]>([]);
   public customers$ = this.customersSubject.asObservable();
 
@@ -22,19 +25,10 @@ export class AuthService {
 
   public showLoginModal$ = new BehaviorSubject<boolean>(false);
 
-  private isFetching = false;
-
-  constructor(private http: HttpClient) {
-    interval(10000).subscribe(() => {
-      if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
-        this.fetchAllCustomers();
-      }
-    });
-
-    if (this.isBrowser) {
-      this.fetchAllCustomers();
-    }
-  }
+  // Injected the OrderService so we can clear its cache on logout
+  constructor(
+    private http: HttpClient,
+  ) {}
 
   private loadUser() {
     if (!this.isBrowser) return null;
@@ -59,91 +53,49 @@ export class AuthService {
     this.showLoginModal$.next(false);
   }
 
-  private generateId(): string {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-      const r = (Math.random() * 16) | 0;
-      const v = c === 'x' ? r : (r & 0x3) | 0x8;
-      return v.toString(16);
-    });
-  }
-
-  private fetchAllCustomers(): void {
-    if (this.isFetching) return;
-    this.isFetching = true;
-
-    this.http
-      .get<any[]>(this.javaUrl)
-      .pipe(
-        timeout(8000),
-        catchError(() => of([])),
-        finalize(() => (this.isFetching = false)),
-      )
-      .subscribe((javaData) => {
-        this.customersSubject.next(javaData);
-
-        const currentLoggedUser = this.currentUserSubject.value;
-        if (currentLoggedUser) {
-          const updatedUserFromSync = javaData.find((c) => c.id === currentLoggedUser.id);
-
-          if (updatedUserFromSync) {
-            if (JSON.stringify(currentLoggedUser) !== JSON.stringify(updatedUserFromSync)) {
-              if (this.isBrowser) {
-                localStorage.setItem('currentUser', JSON.stringify(updatedUserFromSync));
-              }
-              this.currentUserSubject.next(updatedUserFromSync);
-            }
-          } else {
-            this.logout();
-          }
-        }
-      });
-  }
-
+  // --- SECURE LOGIN ---
   login(email: string, password: string): Observable<any> {
-    this.fetchAllCustomers();
-
-    return this.http.get<any[]>(this.javaUrl).pipe(
-      map((customers) => {
-        const user = customers.find((c) => c.email === email && c.password === password);
-        if (user) {
-          if (this.isBrowser) localStorage.setItem('currentUser', JSON.stringify(user));
-          this.currentUserSubject.next(user);
-          return user;
+    return this.http.post<any>(`${this.authUrl}/login`, { email, password }).pipe(
+      map((response) => {
+        if (response && response.token) {
+          if (this.isBrowser) {
+            localStorage.setItem('currentUser', JSON.stringify(response.user));
+            localStorage.setItem('authToken', response.token);
+          }
+          this.currentUserSubject.next(response.user);
+          return response.user;
         }
-        throw new Error('Invalid email or password');
+        throw new Error('Invalid response from server');
       }),
     );
   }
 
+  // --- SECURE REGISTER ---
   register(user: any): Observable<any> {
-    user.id = user.id || this.generateId();
-    user.admin = false;
-
-    const currentCustomers = this.customersSubject.value;
-    this.customersSubject.next([...currentCustomers, user]);
-
-    this.http
-      .post<any>(this.javaUrl, user)
-      .pipe(catchError(() => of(null)))
-      .subscribe();
-
-    if (this.isBrowser) localStorage.setItem('currentUser', JSON.stringify(user));
-    this.currentUserSubject.next(user);
-
-    return of(user);
+    return this.http.post<any>(`${this.authUrl}/register`, user).pipe(
+      map((response) => {
+        if (response && response.token) {
+          if (this.isBrowser) {
+            localStorage.setItem('currentUser', JSON.stringify(response.user));
+            localStorage.setItem('authToken', response.token);
+          }
+          this.currentUserSubject.next(response.user);
+          return response.user;
+        }
+        throw new Error('Registration failed');
+      }),
+    );
   }
 
+  // --- RESTORED: UPDATE USER ---
   updateUser(id: string, updatedData: any): Observable<any> {
-    const currentCustomers = this.customersSubject.value.map((c) =>
-      c.id === id ? { ...c, ...updatedData } : c,
-    );
-    this.customersSubject.next(currentCustomers);
-
+    // 1. Send update to Java backend
     this.http
-      .put<any>(`${this.javaUrl}/${id}`, updatedData)
+      .put<any>(`${this.customersUrl}/${id}`, updatedData)
       .pipe(catchError(() => of(null)))
       .subscribe();
 
+    // 2. Update the currently logged-in user in memory
     const currentUser = this.currentUserSubject.value;
     if (currentUser && currentUser.id === id) {
       const newUserState = { ...currentUser, ...updatedData };
@@ -151,22 +103,66 @@ export class AuthService {
       this.currentUserSubject.next(newUserState);
     }
 
+    // 3. Update the Admin's customer cache if it happens to be loaded
+    const currentCustomers = this.customersSubject.value.map((c) =>
+      c.id === id ? { ...c, ...updatedData } : c,
+    );
+    this.customersSubject.next(currentCustomers);
+
     return of(updatedData);
   }
 
+  // --- SECURE LOGOUT ---
   logout() {
-    if (this.isBrowser) localStorage.removeItem('currentUser');
+    if (this.isBrowser) {
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('authToken');
+    }
     this.currentUserSubject.next(null);
+    this.customersSubject.next([]); // Clear admin customer cache
   }
 
-  syncToGoogleSheets(): Observable<any> {
+  // Gets the customers securely (Requires Admin Token!)
+  getAllCustomersAdmin(): Observable<any[]> {
+    return this.http.get<any[]>(this.customersUrl).pipe(
+      tap((data) => {
+        this.customersSubject.next(data); // Fill the cache for the Google Sheets sync
+      }),
+    );
+  }
+
+  // --- RESTORED: GOOGLE SHEETS SYNC ---
+  /* syncToGoogleSheets(): Observable<any> {
     const items = this.customersSubject.value;
+
+    // If the cache is empty, we don't have anything to sync
     if (items.length === 0) return of(null);
 
     const requests = items.map((item) => {
       const payload = { key: this.apiKey, route: 'customers', action: 'CREATE', data: item };
       return this.http
         .post<any>(this.sheetsUrl, JSON.stringify(payload), { headers: this.textHeaders })
+        .pipe(catchError(() => of(null)));
+    });
+
+    return forkJoin(requests);
+  } */
+
+  syncToGoogleSheets(): Observable<any> {
+    const items = this.customersSubject.value;
+    if (items.length === 0) return of(null);
+
+    const requests = items.map((item) => {
+      const body = new URLSearchParams();
+      body.set('key', this.apiKey);
+      body.set('route', 'customers');
+      body.set('action', 'CREATE');
+      body.set('data', JSON.stringify(item));
+
+      return this.http
+        .post<any>(this.sheetsUrl, body.toString(), {
+          headers: new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' }),
+        })
         .pipe(catchError(() => of(null)));
     });
 

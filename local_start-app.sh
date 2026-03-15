@@ -19,7 +19,7 @@ BASE_DIR="$(cd "$(dirname "$0")" && pwd)"
 # start the Java backend
 echo "Starting Spring Boot backend..."
 cd "$BASE_DIR/backend" || { echo "Error: backend folder not found!"; exit 1; }
-mvn spring-boot:run &
+mvn clean spring-boot:run &
 BACKEND_PID=$!
 
 # start the Angular frontend
