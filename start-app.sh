@@ -30,5 +30,6 @@ echo "Starting Angular frontend..."
 cd ~/La-signare-web/grocery-frontend || exit
 HOST=0.0.0.0 PORT=4200 node dist/grocery-frontend/server/server.mjs &
 FRONTEND_PID=$!
+echo "FRONTEND LAUNCHED"
 
 wait
