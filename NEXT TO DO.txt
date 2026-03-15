@@ -28,6 +28,8 @@ git commit -m "Force adding production dist folder"
 git push
 
 
+npm run build && git add dist/ -f && git commit -m "Forced commit dist" && git push
+
 access mongodb in terminal : 
 
 mongosh -> enter shell

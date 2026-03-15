@@ -89,11 +89,13 @@ export class CheckoutComponent implements OnInit {
       setTimeout(() => {
         this.emptyCartError = false;
       }, 3000);
+	  console.log("returnnhèèè");
       return;
     }
 
     if (!this.currentUser || !this.currentUser.name || !this.currentUser.phone) {
       this.message = 'Please log in to place an order.';
+	  console.log('returnnn');
       return;
     }
 
