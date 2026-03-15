@@ -78,7 +78,7 @@ export class CheckoutComponent implements OnInit {
   }
 
   placeOrder(): void {
-	console.log('placing ORDER')
+	console.log('placing ORDER');
     this.orderError = false;
     this.orderSuccess = false;
     this.errorMessage = '';
@@ -99,6 +99,7 @@ export class CheckoutComponent implements OnInit {
 
     this.loading = true;
     const draftId = this.cartService.getDraftOrderId();
+	console.log('draftId : ', draftId);
 
     const finalizedOrder = {
       customerName: this.currentUser.name,
@@ -109,6 +110,8 @@ export class CheckoutComponent implements OnInit {
       status: 'Pending',
       createdAt: new Date().toISOString(),
     };
+
+	console.log('finalizedOrder - ', finalizedOrder);
 
     if (draftId) {
 		console.log("in draftId condition");
