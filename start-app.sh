@@ -9,7 +9,7 @@ cleanup() {
     exit 0
 }
 
-# detects the crtl C to start the cleanup function
+# detects the ctrl C to start the cleanup function
 trap cleanup SIGINT
 
 # start the java backend
@@ -18,11 +18,15 @@ cd ~/La-signare-web/backend || exit
 mvn spring-boot:run &
 BACKEND_PID=$!
 
+# Give Java a brief head-start to print its initial logs
+sleep 2
+
 # start the angular frontend
 echo "Starting Angular frontend..."
 cd ~/La-signare-web/grocery-frontend || exit
-PORT=4200 node dist/grocery-frontend/server/server.mjs &
-FRONTEND_PID=$!
 
+# ADDED HOST=0.0.0.0 RIGHT HERE!
+HOST=0.0.0.0 PORT=4200 node dist/grocery-frontend/server/server.mjs &
+FRONTEND_PID=$!
 
 wait
