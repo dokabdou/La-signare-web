@@ -117,6 +117,9 @@ export class AuthService {
     if (this.isBrowser) {
       localStorage.removeItem('currentUser');
       localStorage.removeItem('authToken');
+
+	  localStorage.removeItem('cart');
+      localStorage.removeItem('activeDraftOrderId');
     }
     this.currentUserSubject.next(null);
     this.customersSubject.next([]); // Clear admin customer cache
