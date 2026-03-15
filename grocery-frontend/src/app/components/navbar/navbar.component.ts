@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -12,7 +12,7 @@ import { map } from 'rxjs/operators';
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule ],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css'],
 })
@@ -40,6 +40,7 @@ export class NavbarComponent implements OnInit {
     private cartService: CartService,
     public authService: AuthService,
     private router: Router,
+    private cdr: ChangeDetectorRef, // <--- ADDED: Manual screen refresher!
   ) {
     this.categories$ = this.productService
       .getProducts()
@@ -57,10 +58,12 @@ export class NavbarComponent implements OnInit {
       (c) => (this.cartCount = c.reduce((s, i) => s + i.quantity, 0)),
     );
 
+    // Watch for login changes and FORCE a screen update when they happen
     this.authService.currentUser$.subscribe((user) => {
       this.currentUser = user;
       this.isLoggedIn = !!user;
       this.isAdmin = this.authService.isAdmin();
+      this.cdr.detectChanges(); // <--- Redraw screen!
     });
 
     this.authService.showLoginModal$.subscribe((show) => {
@@ -73,6 +76,7 @@ export class NavbarComponent implements OnInit {
         this.authError = '';
         this.isRegisterMode = false;
       }
+      this.cdr.detectChanges(); // <--- Redraw screen!
     });
   }
 
@@ -101,14 +105,18 @@ export class NavbarComponent implements OnInit {
         phone: this.authPhone,
         password: this.authPassword,
       };
+
       this.authService.register(newUser).subscribe({
         next: () => {
           this.authLoading = false;
           this.closeModal();
+          this.cdr.detectChanges(); // <--- Redraw screen instantly on success!
         },
-        error: () => {
-          this.authError = 'Registration failed. Try again.';
+        error: (err) => {
+          // Look for Java's clean error, fallback to generic message
+          this.authError = err.error?.error || 'Registration failed. Try again.';
           this.authLoading = false;
+          this.cdr.detectChanges(); // <--- Show error instantly!
         },
       });
     } else {
@@ -116,10 +124,13 @@ export class NavbarComponent implements OnInit {
         next: () => {
           this.authLoading = false;
           this.closeModal();
+          this.cdr.detectChanges(); // <--- Redraw screen instantly on success!
         },
         error: (err) => {
-          this.authError = err.message;
+          // Look inside err.error.error for Java's custom message!
+          this.authError = err.error?.error || "Email/password incorrect or user doesn't exist.";
           this.authLoading = false;
+          this.cdr.detectChanges(); // <--- Show error instantly!
         },
       });
     }
@@ -143,22 +154,27 @@ export class NavbarComponent implements OnInit {
   goHome() {
     this.router.navigate(['/']);
   }
+
   search(term: string) {
     if (term?.trim()) {
       this.router.navigate(['/all-products'], { queryParams: { search: term } });
     } else {
-      this.router.navigate(['/all-products']); 
+      this.router.navigate(['/all-products']);
     }
   }
+
   goToProduct(id: string) {
     this.router.navigate(['/product', id]);
   }
+
   goAdmin() {
     this.router.navigate(['/admin']);
   }
+
   toggleDropdown() {
     this.dropdownOpen = !this.dropdownOpen;
   }
+
   closeDropdown() {
     this.dropdownOpen = false;
   }
