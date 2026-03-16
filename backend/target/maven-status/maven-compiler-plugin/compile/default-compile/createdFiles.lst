@@ -11,6 +11,7 @@ com\grocery\model\Order.class
 com\grocery\model\Customer.class
 com\grocery\security\JwtFilter.class
 com\grocery\repository\CustomerRepository.class
+com\grocery\controller\SyncController.class
 com\grocery\repository\ProductRepository.class
 com\grocery\controller\CustomerController.class
 com\grocery\model\Category.class

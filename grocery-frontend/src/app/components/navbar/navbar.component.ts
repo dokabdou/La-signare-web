@@ -40,7 +40,7 @@ export class NavbarComponent implements OnInit {
     private cartService: CartService,
     public authService: AuthService,
     private router: Router,
-    private cdr: ChangeDetectorRef, // <--- ADDED: Manual screen refresher!
+    private cdr: ChangeDetectorRef, 
   ) {
     this.categories$ = this.productService
       .getProducts()
@@ -58,12 +58,11 @@ export class NavbarComponent implements OnInit {
       (c) => (this.cartCount = c.reduce((s, i) => s + i.quantity, 0)),
     );
 
-    // Watch for login changes and FORCE a screen update when they happen
     this.authService.currentUser$.subscribe((user) => {
       this.currentUser = user;
       this.isLoggedIn = !!user;
       this.isAdmin = this.authService.isAdmin();
-      this.cdr.detectChanges(); // <--- Redraw screen!
+      this.cdr.detectChanges();
     });
 
     this.authService.showLoginModal$.subscribe((show) => {
@@ -76,7 +75,7 @@ export class NavbarComponent implements OnInit {
         this.authError = '';
         this.isRegisterMode = false;
       }
-      this.cdr.detectChanges(); // <--- Redraw screen!
+      this.cdr.detectChanges();
     });
   }
 
@@ -96,27 +95,53 @@ export class NavbarComponent implements OnInit {
       return;
     }
 
+	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+	if (!emailRegex.test(this.authEmail)) {
+		this.authError = 'Please enter a valid email address (e.g., name@example.com).';
+		return;
+	}
+
+	if (this.authPassword.length < 8) {
+		this.authError = 'Password must be at least 8 characters long.';
+		return;
+	}
+
+	if (this.isRegisterMode && this.authPhone) {
+		const phoneRegex = /^[0-9+\-\s()]{8,20}$/;
+		if (!phoneRegex.test(this.authPhone)) {
+		this.authError = 'Please enter a valid phone number.';
+		return;
+		}
+	}
+
     this.authLoading = true;
 
     if (this.isRegisterMode) {
       const newUser = {
         name: this.authName,
         email: this.authEmail,
-        phone: this.authPhone,
         password: this.authPassword,
+		phone: ""
       };
+
+	  if (this.authPhone && this.authPhone.trim() !== '') {
+		newUser.phone = this.authPhone.trim();
+	  }
 
       this.authService.register(newUser).subscribe({
         next: () => {
           this.authLoading = false;
           this.closeModal();
-          this.cdr.detectChanges(); // <--- Redraw screen instantly on success!
+          this.cdr.detectChanges(); 
         },
         error: (err) => {
-          // Look for Java's clean error, fallback to generic message
-          this.authError = err.error?.error || 'Registration failed. Try again.';
+		  console.log('Navbar : error from Java:', err);
+
+      	  const serverErrorMessage = err.error?.error || err.error?.message;
+
+          this.authError = serverErrorMessage || 'Registration failed. Try again.';
           this.authLoading = false;
-          this.cdr.detectChanges(); // <--- Show error instantly!
+          this.cdr.detectChanges();
         },
       });
     } else {
@@ -124,13 +149,12 @@ export class NavbarComponent implements OnInit {
         next: () => {
           this.authLoading = false;
           this.closeModal();
-          this.cdr.detectChanges(); // <--- Redraw screen instantly on success!
+          this.cdr.detectChanges();
         },
         error: (err) => {
-          // Look inside err.error.error for Java's custom message!
           this.authError = err.error?.error || "Email/password incorrect or user doesn't exist.";
           this.authLoading = false;
-          this.cdr.detectChanges(); // <--- Show error instantly!
+          this.cdr.detectChanges();
         },
       });
     }

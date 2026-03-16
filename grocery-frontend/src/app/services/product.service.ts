@@ -9,10 +9,6 @@ import { environment } from '../../environments/environment';
 })
 export class ProductService {
   private javaUrl = `${environment.apiUrl}/products`;
-  private sheetsUrl =
-    'https://script.google.com/macros/s/AKfycbzAE4pvZ1tug4JO5ANwVZAlg1EnrSqxSNPhd-1_QtnwvEkIm8ahpYKUEPf3gf9wKWGrHw/exec';
-  private apiKey = 'grocery_secret_2026';
-  //private textHeaders = new HttpHeaders({ 'Content-Type': 'text/plain' });
 
   private productsSubject = new BehaviorSubject<any[]>([]);
   public products$ = this.productsSubject.asObservable();
@@ -121,36 +117,19 @@ export class ProductService {
     return of(undefined);
   }
 
-  /* syncToGoogleSheets(): Observable<any> {
-    const items = this.productsSubject.value;
-    if (items.length === 0) return of(null);
-
-    const requests = items.map((item) => {
-      const payload = { key: this.apiKey, route: 'products', action: 'CREATE', data: item };
-      return this.http
-        .post<any>(this.sheetsUrl, JSON.stringify(payload), { headers: this.textHeaders })
-        .pipe(catchError(() => of(null)));
-    });
-
-    return forkJoin(requests);
-  } */
-
   syncToGoogleSheets(): Observable<any> {
     const items = this.productsSubject.value;
     if (items.length === 0) return of(null);
 
     const requests = items.map((item) => {
-      // Use URLSearchParams to format the data exactly how Google wants it to avoid CORS!
-      const body = new URLSearchParams();
-      body.set('key', this.apiKey);
-      body.set('route', 'products');
-      body.set('action', 'CREATE');
-      body.set('data', JSON.stringify(item));
+      const payload = {
+        route: 'products',
+        action: 'CREATE',
+        data: JSON.stringify(item),
+      };
 
       return this.http
-        .post<any>(this.sheetsUrl, body.toString(), {
-          headers: new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' }),
-        })
+        .post<any>(`${environment.apiUrl}/sync`, payload)
         .pipe(catchError(() => of(null)));
     });
 

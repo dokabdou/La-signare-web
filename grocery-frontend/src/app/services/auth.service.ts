@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, forkJoin, of } from 'rxjs';
-import { map, catchError, tap } from 'rxjs/operators';
+import { map, catchError, tap, finalize } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -9,14 +9,8 @@ export class AuthService {
   private authUrl = `${environment.apiUrl}/auth`;
   private customersUrl = `${environment.apiUrl}/customers`;
 
-  private sheetsUrl =
-    'https://script.google.com/macros/s/AKfycbzAE4pvZ1tug4JO5ANwVZAlg1EnrSqxSNPhd-1_QtnwvEkIm8ahpYKUEPf3gf9wKWGrHw/exec';
-  private apiKey = 'grocery_secret_2026';
-  //private textHeaders = new HttpHeaders({ 'Content-Type': 'text/plain' });
-
   private isBrowser = typeof window !== 'undefined';
 
-  // Restored: Caches the customer list ONLY when an Admin requests it
   private customersSubject = new BehaviorSubject<any[]>([]);
   public customers$ = this.customersSubject.asObservable();
 
@@ -25,10 +19,7 @@ export class AuthService {
 
   public showLoginModal$ = new BehaviorSubject<boolean>(false);
 
-  // Injected the OrderService so we can clear its cache on logout
-  constructor(
-    private http: HttpClient,
-  ) {}
+  constructor(private http: HttpClient) {}
 
   private loadUser() {
     if (!this.isBrowser) return null;
@@ -45,6 +36,16 @@ export class AuthService {
     return user && (user.admin === true || user.admin === 'true');
   }
 
+  // This ignores localStorage and asks Java to verify the HttpOnly cookie
+  verifyAdminStatus(): Observable<boolean> {
+    return this.http.get(`${this.authUrl}/validate-admin`).pipe(
+      map(() => true), // If Java returns 200 OK, they are a real admin
+      catchError(() => {
+        return of(false);
+      }),
+    );
+  }
+
   openLoginModal() {
     this.showLoginModal$.next(true);
   }
@@ -53,14 +54,13 @@ export class AuthService {
     this.showLoginModal$.next(false);
   }
 
-  // --- SECURE LOGIN ---
   login(email: string, password: string): Observable<any> {
+    // Note: withCredentials: true interceptor manages it but it is checked here
     return this.http.post<any>(`${this.authUrl}/login`, { email, password }).pipe(
       map((response) => {
-        if (response && response.token) {
+        if (response && response.user) {
           if (this.isBrowser) {
             localStorage.setItem('currentUser', JSON.stringify(response.user));
-            localStorage.setItem('authToken', response.token);
           }
           this.currentUserSubject.next(response.user);
           return response.user;
@@ -70,32 +70,27 @@ export class AuthService {
     );
   }
 
-  // --- SECURE REGISTER ---
   register(user: any): Observable<any> {
     return this.http.post<any>(`${this.authUrl}/register`, user).pipe(
       map((response) => {
-        if (response && response.token) {
+        if (response && response.user) {
           if (this.isBrowser) {
             localStorage.setItem('currentUser', JSON.stringify(response.user));
-            localStorage.setItem('authToken', response.token);
           }
           this.currentUserSubject.next(response.user);
           return response.user;
         }
-        throw new Error('Registration failed');
+        return response;
       }),
     );
   }
 
-  // --- RESTORED: UPDATE USER ---
   updateUser(id: string, updatedData: any): Observable<any> {
-    // 1. Send update to Java backend
     this.http
       .put<any>(`${this.customersUrl}/${id}`, updatedData)
       .pipe(catchError(() => of(null)))
       .subscribe();
 
-    // 2. Update the currently logged-in user in memory
     const currentUser = this.currentUserSubject.value;
     if (currentUser && currentUser.id === id) {
       const newUserState = { ...currentUser, ...updatedData };
@@ -103,7 +98,6 @@ export class AuthService {
       this.currentUserSubject.next(newUserState);
     }
 
-    // 3. Update the Admin's customer cache if it happens to be loaded
     const currentCustomers = this.customersSubject.value.map((c) =>
       c.id === id ? { ...c, ...updatedData } : c,
     );
@@ -112,60 +106,47 @@ export class AuthService {
     return of(updatedData);
   }
 
-  // --- SECURE LOGOUT ---
   logout() {
-    if (this.isBrowser) {
-      localStorage.removeItem('currentUser');
-      localStorage.removeItem('authToken');
-
-	  localStorage.removeItem('cart');
-      localStorage.removeItem('activeDraftOrderId');
-    }
-    this.currentUserSubject.next(null);
-    this.customersSubject.next([]); // Clear admin customer cache
+    // asks java to destory the HttpOnly cookie
+    this.http
+      .post(`${this.authUrl}/logout`, {})
+      .pipe(
+        finalize(() => {
+          // clean the browser
+          if (this.isBrowser) {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('cart');
+            localStorage.removeItem('activeDraftOrderId');
+          }
+          this.currentUserSubject.next(null);
+          this.customersSubject.next([]);
+        }),
+      )
+      .subscribe();
   }
 
-  // Gets the customers securely (Requires Admin Token!)
+  // Gets the customers securely (needs to be Admin)
   getAllCustomersAdmin(): Observable<any[]> {
     return this.http.get<any[]>(this.customersUrl).pipe(
       tap((data) => {
-        this.customersSubject.next(data); // Fill the cache for the Google Sheets sync
+        this.customersSubject.next(data);
       }),
     );
   }
-
-  // --- RESTORED: GOOGLE SHEETS SYNC ---
-  /* syncToGoogleSheets(): Observable<any> {
-    const items = this.customersSubject.value;
-
-    // If the cache is empty, we don't have anything to sync
-    if (items.length === 0) return of(null);
-
-    const requests = items.map((item) => {
-      const payload = { key: this.apiKey, route: 'customers', action: 'CREATE', data: item };
-      return this.http
-        .post<any>(this.sheetsUrl, JSON.stringify(payload), { headers: this.textHeaders })
-        .pipe(catchError(() => of(null)));
-    });
-
-    return forkJoin(requests);
-  } */
 
   syncToGoogleSheets(): Observable<any> {
     const items = this.customersSubject.value;
     if (items.length === 0) return of(null);
 
     const requests = items.map((item) => {
-      const body = new URLSearchParams();
-      body.set('key', this.apiKey);
-      body.set('route', 'customers');
-      body.set('action', 'CREATE');
-      body.set('data', JSON.stringify(item));
+      const payload = {
+        route: 'customers',
+        action: 'CREATE',
+        data: JSON.stringify(item),
+      };
 
       return this.http
-        .post<any>(this.sheetsUrl, body.toString(), {
-          headers: new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' }),
-        })
+        .post<any>(`${environment.apiUrl}/sync`, payload)
         .pipe(catchError(() => of(null)));
     });
 

@@ -9,3 +9,8 @@ spring:
 
 jwt:
   secret: grocery_secret_key_must_be_very_long_and_secure_2026
+
+google:
+  sheets:
+    url: "https://script.google.com/macros/s/AKfycbzAE4pvZ1tug4JO5ANwVZAlg1EnrSqxSNPhd-1_QtnwvEkIm8ahpYKUEPf3gf9wKWGrHw/exec"
+    api-key: "grocery_secret_2026"

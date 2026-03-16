@@ -61,22 +61,22 @@
     <form (ngSubmit)="submitAuth()">
       <div class="input-group" *ngIf="isRegisterMode">
         <label>Full Name</label>
-        <input type="text" [(ngModel)]="authName" name="authName" required>
+        <input type="text" [(ngModel)]="authName" name="authName" placeholder="Nom Prenom" required>
       </div>
       
       <div class="input-group" *ngIf="isRegisterMode">
         <label>Phone Number (Optional)</label>
-        <input type="text" [(ngModel)]="authPhone" name="authPhone">
+        <input type="text" [(ngModel)]="authPhone" name="authPhone" placeholder=" +33 6 36 02 23 91">
       </div>
       
       <div class="input-group">
         <label>Email Address</label>
-        <input type="email" [(ngModel)]="authEmail" name="authEmail" required>
+        <input type="email" [(ngModel)]="authEmail" name="authEmail" placeholder="nom@exemple.com" required>
       </div>
 
       <div class="input-group">
         <label>Password</label>
-        <input type="password" [(ngModel)]="authPassword" name="authPassword" required>
+        <input type="password" [(ngModel)]="authPassword" name="authPassword" placeholder="Min. 8 characters" required>
       </div>
 
       <button type="submit" class="submit-btn" [disabled]="authLoading">

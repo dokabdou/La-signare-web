@@ -1,5 +1,6 @@
 package com.grocery.security;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,33 +26,32 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
-        final String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
 
-        // 1. Check if the request has a Bearer token
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            String token = authorizationHeader.substring(7);
-
-            // 2. If token is valid, read the data
-            if (jwtUtil.validateToken(token)) {
-                String email = jwtUtil.extractEmail(token);
-                boolean isAdmin = jwtUtil.extractIsAdmin(token);
-
-                // 3. Assign the correct Spring Security Role
-                List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-                if (isAdmin) {
-                    authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-                } else {
-                    authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("jwt".equals(cookie.getName())) {
+                    token = cookie.getValue();
                 }
-
-                // 4. Let them in
-                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                        email, null, authorities);
-                SecurityContextHolder.getContext().setAuthentication(auth);
             }
         }
+
+        if (token != null && jwtUtil.validateToken(token)) {
+            String email = jwtUtil.extractEmail(token);
+            boolean isAdmin = jwtUtil.extractIsAdmin(token);
+
+            List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+            if (isAdmin) {
+                authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+            } else {
+                authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+            }
+
+            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                    email, null, authorities);
+            SecurityContextHolder.getContext().setAuthentication(auth);
+        }
         
-        // Continue the request chain
         chain.doFilter(request, response);
     }
 }

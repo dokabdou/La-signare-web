@@ -28,6 +28,14 @@ public class SecurityConfig {
             
             // 2. Tell Spring Security we are using API Tokens, not standard server sessions
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+
+			// only execute js from app, block all else
+			/* .headers(headers -> headers
+				.contentSecurityPolicy(csp -> csp
+					.policyDirectives("default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:;")
+				)
+			) */
             
             .authorizeHttpRequests(auth -> auth
 				/* this means that :

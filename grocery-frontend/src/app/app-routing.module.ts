@@ -10,13 +10,18 @@ import { NewArrivalsComponent } from './components/new-arrivals/new-arrivals.com
 import { BestSellersComponent } from './components/best-sellers/best-sellers.component';
 import { AccountComponent } from './components/account/account.component';
 import { AllProductsComponent } from './components/all-products/all-products.component';
+import { adminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
   { path: '', component: ProductListComponent },
   { path: 'category/:category', component: ProductCategoryComponent },
   { path: 'product/:id', component: ProductPageComponent },
   { path: 'checkout', component: CheckoutComponent },
-  { path: 'admin', component: AdminComponent },
+  {
+    path: 'admin',
+    component: AdminComponent,
+    canActivate: [adminGuard],
+  },
   { path: 'new-arrivals', component: NewArrivalsComponent },
   { path: 'best-sellers', component: BestSellersComponent },
   { path: 'account', component: AccountComponent },
