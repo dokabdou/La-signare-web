@@ -9,5 +9,5 @@ export default `<!doctype html>
 <link rel="stylesheet" href="styles-OZJ7YZ3C.css" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="styles-OZJ7YZ3C.css"></noscript></head>
 <body ngcm="">
   <app-root></app-root> 
-<script src="main-EGPZTVT3.js" type="module"></script></body>
+<script src="main-N3UCPJEX.js" type="module"></script></body>
 </html>`;
