@@ -35,7 +35,12 @@ public class OrderController {
         if (!isAdmin()) {
             order.setEmail(getCurrentEmail());
         }
-        return ResponseEntity.ok(service.createOrder(order));
+        try {
+            return ResponseEntity.ok(service.createOrder(order));
+        } catch (IllegalArgumentException e) {
+            // If a product ID is invalid or doesn't exist anymore
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        }
     }
 
     @GetMapping
@@ -72,7 +77,12 @@ public class OrderController {
         if (!isAdmin() && !existingOrder.getEmail().equals(getCurrentEmail())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Order updateOrder : Access Blocked"));
         }
-        return ResponseEntity.ok(service.updateOrder(id, order));
+        try {
+            return ResponseEntity.ok(service.updateOrder(id, order));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 
     @PutMapping("/{id}/status")

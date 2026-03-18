@@ -5,6 +5,14 @@ on admin when the page is reloaded the products disappear : ReplaySubject =>
 The issue is that products$ is a Subject that doesn't replay values. When the component subscribes with the async pipe, if the value was emitted before subscription, it won't receive it. Use ReplaySubject instead
 
 
+ADMIN TEST USER :
+abdou@admin.com
+Abdou Admin
+ghouls123
+
+
+
+
 Only authenticated users (with a VIP pass, usually a JWT token) can see /api/customers and /api/orders.
 
 Compile Java backend into a .jar file :

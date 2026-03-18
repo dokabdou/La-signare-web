@@ -14,14 +14,14 @@ public class Order {
     private String customerName;
     private String phone;
 	private String email;
-    private List<Object> items;
+    private List<OrderItem> items;
     private double total;
     private LocalDateTime createdAt;
 	private String status = "UnProcessed"; // initial status is UnProcessed, then Pending, Ready, or Cancelled
 
 	public Order() {}
 
-	public Order(String customerName, String phone, String email, List<Object> items, double total) {
+	public Order(String customerName, String phone, String email, List<OrderItem> items, double total) {
 		this.customerName = customerName;
 		this.phone = phone;
 		this.email = email;
@@ -62,11 +62,11 @@ public class Order {
 		this.email = email;
 	}
 
-	public List<Object> getItems() {
+	public List<OrderItem> getItems() {
 		return items;
 	}
 
-	public void setItems(List<Object> items) {
+	public void setItems(List<OrderItem> items) {
 		this.items = items;
 	}
 

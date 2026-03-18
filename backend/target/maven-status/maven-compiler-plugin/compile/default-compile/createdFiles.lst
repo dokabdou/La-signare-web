@@ -7,9 +7,11 @@ com\grocery\security\AuthController.class
 com\grocery\security\SecurityConfig.class
 com\grocery\controller\OrderController.class
 com\grocery\repository\CategoryRepository.class
+com\grocery\dto\UserDTO.class
 com\grocery\model\Order.class
 com\grocery\model\Customer.class
 com\grocery\security\JwtFilter.class
+com\grocery\model\OrderItem.class
 com\grocery\repository\CustomerRepository.class
 com\grocery\controller\SyncController.class
 com\grocery\repository\ProductRepository.class

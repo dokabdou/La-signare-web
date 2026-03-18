@@ -11,8 +11,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.util.Map;
 import java.util.Optional;
 
+import com.grocery.dto.UserDTO;
 import com.grocery.model.Customer;
 import com.grocery.repository.CustomerRepository;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -24,6 +27,9 @@ public class AuthController {
 
     @Autowired
     private CustomerRepository customerRepository;
+
+	@Autowired
+    private PasswordEncoder passwordEncoder;
 
     private ResponseCookie createJwtCookie(String token, long maxAgeSeconds) {
         return ResponseCookie.from("jwt", token)
@@ -42,15 +48,17 @@ public class AuthController {
 
         Optional<Customer> userOpt = customerRepository.findByEmail(email);
 
-        if (userOpt.isPresent() && userOpt.get().getPassword().equals(password)) {
+        if (userOpt.isPresent() && passwordEncoder.matches(password, userOpt.get().getPassword())) {
             Customer user = userOpt.get();
             
             String token = jwtUtil.generateToken(user.getEmail(), user.isAdmin());
             ResponseCookie jwtCookie = createJwtCookie(token, 60 * 60); //  hour long lifespan
 
+			UserDTO safeUser = new UserDTO(user);
+
             return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                .body(Map.of("message", "Login successful", "user", user)); // returns user
+                .body(Map.of("message", "Login successful", "user", safeUser)); // returns user
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid email or password"));
@@ -68,6 +76,11 @@ public class AuthController {
             }
         }
 
+		// hash the password
+        String plainTextPassword = newCustomer.getPassword();
+        String hashedPassword = passwordEncoder.encode(plainTextPassword);
+        newCustomer.setPassword(hashedPassword);
+
         // new users are always basic
         newCustomer.setAdmin(false);
         Customer savedCustomer = customerRepository.save(newCustomer);
@@ -76,9 +89,11 @@ public class AuthController {
         String token = jwtUtil.generateToken(savedCustomer.getEmail(), savedCustomer.isAdmin());
         ResponseCookie jwtCookie = createJwtCookie(token, 60 * 60);
 
+		UserDTO safeUser = new UserDTO(savedCustomer);
+
         return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-            .body(Map.of("message", "Registered successfully", "user", savedCustomer));
+            .body(Map.of("message", "Registered successfully", "user", safeUser));
     }
 
 	@GetMapping("/validate-admin")
