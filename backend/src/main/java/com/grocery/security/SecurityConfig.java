@@ -1,5 +1,6 @@
 package com.grocery.security;
 
+import com.grocery.security.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,24 +20,25 @@ public class SecurityConfig {
     @Autowired
     private JwtFilter jwtFilter;
 
+	public SecurityConfig(JwtFilter jwtFilter) {
+        this.jwtFilter = jwtFilter;
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
             .cors(Customizer.withDefaults())
             .formLogin(form -> form.disable()) 
+			.headers(headers -> headers
+                .contentSecurityPolicy(csp -> csp
+                    .policyDirectives("default-src 'none'; img-src 'self'; frame-ancestors 'none'; sandbox;")
+                )
+            )
             
             // 2. Tell Spring Security we are using API Tokens, not standard server sessions
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-
-			// only execute js from app, block all else
-			/* .headers(headers -> headers
-				.contentSecurityPolicy(csp -> csp
-					.policyDirectives("default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:;")
-				)
-			) */
-            
             .authorizeHttpRequests(auth -> auth
 				/* this means that :
 				http://localhost:8080/api/products will display all the products

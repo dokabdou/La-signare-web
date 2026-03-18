@@ -44,7 +44,7 @@
   border-radius: 6px; color: #f8eded; cursor: pointer; font-weight: 600;
   transition: all 0.2s; margin-right: 10px;
 }
-.file-input::file-selector-button:hover { background: #e0e0e0; }
+.file-input::file-selector-button:hover { background: #1b4332; }
 
 .btn-primary, .btn-cancel, .btn-edit, .btn-delete, .btn-outline {
   border: none; border-radius: 8px; cursor: pointer;
