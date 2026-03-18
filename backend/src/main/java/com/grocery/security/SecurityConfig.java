@@ -19,13 +19,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // 1. Bring in our custom JWT Bouncer
     @Autowired
     private JwtFilter jwtFilter;
-
-	public SecurityConfig(JwtFilter jwtFilter) {
-        this.jwtFilter = jwtFilter;
-    }
 
 	@Bean
     public PasswordEncoder passwordEncoder() {
@@ -63,7 +58,14 @@ public class SecurityConfig {
                 
                 .requestMatchers("/api/auth", "/api/auth/**").permitAll()
                 
-                .requestMatchers("/api/customers", "/api/customers/**").hasRole("ADMIN")
+                // --- CUSTOMERS ---
+                // Only Admins can list ALL customers or delete customers
+                .requestMatchers(HttpMethod.GET, "/api/customers").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/customers/**").hasRole("ADMIN")
+
+				// ANY logged-in user needs to be able to fetch or update their OWN profile
+                .requestMatchers(HttpMethod.GET, "/api/customers/**").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/api/customers/**").authenticated()
                 
                 // Orders: ANY logged-in user can create/view their own orders
 				.requestMatchers(HttpMethod.GET, "/api/orders", "/api/orders/**").authenticated()

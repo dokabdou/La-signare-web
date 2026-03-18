@@ -13,21 +13,30 @@
       <input type="text" [value]="user?.email" disabled class="disabled-input">
     </div>
 
-    <div *ngIf="message && !message.includes('empty')" class="success-msg">{{ message }}</div>
-    <div *ngIf="message && message.includes('empty')" class="error-msg">{{ message }}</div>
+    <div *ngIf="message && !isError" class="success-msg">{{ message }}</div>
+    <div *ngIf="message && isError" class="error-msg">{{ message }}</div>
 
     <form (ngSubmit)="save()">
       <div class="info-group">
         <label>Phone Number</label>
-        <input type="text" [(ngModel)]="phone" name="phone" placeholder="Enter phone number">
+        <input type="text" [(ngModel)]="phone" name="phone" placeholder="Enter phone number" required>
       </div>
 
       <div class="info-group">
-        <label>Password</label>
-        <input type="password" [(ngModel)]="password" name="password" required>
+        <label>New Password</label>
+        <input type="password" [(ngModel)]="password" name="password" placeholder="Min. 8 characters" required>
       </div>
 
-      <button type="submit" class="save-btn" [disabled]="loading">
+      <div class="info-group">
+        <label>Confirm Password</label>
+        <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" placeholder="Repeat your password" required>
+        
+        <small *ngIf="confirmPassword && password !== confirmPassword" style="color: #c0392b; font-size: 0.8rem; margin-top: 4px; display: block;">
+          Passwords do not match.
+        </small>
+      </div>
+
+      <button type="submit" class="save-btn" [disabled]="loading || !isFormValid">
         {{ loading ? 'Saving Changes...' : 'Save Changes' }}
       </button>
     </form>

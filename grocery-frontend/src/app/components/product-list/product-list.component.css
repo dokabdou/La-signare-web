@@ -56,19 +56,9 @@
 .dynamic-bg:nth-child(6n+5) { background: linear-gradient(135deg, #8e44ad, #9b59b6); }
 .dynamic-bg:nth-child(6n+6) { background: linear-gradient(135deg, #27ae60, #2ecc71); }
 
-.main-footer { background: #111; color: #fff; padding: 4rem 2rem 2rem; display: flex; flex-wrap: wrap; justify-content: space-around; gap: 2rem; }
-.footer-col h3 { color: #f1a81b; margin-bottom: 1.5rem; font-size: 1.2rem; }
-.footer-col p { color: #bbb; line-height: 1.6; font-size: 0.9rem; }
-.footer-col ul { list-style: none; padding: 0; }
-.footer-col ul li { margin-bottom: 0.8rem; }
-.footer-col ul li a { color: #bbb; text-decoration: none; transition: color 0.2s; }
-.footer-col ul li a:hover { color: #fff; }
-.map-link { color: #bbb; text-decoration: underline; text-decoration-style: dotted; transition: color 0.2s; }
-.map-link:hover { color: #f1a81b; text-decoration-style: solid; }
 
-@media (max-width: 768px) {
+@media (max-width: 850px) {
   .hero-content h1 { font-size: 2.2rem; }
   .section-header h2 { font-size: 1.8rem; }
   .product-card { flex: 0 0 80%; }
-  .main-footer { flex-direction: column; text-align: center; }
 }

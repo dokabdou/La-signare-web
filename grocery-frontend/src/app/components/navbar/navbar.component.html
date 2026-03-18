@@ -65,8 +65,8 @@
       </div>
       
       <div class="input-group" *ngIf="isRegisterMode">
-        <label>Phone Number (Optional)</label>
-        <input type="text" [(ngModel)]="authPhone" name="authPhone" placeholder=" +33 6 36 02 23 91">
+        <label>Phone Number</label>
+        <input type="text" [(ngModel)]="authPhone" name="authPhone" placeholder="+33 6 36 02 23 91" required>
       </div>
       
       <div class="input-group">
@@ -79,7 +79,16 @@
         <input type="password" [(ngModel)]="authPassword" name="authPassword" placeholder="Min. 8 characters" required>
       </div>
 
-      <button type="submit" class="submit-btn" [disabled]="authLoading">
+      <div class="input-group" *ngIf="isRegisterMode">
+        <label>Confirm Password</label>
+        <input type="password" [(ngModel)]="authConfirmPassword" name="authConfirmPassword" placeholder="Repeat your password" required>
+        
+        <small *ngIf="authConfirmPassword && authPassword !== authConfirmPassword" style="color: #c0392b; font-size: 0.8rem; margin-top: 4px; display: block;">
+          Passwords do not match.
+        </small>
+      </div>
+
+      <button type="submit" class="submit-btn" [disabled]="authLoading || !isFormValid">
         {{ authLoading ? 'Please wait...' : (isRegisterMode ? 'Register' : 'Log In') }}
       </button>
     </form>

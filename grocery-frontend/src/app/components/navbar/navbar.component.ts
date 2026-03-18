@@ -30,6 +30,7 @@ export class NavbarComponent implements OnInit {
 
   authEmail = '';
   authPassword = '';
+  authConfirmPassword = '';
   authName = '';
   authPhone = '';
   authError = '';
@@ -40,7 +41,7 @@ export class NavbarComponent implements OnInit {
     private cartService: CartService,
     public authService: AuthService,
     private router: Router,
-    private cdr: ChangeDetectorRef, 
+    private cdr: ChangeDetectorRef,
   ) {
     this.categories$ = this.productService
       .getProducts()
@@ -68,88 +69,84 @@ export class NavbarComponent implements OnInit {
     this.authService.showLoginModal$.subscribe((show) => {
       this.showLoginModal = show;
       if (show) {
-        this.authEmail = '';
-        this.authPassword = '';
-        this.authName = '';
-        this.authPhone = '';
-        this.authError = '';
-        this.isRegisterMode = false;
+        this.resetAuthForm();
       }
       this.cdr.detectChanges();
     });
   }
 
+  resetAuthForm() {
+    this.authEmail = '';
+    this.authPassword = '';
+    this.authConfirmPassword = '';
+    this.authName = '';
+    this.authPhone = '';
+    this.authError = '';
+    this.isRegisterMode = false;
+  }
+
   closeModal() {
+    this.showLoginModal = false;
     this.authService.closeLoginModal();
   }
 
   toggleAuthMode() {
     this.isRegisterMode = !this.isRegisterMode;
     this.authError = '';
+    this.authPassword = '';
+    this.authConfirmPassword = '';
+  }
+  // !! : ensures that empty strings are strict false booleans
+  get isFormValid(): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isEmailValid = emailRegex.test(this.authEmail);
+
+    const isPasswordValid = !!this.authPassword && this.authPassword.length >= 8;
+
+    if (!this.isRegisterMode) {
+      return !!(isEmailValid && isPasswordValid);
+    }
+
+    const phoneRegex = /^[0-9+\-\s()]{8,20}$/;
+    const isPhoneValid = phoneRegex.test(this.authPhone);
+
+    const isNameValid = !!this.authName && this.authName.trim().length > 0;
+    const passwordsMatch = this.authPassword === this.authConfirmPassword;
+
+    return !!(isEmailValid && isPasswordValid && isPhoneValid && isNameValid && passwordsMatch);
   }
 
   submitAuth() {
     this.authError = '';
-    if (!this.authEmail || !this.authPassword || (this.isRegisterMode && !this.authName)) {
-      this.authError = 'Please fill in all required fields.';
-      return;
-    }
-
-	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-	if (!emailRegex.test(this.authEmail)) {
-		this.authError = 'Please enter a valid email address (e.g., name@example.com).';
-		return;
-	}
-
-	if (this.authPassword.length < 8) {
-		this.authError = 'Password must be at least 8 characters long.';
-		return;
-	}
-
-	if (this.isRegisterMode && this.authPhone) {
-		const phoneRegex = /^[0-9+\-\s()]{8,20}$/;
-		if (!phoneRegex.test(this.authPhone)) {
-		this.authError = 'Please enter a valid phone number.';
-		return;
-		}
-	}
-
     this.authLoading = true;
 
     if (this.isRegisterMode) {
       const newUser = {
-        name: this.authName,
-        email: this.authEmail,
+        name: this.authName.trim(),
+        email: this.authEmail.trim(),
         password: this.authPassword,
-		phone: ""
+        phone: this.authPhone.trim(),
       };
-
-	  if (this.authPhone && this.authPhone.trim() !== '') {
-		newUser.phone = this.authPhone.trim();
-	  }
 
       this.authService.register(newUser).subscribe({
         next: () => {
           this.authLoading = false;
-          this.closeModal();
-          this.cdr.detectChanges(); 
+          this.closeModal();// force reload
+          window.location.reload();
         },
         error: (err) => {
-		  console.log('Navbar : error from Java:', err);
-
-      	  const serverErrorMessage = err.error?.error || err.error?.message;
-
+          const serverErrorMessage = err.error?.error || err.error?.message;
           this.authError = serverErrorMessage || 'Registration failed. Try again.';
           this.authLoading = false;
           this.cdr.detectChanges();
         },
       });
     } else {
-      this.authService.login(this.authEmail, this.authPassword).subscribe({
+      this.authService.login(this.authEmail.trim(), this.authPassword).subscribe({
         next: () => {
           this.authLoading = false;
           this.closeModal();
-          this.cdr.detectChanges();
+          window.location.reload();
         },
         error: (err) => {
           this.authError = err.error?.error || "Email/password incorrect or user doesn't exist.";
@@ -162,7 +159,13 @@ export class NavbarComponent implements OnInit {
 
   logout() {
     this.authService.logout();
-    this.router.navigate(['/']);
+    setTimeout(() => {
+      if (window.location.pathname === '/') {
+        window.location.reload();
+      } else {
+        window.location.href = '/';
+      }
+    }, 200);
   }
 
   goToCategory(cat: string) {

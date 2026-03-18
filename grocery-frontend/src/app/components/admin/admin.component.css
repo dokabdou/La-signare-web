@@ -1,3 +1,8 @@
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
 * { box-sizing: border-box; }
 .admin-container {
   max-width: 1200px; 
@@ -62,12 +67,19 @@
 .btn-outline { background: white; color: #1b4332; border: 2px solid #1b4332; padding: 6px 14px; border-radius: 6px; }
 .btn-outline:hover { background: #f0f7f0; }
 
-.admin-tabs { max-width: 1200px; margin: 2.5rem auto 0; display: flex; gap: 8px; padding: 0; }
+.admin-tabs { max-width: 1200px; margin: 2.5rem auto 0; display: flex; gap: 8px; padding: 0; overflow-x: auto;
+  -webkit-overflow-scrolling: touch;}
 .admin-tabs button {
   background: #e9ecef; border: none; padding: 12px 24px;
   font-size: 1rem; font-weight: 600; color: #495057;
   border-radius: 8px 8px 0 0; cursor: pointer; transition: all 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
+
+.admin-tabs::-webkit-scrollbar { display: none; }
+.admin-tabs { -ms-overflow-style: none; scrollbar-width: none; }
+
 .admin-tabs button:hover { background: #dee2e6; }
 .admin-tabs button.active { background: #fff; color: #1b4332; }
 
@@ -176,9 +188,21 @@ tr:hover { background-color: #f0f7f0; }
 .receipt-items { width: 100%; border-top: 1px dashed #000; border-bottom: 1px dashed #000; margin-bottom: 1rem; }
 .receipt-items th, .receipt-items td { padding: 5px 0; border: none; font-size: 0.85rem; }
 
-@media (max-width: 768px) {
+@media (max-width: 850px) {
   .product-row, .order-header-row, .list-header-row { flex-direction: column; align-items: flex-start; gap: 10px; }
   .product-row .right { width: 100%; justify-content: space-between; margin-top: 10px; }
   .category-filter { flex-direction: column; }
   .category-btn, .order-search-input { width: 100%; }
+}
+
+@media (max-width: 480px) {
+  .admin-tabs button {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+  }
+  
+  .admin-container {
+    margin: 0 auto 2.5rem; 
+    border-radius: 0 0 12px 12px;
+  }
 }

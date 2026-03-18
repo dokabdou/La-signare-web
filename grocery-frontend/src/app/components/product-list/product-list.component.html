@@ -84,39 +84,4 @@
     </div>
   </section>
 
-  <footer class="main-footer">
-    <div class="footer-col">
-      <h3>🛒 La signare - Épicerie du Monde</h3>
-      <p> --- </p>
-      <p>📞 +33 6 36 02 23 91</p>
-      <p>✉️ eamil @@@@@@</p>
-      <p>
-        📍 
-        <a href="https://maps.google.com/?q=LA+SIGNARE+Épicerie+Du+Monde,+11+Rue+de+Bernières,+14000+Caen" 
-           target="_blank" 
-           rel="noopener noreferrer" 
-           class="map-link">
-          11 Rue de Bernières, 14000 Caen
-        </a>
-      </p>
-    </div>
-    <div class="footer-col">
-      <h3>Our Products</h3>
-      <ul>
-        <li *ngFor="let cat of categories | slice:0:6">
-          <a (click)="goToCategory(cat)" style="cursor:pointer">{{ cat | titlecase }}</a>
-        </li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h3>Learn More</h3>
-      <ul>
-        <li><a routerLink="/">Contact Us</a></li>
-        <li><a routerLink="/">Legal Notice</a></li>
-        <li><a routerLink="/">Delivery</a></li>
-        <li><a routerLink="/">Terms & Conditions</a></li>
-      </ul>
-    </div>
-  </footer>
-
 </div>

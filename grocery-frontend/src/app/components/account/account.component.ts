@@ -14,40 +14,62 @@ export class AccountComponent implements OnInit {
   user: any = null;
   phone = '';
   password = '';
+  confirmPassword = '';
   message = '';
+  isError = false;
   loading = false;
 
   constructor(private authService: AuthService) {}
 
   ngOnInit() {
-    // Automatically load the current user's data into the form
     this.authService.currentUser$.subscribe((u) => {
       if (u) {
         this.user = u;
         this.phone = u.phone || '';
-        this.password = u.password || '';
+        this.password = '';
+        this.confirmPassword = '';
       }
     });
   }
 
+  get isFormValid(): boolean {
+    const phoneRegex = /^[0-9+\-\s()]{8,20}$/;
+    const isPhoneValid = phoneRegex.test(this.phone);
+
+    const isPasswordValid = !!this.password && this.password.length >= 8;
+    const passwordsMatch = this.password === this.confirmPassword;
+
+    return !!(isPhoneValid && isPasswordValid && passwordsMatch);
+  }
+
   save() {
-    if (!this.password) {
-      this.message = 'Password cannot be empty.';
-      return;
-    }
     this.loading = true;
     this.message = '';
+    this.isError = false;
 
     const updatedUser = {
       ...this.user,
-      phone: this.phone,
+      phone: this.phone.trim(),
       password: this.password,
     };
 
-    this.authService.updateUser(this.user.id, updatedUser).subscribe(() => {
-      this.loading = false;
-      this.message = 'Account updated successfully!';
-      setTimeout(() => (this.message = ''), 3000);
+	console.log(updatedUser);
+
+    this.authService.updateUser(this.user.id, updatedUser).subscribe({
+      next: () => {
+        this.loading = false;
+        this.message = 'Account updated successfully!';
+
+        this.password = '';
+        this.confirmPassword = '';
+
+        setTimeout(() => (this.message = ''), 3000);
+      },
+      error: (err) => {
+        this.loading = false;
+        this.isError = true;
+        this.message = 'Failed to update account. Please try again.';
+      },
     });
   }
 }
