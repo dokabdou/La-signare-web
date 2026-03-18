@@ -14,7 +14,7 @@ export class ProductService {
   public products$ = this.productsSubject.asObservable();
 
   private isFetching = false;
-  private hasFetched = false; // THE CACHE FLAG
+  private hasFetched = false;
 
   constructor(private http: HttpClient) {}
 
@@ -26,31 +26,31 @@ export class ProductService {
     });
   }
 
-  // Only fetches from Java if it hasn't fetched already
-  private fetchAllProducts(): void {
-    if (this.isFetching || this.hasFetched) return;
+  private fetchAllProducts(forceRefresh = false): void {
+    if (!forceRefresh && (this.isFetching || this.hasFetched)) return;
     this.isFetching = true;
 
+    const url = forceRefresh ? `${this.javaUrl}?cb=${Date.now()}` : this.javaUrl;
+
     this.http
-      .get<any[]>(this.javaUrl)
+      .get<any[]>(url)
       .pipe(
         catchError(() => of([])),
         finalize(() => (this.isFetching = false)),
       )
       .subscribe((javaData) => {
         this.productsSubject.next(javaData);
-        this.hasFetched = true; // Mark as successfully cached!
+        this.hasFetched = true;
       });
   }
 
-  // Call this if an Admin adds a product and you want to force a redownload
   public refreshProducts(): void {
     this.hasFetched = false;
-    this.fetchAllProducts();
+    this.fetchAllProducts(true);
   }
 
   getProducts(category?: string, search?: string): Observable<any[]> {
-    this.fetchAllProducts(); // Triggers the lazy load
+    this.fetchAllProducts();
 
     return this.products$.pipe(
       map((products) => {

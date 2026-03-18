@@ -83,4 +83,8 @@ public class Product {
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
 	}
+
+	public String getAllInfo() {
+		return "-- ALL PRODUCT INFO : " + getId() + " _ " + getName() + " _ " + getCategory() + " _ " + getDescription() + " _ " + getPrice() + " _ " + getQuantity() + "___";
+	}
 }

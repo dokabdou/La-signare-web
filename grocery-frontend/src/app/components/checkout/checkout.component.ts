@@ -11,7 +11,7 @@ import { PastOrdersComponent } from '../past-orders/past-orders.component';
 @Component({
   selector: 'app-checkout',
   standalone: true,
-  imports: [CommonModule, FormsModule, PastOrdersComponent], 
+  imports: [CommonModule, FormsModule, PastOrdersComponent],
   templateUrl: './checkout.component.html',
   styleUrls: ['./checkout.component.css'],
 })
@@ -37,7 +37,7 @@ export class CheckoutComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-	this.cart = [];
+    this.cart = [];
 
     this.cartService.cart$.subscribe((cart) => {
       this.cart = cart || [];
@@ -48,10 +48,10 @@ export class CheckoutComponent implements OnInit {
       this.authService.openLoginModal();
     }
 
-	if (typeof window !== 'undefined') {
-		this.currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-	}  
-}
+    if (typeof window !== 'undefined') {
+      this.currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    }
+  }
 
   switchTab(tab: 'cart' | 'past-orders') {
     this.activeTab = tab;
@@ -92,13 +92,13 @@ export class CheckoutComponent implements OnInit {
     }
 
     if (!this.currentUser || !this.currentUser.name || !this.currentUser.phone) {
-		this.orderError = true;
-      this.message = 'Please log in to place an order.';
+      this.orderError = true;
+      this.errorMessage =
+        'Please log in and ensure your profile has a phone number to place an order.';
       return;
     }
 
     this.loading = true;
-    const draftId = this.cartService.getDraftOrderId();
 
     const finalizedOrder = {
       customerName: this.currentUser.name,
@@ -106,29 +106,27 @@ export class CheckoutComponent implements OnInit {
       email: this.currentUser.email,
       items: this.cart,
       total: this.total,
-      status: 'Pending',
+      status: 'Pending', 
       createdAt: new Date().toISOString(),
     };
 
+    this.orderService.createOrder(finalizedOrder).subscribe({
+      next: (res) => {
+        this.loading = false;
+        this.orderSuccess = true;
 
-    if (draftId) {
-      this.orderService.updateOrder(draftId, finalizedOrder).subscribe({
-        next: (res) => {
-          this.loading = false;
-          this.orderSuccess = true;
-          this.cartService.finalizeCheckout();
+        this.cartService.clearCart();
 
-          setTimeout(() => {
-            this.orderSuccess = false;
-            this.switchTab('past-orders');
-          }, 2000);
-        },
-        error: (err) => {
-          this.loading = false;
-          this.orderError = true;
-          this.errorMessage = 'Error placing order. Please try again.';
-        },
-      });
-    }
+        setTimeout(() => {
+          this.orderSuccess = false;
+          this.switchTab('past-orders');
+        }, 2000);
+      },
+      error: (err) => {
+        this.loading = false;
+        this.orderError = true;
+        this.errorMessage = err.error?.error || 'Error placing order. Please try again.';
+      },
+    });
   }
 }

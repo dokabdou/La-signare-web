@@ -4,6 +4,10 @@
   <button [class.active]="activeTab === 'receipts'" (click)="switchTab('receipts')">Receipts</button>
   <button [class.active]="activeTab === 'users'" (click)="switchTab('users')">Users</button>
   <button [class.active]="activeTab === 'sync'" (click)="switchTab('sync')">Sync Data</button>
+  
+  <button class="btn-refresh" (click)="refreshData()" style="margin-left: auto; background: #e8f5e9; color: #1b4332; font-weight: bold; display: flex; align-items: center; gap: 5px;">
+    <span style="font-size: 1.2rem; line-height: 1;">↻</span> Refresh Data
+  </button>
 </div>
 
 <div class="admin-container no-print">

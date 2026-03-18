@@ -62,6 +62,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   syncMessage = '';
 
   private ordersSubscription!: Subscription;
+  private productsSubscription!: Subscription;
 
   constructor(
     private ps: ProductService,
@@ -78,13 +79,23 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.ordersSubscription) {
-      this.ordersSubscription.unsubscribe();
+    if (this.ordersSubscription) this.ordersSubscription.unsubscribe();
+    if (this.productsSubscription) this.productsSubscription.unsubscribe();
+  }
+
+  refreshData() {
+    if (this.activeTab === 'stocks') {
+      this.loadProducts();
+    } else if (this.activeTab === 'orders' || this.activeTab === 'receipts') {
+      this.loadOrders();
+    } else if (this.activeTab === 'users') {
+      this.loadUsers();
     }
   }
 
   switchTab(tab: 'stocks' | 'orders' | 'receipts' | 'users' | 'sync') {
     this.activeTab = tab;
+    this.refreshData();
   }
 
   toggleSelection(productId: string) {
@@ -157,7 +168,16 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   loadProducts(): void {
     this.loading = true;
-    this.ps.getProducts().subscribe({
+
+    if (typeof this.ps.refreshProducts === 'function') {
+      this.ps.refreshProducts();
+    }
+
+    if (this.productsSubscription) {
+      this.productsSubscription.unsubscribe();
+    }
+
+    this.productsSubscription = this.ps.getProducts().subscribe({
       next: (p) => {
         this.currentProducts = p || [];
         this.products$.next(this.currentProducts);
@@ -172,7 +192,6 @@ export class AdminComponent implements OnInit, OnDestroy {
       },
     });
   }
-
   extractCategories(products: any[]): void {
     const cats = Array.from(new Set(products.map((p) => p.category).filter(Boolean))).sort((a, b) =>
       a.localeCompare(b),
@@ -255,6 +274,15 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   loadOrders(): void {
     this.ordersLoading = true;
+
+    if (typeof this.os.refreshOrders === 'function') {
+      this.os.refreshOrders();
+    }
+
+    if (this.ordersSubscription) {
+      this.ordersSubscription.unsubscribe();
+    }
+
     this.ordersSubscription = this.os.getOrders().subscribe({
       next: (ordersData) => {
         this.orders = ordersData.sort((a, b) => {
