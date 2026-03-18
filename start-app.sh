@@ -16,6 +16,30 @@ echo "Pulling latest code from GitHub..."
 cd ~/La-signare-web || exit
 git pull origin main
 
+# ==========================================
+# BUILD STEPS
+# ==========================================
+
+echo "Building Spring Boot backend..."
+cd ~/La-signare-web/backend || exit
+mvn clean package -DskipTests
+
+echo "Building Angular frontend..."
+cd ~/La-signare-web/grocery-frontend || exit
+npm run build
+
+echo "Committing and pushing frontend dist folder to GitHub..."
+# Force add the dist folder
+git add dist/ -f
+# Commit the files (will just bypass if there are no changes)
+git commit -m "Force adding production dist folder"
+# Push to GitHub
+git push
+
+# ==========================================
+# SERVER STARTUP
+# ==========================================
+
 echo "Starting Spring Boot backend (Production Mode)..."
 cd ~/La-signare-web/backend || exit
 
