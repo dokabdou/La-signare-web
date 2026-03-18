@@ -25,7 +25,7 @@ public class JwtUtil {
         this.key = Keys.hmacShaKeyFor(secretKeyString.getBytes());
     }
 
-    // 1. Generate the token and stamp the Admin status inside it
+    // Generate the token and stamp the Admin status inside it
     public String generateToken(String email, boolean isAdmin) {
         return Jwts.builder()
                 .setSubject(email)
@@ -36,19 +36,19 @@ public class JwtUtil {
                 .compact();
     }
 
-    // 2. Read the email from the token
+    // Read the email from the token
     public String extractEmail(String token) {
         return Jwts.parser().setSigningKey(key).build()
                 .parseClaimsJws(token).getBody().getSubject();
     }
 
-    // 3. Read the Admin stamp from the token
+    // Read the Admin stamp from the token
     public boolean extractIsAdmin(String token) {
         return Jwts.parser().setSigningKey(key).build()
                 .parseClaimsJws(token).getBody().get("admin", Boolean.class);
     }
 
-    // 4. Check if the token is valid and not tampered with
+    // Check if the token is valid and not tampered with
     public boolean validateToken(String token) {
         try {
             Jwts.parser().setSigningKey(key).build().parseClaimsJws(token);

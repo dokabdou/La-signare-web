@@ -58,5 +58,16 @@ db.customers.updateOne(
 )
 = should reply with { acknowledged: true, modifiedCount: 1 }
 
+add customer in db : but password would be an issue
+db.customers.insertOne({
+  name: "Signare Barry",
+  email: "admin@store.com",
+  phone: "0636022391",
+  password: "",
+  isAdmin: true
+})
+
+BEST TO create the account online then update it in mongosh, no linebreaks : 
+db.customers.updateOne({ email: "" }, { $set: { isAdmin: true } })
 
 exit -> exit db

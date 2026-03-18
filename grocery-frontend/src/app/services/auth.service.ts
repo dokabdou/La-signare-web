@@ -106,6 +106,10 @@ export class AuthService {
     return of(updatedData);
   }
 
+  deleteUser(id: string): Observable<any> {
+    return this.http.delete(`${this.customersUrl}/customers/${id}`);
+  }
+
   logout() {
     // asks java to destory the HttpOnly cookie
     this.http

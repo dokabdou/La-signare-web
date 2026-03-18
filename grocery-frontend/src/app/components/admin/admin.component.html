@@ -2,6 +2,7 @@
   <button [class.active]="activeTab === 'stocks'" (click)="switchTab('stocks')">Stocks</button>
   <button [class.active]="activeTab === 'orders'" (click)="switchTab('orders')">Orders</button>
   <button [class.active]="activeTab === 'receipts'" (click)="switchTab('receipts')">Receipts</button>
+  <button [class.active]="activeTab === 'users'" (click)="switchTab('users')">Users</button>
   <button [class.active]="activeTab === 'sync'" (click)="switchTab('sync')">Sync Data</button>
 </div>
 
@@ -16,12 +17,7 @@
       <input [(ngModel)]="price" name="price" type="number" placeholder="Price" step="0.1" />
       <input [(ngModel)]="quantity" name="quantity" type="number" placeholder="Quantity" step="1" />
       <input [(ngModel)]="category" name="category" placeholder="Category" />
-      <input 
-        type="file" 
-        (change)="onFileSelected($event)" 
-        accept=".png, .jpg, .jpeg, image/png, image/jpeg" 
-        class="file-input" 
-      />
+      <input type="file" (change)="onFileSelected($event)" accept=".png, .jpg, .jpeg, image/png, image/jpeg" class="file-input" />
       
       <div class="image-preview" *ngIf="imageUrl">
         <img [src]="imageUrl" alt="Preview" />
@@ -76,9 +72,7 @@
              [class.selected]="selectedProductIds.has(p.id)">
           
           <div class="checkbox-wrapper">
-            <input type="checkbox" 
-                   [checked]="selectedProductIds.has(p.id)" 
-                   (change)="toggleSelection(p.id)" />
+            <input type="checkbox" [checked]="selectedProductIds.has(p.id)" (change)="toggleSelection(p.id)" />
           </div>
 
           <div class="left" (click)="goToProduct(p)">
@@ -136,14 +130,11 @@
             <td>{{ order.customerName || 'N/A' }}<br><small>{{ order.phone }}</small></td> 
             <td>{{ order.email || 'N/A' }}</td> 
             <td>
-              <select 
-                [ngModel]="order.status || 'Pending'" 
-                (ngModelChange)="updateOrderStatus(order.id, $event)"
-                class="status-select">
+              <select [ngModel]="order.status || 'Pending'" (ngModelChange)="updateOrderStatus(order.id, $event)" class="status-select">
                 <option value="UnProcessed">UnProcessed</option>
                 <option value="Pending">Pending</option>
                 <option value="Ready">Ready</option>
-				<option value="Cancelled">Cancelled</option>
+                <option value="Cancelled">Cancelled</option>
               </select>
             </td>
             <td class="price">${{ order.total | number:'1.2-2' }}</td>
@@ -200,6 +191,69 @@
     </div>
   </div>
 
+  <div *ngIf="activeTab === 'users'">
+    <div class="order-header-row">
+      <h2>User Management</h2>
+      <input type="text" [(ngModel)]="userSearchTerm" placeholder="Search users by name, email, or phone..." class="order-search-input">
+    </div>
+
+    <form class="add-form" (ngSubmit)="saveUser()" *ngIf="editingUserId" style="background: #eaf4f4; border-color: #bee1e6;">
+      <h3 style="flex-basis: 100%; margin-top: 0;">Editing User</h3>
+      
+      <input [(ngModel)]="editUserName" name="editUserName" placeholder="Full Name" />
+      <input [(ngModel)]="editUserEmail" name="editUserEmail" type="email" placeholder="Email Address" required />
+      <input [(ngModel)]="editUserPhone" name="editUserPhone" placeholder="Phone Number" />
+      <input [(ngModel)]="editUserPassword" name="editUserPassword" type="password" placeholder="New Password (Leave blank to keep old)" />
+      
+      <div class="form-actions" style="flex-basis: 100%;">
+        <button type="submit" class="btn-primary">Save User Changes</button>
+        <button type="button" (click)="cancelEditUser()" class="btn-cancel">Cancel</button>
+      </div>
+    </form>
+
+    <div *ngIf="usersLoading" class="loading-spinner">Loading users...</div>
+    <div *ngIf="!usersLoading && getFilteredUsers().length === 0" class="empty">No users found.</div>
+
+    <div class="table-container" *ngIf="!usersLoading && getFilteredUsers().length > 0">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Role</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let u of getFilteredUsers()" [class.selected]="editingUserId === u.id">
+            <td>{{ u.name || 'N/A' }}</td>
+            <td>{{ u.email }}</td>
+            <td>{{ u.phone || 'N/A' }}</td>
+            <td>
+              <span class="stock-badge" [ngStyle]="{'background': u.admin ? '#1b4332' : '#95a5a6'}">
+                {{ u.admin ? 'Admin' : 'Customer' }}
+              </span>
+            </td>
+            <td style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <button class="btn-outline" (click)="toggleAdminRole(u)" style="padding: 4px 8px; font-size: 0.8rem;">
+                {{ u.admin ? 'Revoke Admin' : 'Make Admin' }}
+              </button>
+              
+              <button class="btn-edit" (click)="startEditUser(u)" style="padding: 4px 8px; font-size: 0.8rem;">
+                Edit
+              </button>
+
+              <button class="btn-delete" (click)="deleteUser(u.id)" style="padding: 4px 8px; font-size: 0.8rem;">
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
   <div *ngIf="activeTab === 'sync'" class="sync-tab-container">
     <h2>System Synchronization</h2>
     <p>Sync the mongodb data with Google Sheets.</p>
@@ -239,7 +293,7 @@
   <div class="receipt-header">
     <h2>🛒 La signare - Épicerie du Monde</h2>
     <p>LA SIGNARE - Épicerie Du Monde, 11 Rue de Bernières, 14000 Caen</p>
-	<p> +33 6 36 02 23 91 </p>
+    <p> +33 6 36 02 23 91 </p>
     <p>Receipt #: {{ selectedReceiptToPrint.id | slice:0:8 }}</p>
     <p>Date: {{ selectedReceiptToPrint.createdAt | date:'short' }}</p>
     <b *ngIf="selectedReceiptToPrint.customerName">Customer: {{ selectedReceiptToPrint.customerName }}</b>

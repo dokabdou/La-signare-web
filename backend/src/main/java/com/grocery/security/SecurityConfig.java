@@ -39,7 +39,7 @@ public class SecurityConfig {
                 )
             )
             
-            // 2. Tell Spring Security we are using API Tokens, not standard server sessions
+            // Tell Spring Security we are using API Tokens, not standard server sessions
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
             .authorizeHttpRequests(auth -> auth
@@ -76,7 +76,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             );
             
-        // 3. Put our Bouncer at the front door to check tokens BEFORE Spring blocks the request!
+        // Put our Bouncer at the front door to check tokens BEFORE Spring blocks the request!
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
