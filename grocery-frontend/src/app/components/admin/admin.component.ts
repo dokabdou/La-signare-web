@@ -360,7 +360,7 @@ export class AdminComponent implements OnInit, OnDestroy {
           printWindow.document.write(`
             <html>
               <head>
-                <title>Receipt - ${receipt.id}</title>
+                <title>Ticket de Caisse - ${receipt.id}</title>
                 <style>
                   @page { size: 110mm 220mm; margin: 5mm; }
                   body { font-family: 'Courier New', Courier, monospace; color: #000; width: 100mm; margin: 0 auto; padding: 0; background: #fff; }

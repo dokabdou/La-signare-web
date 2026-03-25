@@ -122,6 +122,16 @@ export class OrderService {
     return of(undefined);
   }
 
+  sendEmail(payload: { to: string; subject: string; htmlBody: string }) {
+    console.log('sendEmail payload : ', payload);
+    console.log('${this.javaUrl} : ', this.javaUrl);
+
+    // { withCredentials: true } because the token is stored in the cookies
+    return this.http
+      .post<any>(`${this.javaUrl}/send-receipt`, payload, { withCredentials: true })
+      .pipe(catchError(() => of(null)));
+  }
+
   syncToGoogleSheets(): Observable<any> {
     const items = this.ordersSubject.value;
     if (items.length === 0) return of(null);
