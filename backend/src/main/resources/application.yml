@@ -6,6 +6,17 @@ spring:
   data:
     mongodb:
       uri: mongodb://localhost:27017/grocerydb
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: abdoulaye.dllo2002@gmail.com
+    password: irmiouyjvocbdcku
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 jwt:
   secret: grocery_secret_key_must_be_very_long_and_secure_2026

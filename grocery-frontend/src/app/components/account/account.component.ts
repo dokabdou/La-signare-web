@@ -8,7 +8,7 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './account.component.html',
-  styleUrls: ['./account.component.css'],
+  styleUrls: ['./account.component.css', '../../../styles.css'],
 })
 export class AccountComponent implements OnInit {
   user: any = null;
@@ -53,12 +53,11 @@ export class AccountComponent implements OnInit {
       password: this.password,
     };
 
-	console.log(updatedUser);
 
     this.authService.updateUser(this.user.id, updatedUser).subscribe({
       next: () => {
         this.loading = false;
-        this.message = 'Account updated successfully!';
+        this.message = 'Compte modifié avec succès.';
 
         this.password = '';
         this.confirmPassword = '';
@@ -68,7 +67,7 @@ export class AccountComponent implements OnInit {
       error: (err) => {
         this.loading = false;
         this.isError = true;
-        this.message = 'Failed to update account. Please try again.';
+        this.message = 'La modification à échoué veuillez réessayer.';
       },
     });
   }

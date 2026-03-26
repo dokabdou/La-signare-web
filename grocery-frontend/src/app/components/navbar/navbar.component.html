@@ -1,8 +1,12 @@
 <nav class="navbar">
-  <div class="logo" (click)="goHome()" style="cursor:pointer">🛒 La signare - Épicerie du Monde</div>
+  <div class="logo" (click)="goHome()" style="cursor:pointer; display: flex; align-items: center; gap: 12px;">
+    <img src="assets/logo/Logo_Signare.png" alt="LSL" class="nav-logo-img">
+
+    <span class="brand-text">La Signare - Épicerie du Monde</span>
+  </div>
 
   <div class="categories" *ngIf="categories$ | async as cats">
-	<a (click)="goToAllProducts()" class="cat-link">All Products</a>
+    <a (click)="goToAllProducts()" class="cat-link">Tous les produits</a>
     <ng-container *ngIf="cats.length <= 5; else many">
       <a *ngFor="let cat of cats" (click)="goToCategory(cat)" class="cat-link">
         {{ cat | titlecase }}
@@ -15,7 +19,7 @@
       </a>
 
       <div class="dropdown-wrapper">
-        <button class="more-btn" (click)="toggleDropdown()">More ▾</button>
+        <button class="more-btn" (click)="toggleDropdown()">Plus ▾</button>
         <div class="dropdown-menu" *ngIf="dropdownOpen" (clickOutside)="closeDropdown()">
           <a *ngFor="let cat of cats | slice:5" (click)="goToCategory(cat)" class="dropdown-item">
             {{ cat | titlecase }}
@@ -26,26 +30,33 @@
   </div>
   
   <div class="actions">
-    <input type="text" placeholder="Search products..." #searchInput (keyup.enter)="search(searchInput.value)">
+    <input type="text" placeholder="Rechercher des produits..." #searchInput (keyup.enter)="search(searchInput.value)">
     
     <button *ngIf="isLoggedIn" class="cart-btn" routerLink="/checkout">
-      🛒 Cart <span *ngIf="cartCount > 0">({{ cartCount }})</span>
+      🛒 Panier <span *ngIf="cartCount > 0">({{ cartCount }})</span>
     </button>
     
     <button *ngIf="isAdmin" class="admin-btn" (click)="goAdmin()">⚙️ Admin</button>
 
     <div class="dropdown-wrapper" *ngIf="isLoggedIn">
       <button class="admin-btn account-btn" (click)="accountDropdownOpen = !accountDropdownOpen">
-        👋 Hello, {{ currentUser?.name ? currentUser.name.split(' ')[0] : 'User' }} ▾
+        👋 Bonjour, {{ currentUser?.name ? currentUser.name.split(' ')[0] : 'Client' }} ▾
       </button>
       
       <div class="dropdown-menu account-menu" *ngIf="accountDropdownOpen" (clickOutside)="accountDropdownOpen = false">
-        <a routerLink="/account" class="dropdown-item" (click)="accountDropdownOpen = false">👤 Account Info</a>
-        <a (click)="logout(); accountDropdownOpen = false" class="dropdown-item logout-item">🚪 Log Out</a>
+        <a routerLink="/account" class="dropdown-item" (click)="accountDropdownOpen = false">👤 Mon Compte</a>
+		<a routerLink="/location" class="dropdown-item" (click)="accountDropdownOpen = false">📍 Localisation</a>
+        <a (click)="logout(); accountDropdownOpen = false" class="dropdown-item logout-item">🚪 Se déconnecter</a>
       </div>
     </div>
 
-    <button *ngIf="!isLoggedIn" class="admin-btn login-btn" (click)="authService.openLoginModal()">Log In</button>
+	<div *ngIf="!isLoggedIn" style="display: flex; align-items: center; gap: 1rem;">
+		<a routerLink="/location" class="cat-link" style="margin-right: 5px; border: 1px solid var(--brand-gold);">
+		📍 Localisation
+		</a>
+		
+		<button class="admin-btn login-btn" (click)="authService.openLoginModal()">Connexion</button>
+	</div>
   </div>
 </nav>
 
@@ -53,49 +64,49 @@
   <div class="modal-content" (clickOutside)="closeModal()">
     <span class="close-btn" (click)="closeModal()">&times;</span>
     
-    <h2>{{ isRegisterMode ? 'Create an Account' : 'Welcome Back' }}</h2>
-    <p class="modal-sub">{{ isRegisterMode ? 'Join us to start shopping!' : 'Log in to access your cart.' }}</p>
+    <h2>{{ isRegisterMode ? 'Créer un compte' : 'Ravi de vous revoir' }}</h2>
+    <p class="modal-sub">{{ isRegisterMode ? 'Rejoignez-nous pour commencer vos achats !' : 'Connectez-vous pour accéder à votre panier.' }}</p>
 
     <div class="error-msg" *ngIf="authError">{{ authError }}</div>
 
     <form (ngSubmit)="submitAuth()">
       <div class="input-group" *ngIf="isRegisterMode">
-        <label>Full Name</label>
-        <input type="text" [(ngModel)]="authName" name="authName" placeholder="Nom Prenom" required>
+        <label>Nom complet</label>
+        <input type="text" [(ngModel)]="authName" name="authName" placeholder="Prénom Nom" required>
       </div>
       
       <div class="input-group" *ngIf="isRegisterMode">
-        <label>Phone Number</label>
+        <label>Numéro de téléphone</label>
         <input type="text" [(ngModel)]="authPhone" name="authPhone" placeholder="+33 6 36 02 23 91" required>
       </div>
       
       <div class="input-group">
-        <label>Email Address</label>
+        <label>Adresse email</label>
         <input type="email" [(ngModel)]="authEmail" name="authEmail" placeholder="nom@exemple.com" required>
       </div>
 
       <div class="input-group">
-        <label>Password</label>
-        <input type="password" [(ngModel)]="authPassword" name="authPassword" placeholder="Min. 8 characters" required>
+        <label>Mot de passe</label>
+        <input type="password" [(ngModel)]="authPassword" name="authPassword" placeholder="Min. 8 caractères" required>
       </div>
 
       <div class="input-group" *ngIf="isRegisterMode">
-        <label>Confirm Password</label>
-        <input type="password" [(ngModel)]="authConfirmPassword" name="authConfirmPassword" placeholder="Repeat your password" required>
+        <label>Confirmer le mot de passe</label>
+        <input type="password" [(ngModel)]="authConfirmPassword" name="authConfirmPassword" placeholder="Répétez votre mot de passe" required>
         
         <small *ngIf="authConfirmPassword && authPassword !== authConfirmPassword" style="color: #c0392b; font-size: 0.8rem; margin-top: 4px; display: block;">
-          Passwords do not match.
+          Les mots de passe ne correspondent pas.
         </small>
       </div>
 
       <button type="submit" class="submit-btn" [disabled]="authLoading || !isFormValid">
-        {{ authLoading ? 'Please wait...' : (isRegisterMode ? 'Register' : 'Log In') }}
+        {{ authLoading ? 'Veuillez patienter...' : (isRegisterMode ? 'S\'inscrire' : 'Se connecter') }}
       </button>
     </form>
 
     <div class="toggle-mode">
-      <p *ngIf="!isRegisterMode">Don't have an account? <a (click)="toggleAuthMode()">Sign up</a></p>
-      <p *ngIf="isRegisterMode">Already have an account? <a (click)="toggleAuthMode()">Log in</a></p>
+      <p *ngIf="!isRegisterMode">Vous n'avez pas de compte ? <a (click)="toggleAuthMode()">S'inscrire</a></p>
+      <p *ngIf="isRegisterMode">Vous avez déjà un compte ? <a (click)="toggleAuthMode()">Se connecter</a></p>
     </div>
   </div>
 </div>

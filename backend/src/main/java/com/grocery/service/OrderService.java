@@ -13,14 +13,16 @@ import java.util.List;
 @Service
 public class OrderService {
     private final OrderRepository repository;
-	private final ProductRepository productRepository;
+    private final ProductRepository productRepository;
+    private final EmailService emailService;
 
-    public OrderService(OrderRepository repository, ProductRepository productRepository) {
+    public OrderService(OrderRepository repository, ProductRepository productRepository, EmailService emailService) {
         this.repository = repository;
-		this.productRepository = productRepository;
+        this.productRepository = productRepository;
+        this.emailService = emailService;
     }
 
-	private void validatePricesAndDeductStock(Order order, boolean isNewOrder) {
+    private void validatePricesAndDeductStock(Order order, boolean isNewOrder) {
         double realTotal = 0.0;
 
         if (order.getItems() != null) {
@@ -28,15 +30,34 @@ public class OrderService {
                 Product realProduct = productRepository.findById(item.getId())
                         .orElseThrow(() -> new IllegalArgumentException("Product not found: " + item.getId()));
 
-				System.out.println("realProduct  " + realProduct.getAllInfo() );
+                System.out.println("realProduct  " + realProduct.getAllInfo() );
                 if (isNewOrder) {
                     if (realProduct.getQuantity() < item.getQuantity()) {
                         throw new IllegalArgumentException("Not enough stock for: " + realProduct.getName() + ". Only " + realProduct.getQuantity() + " left.");
                     }
-					System.out.println("item quantity " + item.getQuantity() );
-					System.out.println("B realProduct quantity " + realProduct.getQuantity() );
+                    System.out.println("item quantity " + item.getQuantity() );
+                    System.out.println("B realProduct quantity " + realProduct.getQuantity() );
+                    
                     realProduct.setQuantity(realProduct.getQuantity() - item.getQuantity());
-					System.out.println("Af realProduct quantity " + realProduct.getQuantity() );
+                    
+                    System.out.println("Af realProduct quantity " + realProduct.getQuantity() );
+
+                    if (realProduct.getQuantity() < 10) {
+                        try {
+                            String subject = "⚠️ ALERTE STOCK FAIBLE : " + realProduct.getName();
+                            String body = "<h3>Alerte de stock critique</h3>" +
+                                          "<p>Le produit <b>" + realProduct.getName() + "</b> a atteint un niveau de stock critique suite à une commande.</p>" +
+                                          "<p>Quantité restante : <b style='color:red; font-size:1.2rem;'>" + realProduct.getQuantity() + "</b></p>" +
+                                          "<p>Pensez à réapprovisionner vos stocks !</p>";
+                                          
+                            emailService.sendHtmlEmail("abdoulaye.dllo2002@gmail.com", subject, body);
+                            System.out.println("Alerte de stock envoyée pour : " + realProduct.getName());
+                        } catch (Exception e) {
+                            // We catch the exception so that if the email fails, it doesn't crash the user's checkout!
+                            System.err.println("Erreur lors de l'envoi de l'alerte de stock: " + e.getMessage());
+                        }
+                    }
+
                     productRepository.save(realProduct);
                 }
 
@@ -50,7 +71,7 @@ public class OrderService {
     }
 
     public Order createOrder(Order order) {
-		validatePricesAndDeductStock(order, true);
+        validatePricesAndDeductStock(order, true);
         order.setCreatedAt(LocalDateTime.now());
         return repository.save(order);
     }
@@ -105,7 +126,7 @@ public class OrderService {
     public Order updateOrder(String id, Order updated) {
         return repository.findById(id)
                 .map(existing -> {
-					validatePricesAndDeductStock(updated, false);
+                    validatePricesAndDeductStock(updated, false);
 
                     existing.setCustomerName(updated.getCustomerName());
                     existing.setPhone(updated.getPhone());

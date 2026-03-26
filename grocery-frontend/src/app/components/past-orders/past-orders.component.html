@@ -1,29 +1,29 @@
 <div class="past-orders-container">
   
   <div *ngIf="!selectedOrder">
-    <h2>Your Past Orders</h2>
+    <h2>Votre Historique de Commandes</h2>
 
-    <div *ngIf="ordersLoading" class="empty">Loading your orders...</div>
-    <div *ngIf="!ordersLoading && pastOrders.length === 0" class="empty">You haven't placed any orders yet.</div>
+    <div *ngIf="ordersLoading" class="empty">Chargement de vos commandes...</div>
+    <div *ngIf="!ordersLoading && pastOrders.length === 0" class="empty">Vous n'avez pas encore passé de commande.</div>
 
     <div class="orders-list" *ngIf="!ordersLoading && pastOrders.length > 0">
       <div class="order-card" *ngFor="let order of pastOrders" (click)="viewOrderDetails(order)">
         <div class="order-header">
           <div class="order-meta">
-            <span class="order-id">Order #{{ order.id | slice:0:8 }}</span>
+            <span class="order-id">Commande n° {{ order.id | slice:0:8 }}</span>
             <span class="order-date">{{ order.createdAt | date:'medium' }}</span>
           </div>
           <div class="order-status-wrap">
             <span class="status-badge" [ngClass]="'status-' + (order.status | lowercase)">
-              {{ order.status || 'Pending' }}
+              {{ order.status || 'En attente' }}
             </span>
           </div>
         </div>
         
         <div class="order-body">
           <div class="order-total">
-            Total: <strong>${{ order.total | number:'1.2-2' }}</strong>
-            <span class="items-count">({{ getOrderItems(order).length }} items)</span>
+            Total : <strong>{{ order.total | number:'1.2-2' }} €</strong>
+            <span class="items-count">({{ getOrderItems(order).length }} article(s))</span>
           </div>
           
           <div class="order-actions">
@@ -31,11 +31,11 @@
               *ngIf="(order.status | lowercase) === 'pending'" 
               class="cancel-btn" 
               (click)="cancelOrder(order, $event)">
-              Cancel Order
+              Annuler la commande
             </button>
 
             <button class="reorder-btn" (click)="reorder(order, $event)">
-              ↻ Re-order
+              ↻ Recommander
             </button>
           </div>
         </div>
@@ -44,59 +44,59 @@
   </div>
 
   <div *ngIf="selectedOrder" class="order-details-view">
-	<button class="back-btn" (click)="backToList()">← Back to Orders</button>
-	
-	<div class="details-header">
-		<div>
-		<h2>Order Details</h2>
-		<p class="order-id">#{{ selectedOrder.id }}</p>
-		<p class="order-date">Placed on: {{ selectedOrder.createdAt | date:'medium' }}</p>
-		</div>
-		<div class="status-badge large" [ngClass]="'status-' + (selectedOrder.status | lowercase)">
-		{{ selectedOrder.status || 'Pending' }}
-		</div>
-	</div>
+    <button class="back-btn" (click)="backToList()">← Retour aux commandes</button>
+    
+    <div class="details-header">
+        <div>
+        <h2>Détails de la commande</h2>
+        <p class="order-id">n° {{ selectedOrder.id }}</p>
+        <p class="order-date">Passée le : {{ selectedOrder.createdAt | date:'medium' }}</p>
+        </div>
+        <div class="status-badge large" [ngClass]="'status-' + (selectedOrder.status | lowercase)">
+        {{ selectedOrder.status || 'En attente' }}
+        </div>
+    </div>
 
-	<div class="details-items">
+    <div class="details-items">
       <div class="item-row" *ngFor="let item of getOrderItems(selectedOrder)">
-        <img [src]="item.imageUrl || 'assets/placeholder.jpg'" [alt]="item.name" class="item-img" />
+        <img [src]="item.imageUrl" [alt]="item.name" class="item-img" />
         
         <div class="item-info">
           <h4>{{ item.name }}</h4>
           <p>{{ item.category }}</p>
         </div>
         
-        <div class="item-qty">Qty: {{ item.quantity }}</div>
+        <div class="item-qty">Qté : {{ item.quantity }}</div>
         
         <div class="item-actions">
-          <div class="item-price">${{ (item.price * item.quantity) | number:'1.2-2' }}</div>
-          <button class="reorder-item-btn" (click)="reorderItem(item)" title="Add this item to cart">
-            + Add
+          <div class="item-price">{{ (item.price * item.quantity) | number:'1.2-2' }} €</div>
+          <button class="reorder-item-btn" (click)="reorderItem(item)" title="Ajouter cet article au panier">
+            + Ajouter
           </button>
         </div>
 
       </div>
     </div>
 
-	<div class="details-footer">
-		<div class="total-block">
-		<span>Total Paid:</span>
-		<h2>${{ selectedOrder.total | number:'1.2-2' }}</h2>
-		</div>
+    <div class="details-footer">
+        <div class="total-block">
+        <span>Total Payé :</span>
+        <h2>{{ selectedOrder.total | number:'1.2-2' }} €</h2>
+        </div>
 
-		<div class="details-actions">
-		<button 
-			*ngIf="(selectedOrder.status | lowercase) === 'pending'" 
-			class="cancel-btn large-btn" 
-			(click)="cancelOrder(selectedOrder)">
-			Cancel This Order
-		</button>
+        <div class="details-actions">
+        <button 
+            *ngIf="(selectedOrder.status | lowercase) === 'pending'" 
+            class="cancel-btn large-btn" 
+            (click)="cancelOrder(selectedOrder)">
+            Annuler cette commande
+        </button>
 
-		<button class="reorder-btn large-btn" (click)="reorder(selectedOrder)">
-			↻ Re-order All Items
-		</button>
-		</div>
-	</div>
+        <button class="reorder-btn large-btn" (click)="reorder(selectedOrder)">
+            ↻ Recommander tous les articles
+        </button>
+        </div>
+    </div>
   </div>
 
 </div>

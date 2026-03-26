@@ -47,7 +47,7 @@ export class OrderService {
       .get<any[]>(this.javaUrl)
       .pipe(
         catchError((err) => {
-          console.warn('Failed to fetch orders (Auth Token might be missing/expired):', err.status);
+          console.warn('Echec de récuperation des commandes. Auth Token manquant ou expiré.', err.status);
           return of([]);
         }),
         finalize(() => (this.isFetching = false)),
@@ -120,6 +120,13 @@ export class OrderService {
       .subscribe();
 
     return of(undefined);
+  }
+
+  sendEmail(payload: { to: string; subject: string; htmlBody: string }) {
+    // { withCredentials: true } because the token is stored in the cookies
+    return this.http
+      .post<any>(`${this.javaUrl}/send-receipt`, payload, { withCredentials: true })
+      .pipe(catchError(() => of(null)));
   }
 
   syncToGoogleSheets(): Observable<any> {

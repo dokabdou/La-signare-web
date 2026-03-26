@@ -1,7 +1,7 @@
 <div class="page-container">
   <div class="page-header">
-    <h2>Best Sellers</h2>
-    <p>Shop our most popular items, featuring the best from every category.</p>
+    <h2>Meilleures Ventes</h2>
+    <p>Découvrez nos articles les plus populaires, regroupant le meilleur de chaque catégorie.</p>
   </div>
 
   <div class="product-grid" *ngIf="bestSellers.length > 0; else empty">
@@ -13,13 +13,18 @@
       <div class="card-info">
         <span class="cat-label">{{ product.category | uppercase }}</span>
         <h3>{{ product.name }}</h3>
-        <p class="price"><strong>${{ product.price | number:'1.2-2' }}</strong></p>
-        <button class="add-btn" (click)="addToCart($event, product)">Add to cart</button>
+        <p class="price"><strong>{{ product.price | number:'1.2-2' }} €</strong></p>
+        <button class="add-btn" 
+                [ngClass]="{'out-of-stock': product.quantity < 5}" 
+                [disabled]="product.quantity < 5"
+                (click)="addToCart($event, product)">
+          {{ product.quantity < 5 ? 'Stock épuisé' : 'Ajouter au panier' }}
+        </button>
       </div>
     </div>
   </div>
 
   <ng-template #empty>
-    <div class="empty-state">Loading best sellers...</div>
+    <div class="empty-state">Chargement des meilleures ventes...</div>
   </ng-template>
 </div>

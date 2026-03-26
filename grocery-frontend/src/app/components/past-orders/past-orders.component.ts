@@ -9,7 +9,7 @@ import { CartService } from '../../services/cart.service';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './past-orders.component.html',
-  styleUrls: ['./past-orders.component.css'],
+  styleUrls: ['./past-orders.component.css', '../../../styles.css'],
 })
 export class PastOrdersComponent implements OnInit {
   pastOrders: any[] = [];
@@ -47,7 +47,7 @@ export class PastOrdersComponent implements OnInit {
         this.ordersLoading = false;
       },
       error: (err) => {
-        console.error('Failed to load past orders', err);
+        console.error('Échec du chargement des commandes', err);
         this.ordersLoading = false;
       },
     });
@@ -64,14 +64,14 @@ export class PastOrdersComponent implements OnInit {
   cancelOrder(order: any, event?: Event) {
     if (event) event.stopPropagation();
 
-    if (confirm('Are you sure you want to cancel this order?')) {
+    if (confirm('Êtes-vous sûr de vouloir annuler cette commande ?')) {
       const updatedOrder = { ...order, status: 'Cancelled' };
       this.orderService.updateOrder(order.id, updatedOrder).subscribe({
         next: () => {
           this.loadPastOrders();
         },
         error: (err) => {
-          alert('Failed to cancel order. Please try again.');
+          alert("L'annulation de la commande a échoué. Veuillez réessayer.");
         },
       });
     }
@@ -87,24 +87,32 @@ export class PastOrdersComponent implements OnInit {
         this.cartService.addToCart(item, item.quantity);
       });
 
-      alert('🛒 Items from this order have been added to your cart!');
+      alert('🛒 Les articles de cette commande ont été ajoutés à votre panier !');
     }
   }
 
   reorderItem(item: any) {
     this.cartService.addToCart(item, item.quantity);
-    alert(`🛒 ${item.quantity}x ${item.name} added to your cart!`);
+    alert(`🛒 ${item.quantity}x ${item.name} ajouté(s) à votre panier !`);
   }
 
   getOrderItems(order: any): any[] {
     if (!order || !order.items) return [];
+
+    let items = [];
     if (typeof order.items === 'string') {
       try {
-        return JSON.parse(order.items);
+        items = JSON.parse(order.items);
       } catch (e) {
         return [];
       }
+    } else {
+      items = order.items;
     }
-    return order.items;
+
+    return items.map((item: any) => ({
+      ...item,
+      imageUrl: item.imageUrl || item.product?.imageUrl || 'assets/placeholder.jpg',
+    }));
   }
 }

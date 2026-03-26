@@ -31,7 +31,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.cartSub = this.cartService.itemAdded$.subscribe((productName) => {
-      this.showToast(`🛒 ${productName} added to cart!`);
+      this.showToast(`🛒 ${productName} ajouté au panier!`);
     });
 
     this.categories$ = this.productService

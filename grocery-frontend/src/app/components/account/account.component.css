@@ -3,29 +3,29 @@
   justify-content: center;
   padding: 3rem 1rem;
   min-height: calc(100vh - 80px);
-  background: #f0f7f0;
+  background: var(--brand-cream); 
   font-family: 'Poppins', sans-serif;
 }
 
 .account-card {
-  background: white;
+  background: var(--white);
   width: 100%;
   max-width: 450px;
   padding: 2.5rem;
   border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  box-shadow: 0 10px 25px rgba(60, 42, 33, 0.08); 
   height: fit-content;
 }
 
 h2 {
-  color: #1b4332;
+  color: var(--brand-brown); 
   margin-top: 0;
   margin-bottom: 5px;
   font-size: 1.8rem;
 }
 
 .subtitle {
-  color: #666;
+  color: var(--gray-text);
   margin-bottom: 2rem;
   font-size: 0.95rem;
 }
@@ -51,11 +51,13 @@ h2 {
   font-size: 1rem;
   box-sizing: border-box;
   transition: border-color 0.2s;
+  background: #f9fafb;
 }
 
 .info-group input:focus {
   outline: none;
-  border-color: #40916c;
+  border-color: var(--brand-gold);
+  background: var(--white);
 }
 
 .disabled-input {
@@ -66,29 +68,30 @@ h2 {
 }
 
 .success-msg {
-  background: #e2f0e2;
-  color: #1b4332;
+  background: var(--white);
+  color: var(--brand-brown);
   padding: 10px;
   border-radius: 6px;
   margin-bottom: 1rem;
   font-size: 0.9rem;
-  border-left: 4px solid #40916c;
+  border-left: 4px solid var(--brand-gold); 
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 .error-msg {
-  background: #ffebee;
-  color: #c0392b;
+  background: #fff5f5;
+  color: var(--brand-red); 
   padding: 10px;
   border-radius: 6px;
   margin-bottom: 1rem;
   font-size: 0.9rem;
-  border-left: 4px solid #c0392b;
+  border-left: 4px solid var(--brand-red);
 }
 
 .save-btn {
   width: 100%;
-  background: linear-gradient(135deg, #1b4332 0%, #285c45 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--brand-brown) 0%, #5D4037 100%); 
+  color: var(--white);
   border: none;
   padding: 14px;
   font-size: 1.05rem;
@@ -97,14 +100,17 @@ h2 {
   cursor: pointer;
   transition: all 0.2s;
   margin-top: 10px;
+  box-shadow: 0 4px 10px rgba(60, 42, 33, 0.2);
 }
 
 .save-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #285c45 0%, #40916c 100%);
+  background: var(--brand-red); 
   transform: translateY(-1px);
+  box-shadow: 0 6px 15px rgba(211, 47, 47, 0.3);
 }
 
 .save-btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+  box-shadow: none;
 }

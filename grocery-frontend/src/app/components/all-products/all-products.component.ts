@@ -11,7 +11,7 @@ import { Subscription } from 'rxjs';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './all-products.component.html',
-  styleUrls: ['./all-products.component.css'],
+  styleUrls: ['./all-products.component.css', '../../../styles.css'],
 })
 export class AllProductsComponent implements OnInit, OnDestroy {
   products: any[] = [];
@@ -92,11 +92,19 @@ export class AllProductsComponent implements OnInit, OnDestroy {
   }
 
   addToCart(event: Event, product: any): void {
-    event.stopPropagation();
-    if (!this.authService.isLoggedIn()) {
-      this.authService.openLoginModal();
-      return;
-    }
-    this.cartService.addToCart(product, 1);
+	event.stopPropagation();
+
+	if (product.quantity < 5) return;
+
+	if (!this.authService.isLoggedIn()) {
+		this.authService.openLoginModal();
+		return;
+	}
+
+	try {
+		this.cartService.addToCart(product, 1);
+	} catch (error: any) {
+		alert(error.message);
+	}
   }
 }

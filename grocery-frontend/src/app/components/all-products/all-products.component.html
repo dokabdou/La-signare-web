@@ -1,15 +1,15 @@
 <div class="all-products-container">
   
   <div class="header-section">
-    <h2>All Products</h2>
-    <p>-----___------</p>
+    <h2>TOUS LES PRODUITS</h2>
+    <p>Découvrez notre sélection complète</p>
   </div>
 
   <div class="category-filter">
     <button class="category-btn" 
             [class.active]="selectedCategory === ''" 
             (click)="filterByCategory('')">
-      All
+      Tout
     </button>
     <button *ngFor="let cat of categories" 
             (click)="filterByCategory(cat)"
@@ -19,9 +19,9 @@
     </button>
   </div>
 
-  <div *ngIf="loading" class="loading">Loading products...</div>
+  <div *ngIf="loading" class="loading">Chargement des produits...</div>
   <div *ngIf="!loading && getDisplayedProducts().length === 0" class="empty">
-    No products found in this category.
+    Aucun produit trouvé avec ces critères.
   </div>
 
   <div class="products-grid" *ngIf="!loading && getDisplayedProducts().length > 0">
@@ -32,8 +32,14 @@
       <div class="card-info">
         <span class="cat-label">{{ product.category | uppercase }}</span>
         <h3>{{ product.name }}</h3>
-        <p class="price"><strong>${{ product.price | number:'1.2-2' }}</strong></p>
-        <button class="add-btn" (click)="addToCart($event, product)">Add to cart</button>
+        <p class="price"><strong>{{ product.price | number:'1.2-2' }} €</strong></p>
+        
+        <button class="add-btn" 
+                [ngClass]="{'out-of-stock': product.quantity < 5}" 
+                [disabled]="product.quantity < 5"
+                (click)="addToCart($event, product)">
+          {{ product.quantity < 5 ? 'Stock épuisé' : 'Ajouter au panier' }}
+        </button>
       </div>
     </div>
   </div>

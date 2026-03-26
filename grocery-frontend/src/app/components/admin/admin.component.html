@@ -1,56 +1,56 @@
 <div class="admin-tabs no-print">
-  <button [class.active]="activeTab === 'stocks'" (click)="switchTab('stocks')">Stocks</button>
-  <button [class.active]="activeTab === 'orders'" (click)="switchTab('orders')">Orders</button>
-  <button [class.active]="activeTab === 'receipts'" (click)="switchTab('receipts')">Receipts</button>
-  <button [class.active]="activeTab === 'users'" (click)="switchTab('users')">Users</button>
-  <button [class.active]="activeTab === 'sync'" (click)="switchTab('sync')">Sync Data</button>
+  <button [class.active]="activeTab === 'stocks'" (click)="switchTab('stocks')">Produits</button>
+  <button [class.active]="activeTab === 'orders'" (click)="switchTab('orders')">Commandes</button>
+  <button [class.active]="activeTab === 'receipts'" (click)="switchTab('receipts')">Tickets de caisse</button>
+  <button [class.active]="activeTab === 'users'" (click)="switchTab('users')">Utilisateurs</button>
+  <button [class.active]="activeTab === 'sync'" (click)="switchTab('sync')">Synchronisation</button>
   
-  <button class="btn-refresh" (click)="refreshData()" style="margin-left: auto; background: #e8f5e9; color: #1b4332; font-weight: bold; display: flex; align-items: center; gap: 5px;">
-    <span style="font-size: 1.2rem; line-height: 1;">↻</span> Refresh Data
+  <button class="btn-refresh" (click)="refreshData()" style="margin-left: auto; background: #E9A139; color: #3C2A21; font-weight: bold; display: flex; align-items: center; gap: 5px;">
+    <span style="font-size: 1.2rem; line-height: 1;">↻</span> Actualiser les données
   </button>
 </div>
 
 <div class="admin-container no-print">
 
   <div *ngIf="activeTab === 'stocks'">
-    <h2>Inventory Management</h2>
+    <h2>Gestion des stocks</h2>
     
     <form class="add-form" (ngSubmit)="save()" *ngIf="selectedProductIds.size === 0">
-      <input [(ngModel)]="name" name="name" placeholder="Name" required />
+      <input [(ngModel)]="name" name="name" placeholder="Nom" required />
       <input [(ngModel)]="description" name="description" placeholder="Description" />
-      <input [(ngModel)]="price" name="price" type="number" placeholder="Price" step="0.1" />
-      <input [(ngModel)]="quantity" name="quantity" type="number" placeholder="Quantity" step="1" />
-      <input [(ngModel)]="category" name="category" placeholder="Category" />
+      <input [(ngModel)]="price" name="price" type="number" placeholder="Prix" step="0.1" />
+      <input [(ngModel)]="quantity" name="quantity" type="number" placeholder="Quantité" step="1" />
+      <input [(ngModel)]="category" name="category" placeholder="Catégorie" />
       <input type="file" (change)="onFileSelected($event)" accept=".png, .jpg, .jpeg, image/png, image/jpeg" class="file-input" />
       
       <div class="image-preview" *ngIf="imageUrl">
-        <img [src]="imageUrl" alt="Preview" />
+        <img [src]="imageUrl" alt="Aperçu" />
       </div>
 
       <div class="form-actions">
-        <button type="submit" class="btn-primary">{{ editingId ? 'Update Product' : 'Add Product' }}</button>
-        <button *ngIf="editingId" type="button" (click)="cancelEdit()" class="btn-cancel">Cancel</button>
+        <button type="submit" class="btn-primary">{{ editingId ? 'Modifier le produit' : 'Ajouter un produit' }}</button>
+        <button *ngIf="editingId" type="button" (click)="cancelEdit()" class="btn-cancel">Annuler</button>
       </div>
     </form>
 
     <div class="mass-edit-panel" *ngIf="selectedProductIds.size > 0">
-      <h3>Mass Edit ({{ selectedProductIds.size }} selected)</h3>
+      <h3>Modification groupée ({{ selectedProductIds.size }} sélectionnés)</h3>
       <div class="mass-inputs">
-        <input [(ngModel)]="massEditPrice" name="massEditPrice" type="number" placeholder="New Price (Optional)" step="0.1" />
-        <input [(ngModel)]="massEditQuantity" name="massEditQuantity" type="number" placeholder="New Quantity (Optional)" step="1" />
+        <input [(ngModel)]="massEditPrice" name="massEditPrice" type="number" placeholder="Nouveau prix (Optionnel)" step="0.1" />
+        <input [(ngModel)]="massEditQuantity" name="massEditQuantity" type="number" placeholder="Nouvelle quantité (Optionnel)" step="1" />
         
         <button class="btn-primary" (click)="applyMassUpdate()" [disabled]="massUpdating">
-          {{ massUpdating ? 'Updating...' : 'Apply to Selected' }}
+          {{ massUpdating ? 'Mise à jour...' : 'Appliquer à la sélection' }}
         </button>
-        <button class="btn-cancel" (click)="cancelMassEdit()">Cancel</button>
+        <button class="btn-cancel" (click)="cancelMassEdit()">Annuler</button>
       </div>
-      <p class="mass-hint">* Leave a field blank to keep original values.</p>
+      <p class="mass-hint">* Laissez un champ vide pour conserver les valeurs d'origine.</p>
     </div>
 
     <div class="list-header-row">
-      <h3>Products</h3>
+      <h3>Produits</h3>
       <button class="btn-outline" (click)="toggleSelectAll()" *ngIf="products$ | async as products">
-        {{ selectedProductIds.size === getDisplayedProducts(products).length ? 'Deselect All' : 'Select All' }}
+        {{ selectedProductIds.size === getDisplayedProducts(products).length ? 'Tout désélectionner' : 'Tout sélectionner' }}
       </button>
     </div>
 
@@ -60,13 +60,13 @@
         {{ cat | titlecase }}
       </button>
       <button *ngIf="selectedCategory" (click)="filterByCategory('')" class="category-btn clear-filter">
-        Clear Filter
+        Effacer le filtre
       </button>
     </div>
 
     <ng-container *ngIf="products$ | async as products">
       <div *ngIf="getDisplayedProducts(products).length === 0" class="empty">
-        {{ selectedCategory ? 'No products in this category.' : 'No products available.' }}
+        {{ selectedCategory ? 'Aucun produit dans cette catégorie.' : 'Aucun produit disponible.' }}
       </div>
 
       <div class="product-list">
@@ -84,7 +84,7 @@
             <div class="meta">
               <div class="name">
                 {{ p.name }} 
-                <span class="stock-badge" *ngIf="p.quantity < 10">Low Stock</span>
+                <span class="stock-badge" *ngIf="p.quantity < 10">Stock faible. Veuillez remplir le stock. </span>
               </div>
               <div class="cat">{{ p.category }}</div>
               <div class="desc">{{ p.description }}</div>
@@ -92,12 +92,12 @@
           </div>
           
           <div class="right">
-            <div class="qty-display">Qty: <strong>{{ p.quantity || 0 }}</strong></div>
-            <div class="price">${{ p.price | number:'1.2-2' }}</div>
+            <div class="qty-display">Qté : <strong>{{ p.quantity || 0 }}</strong></div>
+            <div class="price">{{ p.price | number:'1.2-2' }} €</div>
             
             <div class="actions-wrapper">
-              <button (click)="startEdit(p)" class="btn-edit">Edit</button>
-              <button (click)="deleteProduct(p.id)" class="btn-delete">Delete</button>
+              <button (click)="startEdit(p)" class="btn-edit">Modifier</button>
+              <button (click)="deleteProduct(p.id)" class="btn-delete">Supprimer</button>
             </div>
           </div>
         </div>
@@ -107,22 +107,22 @@
 
   <div *ngIf="activeTab === 'orders'">
     <div class="order-header-row">
-      <h2>Order Management</h2>
-      <input type="text" [(ngModel)]="orderSearchTerm" placeholder="Search by name, email, phone, or date..." class="order-search-input">
+      <h2>Gestion des commandes</h2>
+      <input type="text" [(ngModel)]="orderSearchTerm" placeholder="Rechercher par nom, email, téléphone ou date..." class="order-search-input">
     </div>
     
-    <div *ngIf="ordersLoading" class="loading-spinner">Loading orders...</div>
-    <div *ngIf="!ordersLoading && getFilteredOrders().length === 0" class="empty">No orders found.</div>
+    <div *ngIf="ordersLoading" class="loading-spinner">Chargement des commandes...</div>
+    <div *ngIf="!ordersLoading && getFilteredOrders().length === 0" class="empty">Aucune commande trouvée.</div>
 
     <div class="table-container" *ngIf="!ordersLoading && getFilteredOrders().length > 0">
       <table>
         <thead>
           <tr>
-            <th>Order ID</th>
+            <th>N° de Commande</th>
             <th>Date</th>
-            <th>Customer</th>
+            <th>Client</th>
             <th>Email</th>
-            <th>Status</th>
+            <th>Statut</th>
             <th>Total</th>
             <th>Actions</th>
           </tr>
@@ -135,16 +135,16 @@
             <td>{{ order.email || 'N/A' }}</td> 
             <td>
               <select [ngModel]="order.status || 'Pending'" (ngModelChange)="updateOrderStatus(order.id, $event)" class="status-select">
-                <option value="UnProcessed">UnProcessed</option>
-                <option value="Pending">Pending</option>
-                <option value="Ready">Ready</option>
-                <option value="Cancelled">Cancelled</option>
+                <option value="UnProcessed">Non confirmée</option>
+                <option value="Pending">En attente</option>
+                <option value="Ready">Prête</option>
+                <option value="Cancelled">Annulée</option>
               </select>
             </td>
-            <td class="price">${{ order.total | number:'1.2-2' }}</td>
+            <td class="price">{{ order.total | number:'1.2-2' }} €</td>
             <td>
               <button (click)="deleteOrder(order.id)" class="btn-delete" style="padding: 4px 8px; font-size: 0.8rem;">
-                Delete
+                Supprimer
               </button>
             </td>
           </tr>
@@ -155,20 +155,20 @@
 
   <div *ngIf="activeTab === 'receipts'">
     <div class="order-header-row">
-      <h2>Completed Orders (Receipts)</h2>
-      <input type="text" [(ngModel)]="receiptSearchTerm" placeholder="Search by name, email, phone, or date..." class="order-search-input">
+      <h2>Commandes terminées (Tickets de caisse)</h2>
+      <input type="text" [(ngModel)]="receiptSearchTerm" placeholder="Rechercher par nom, email, téléphone ou date..." class="order-search-input">
     </div>
 
-    <div *ngIf="ordersLoading" class="loading-spinner">Loading receipts...</div>
-    <div *ngIf="!ordersLoading && getFilteredReceipts().length === 0" class="empty">No Ready orders available to print.</div>
+    <div *ngIf="ordersLoading" class="loading-spinner">Chargement des tickets...</div>
+    <div *ngIf="!ordersLoading && getFilteredReceipts().length === 0" class="empty">Aucune commande « Prête » à imprimer.</div>
 
     <div class="table-container" *ngIf="!ordersLoading && getFilteredReceipts().length > 0">
       <table>
         <thead>
           <tr>
-            <th>Order ID</th>
+            <th>N° de Commande</th>
             <th>Date</th>
-            <th>Customer</th>
+            <th>Client</th>
             <th>Email</th>
             <th>Total</th>
             <th>Action</th>
@@ -180,13 +180,13 @@
             <td>{{ receipt.createdAt | date:'short' }}</td>
             <td>{{ receipt.customerName || 'N/A' }}<br><small>{{ receipt.phone }}</small></td>
             <td>{{ receipt.email || 'N/A' }}</td>
-            <td class="price">${{ receipt.total | number:'1.2-2' }}</td>
+            <td class="price">{{ receipt.total | number:'1.2-2' }} €</td>
             <td style="display: flex; gap: 8px;">
               <button (click)="printReceipt(receipt)" class="btn-primary" style="padding: 6px 12px; font-size: 0.9rem;">
-                Print Receipt
+                Imprimer le ticket
               </button>
-              <button (click)="updateOrderStatus(receipt.id, 'Pending')" class="btn-cancel" style="padding: 6px 12px; font-size: 0.9rem;" title="Move back to Orders">
-                ↺ Revert
+              <button (click)="updateOrderStatus(receipt.id, 'Pending')" class="btn-cancel" style="padding: 6px 12px; font-size: 0.9rem;" title="Retourner aux commandes en attente">
+                ↺ Rétablir
               </button>
             </td>
           </tr>
@@ -197,35 +197,35 @@
 
   <div *ngIf="activeTab === 'users'">
     <div class="order-header-row">
-      <h2>User Management</h2>
-      <input type="text" [(ngModel)]="userSearchTerm" placeholder="Search users by name, email, or phone..." class="order-search-input">
+      <h2>Gestion des utilisateurs</h2>
+      <input type="text" [(ngModel)]="userSearchTerm" placeholder="Rechercher par nom, email ou téléphone..." class="order-search-input">
     </div>
 
     <form class="add-form" (ngSubmit)="saveUser()" *ngIf="editingUserId" style="background: #eaf4f4; border-color: #bee1e6;">
-      <h3 style="flex-basis: 100%; margin-top: 0;">Editing User</h3>
+      <h3 style="flex-basis: 100%; margin-top: 0;">Modification de l'utilisateur</h3>
       
-      <input [(ngModel)]="editUserName" name="editUserName" placeholder="Full Name" />
-      <input [(ngModel)]="editUserEmail" name="editUserEmail" type="email" placeholder="Email Address" required />
-      <input [(ngModel)]="editUserPhone" name="editUserPhone" placeholder="Phone Number" />
-      <input [(ngModel)]="editUserPassword" name="editUserPassword" type="password" placeholder="New Password (Leave blank to keep old)" />
+      <input [(ngModel)]="editUserName" name="editUserName" placeholder="Nom complet" />
+      <input [(ngModel)]="editUserEmail" name="editUserEmail" type="email" placeholder="Adresse email" required />
+      <input [(ngModel)]="editUserPhone" name="editUserPhone" placeholder="Numéro de téléphone" />
+      <input [(ngModel)]="editUserPassword" name="editUserPassword" type="password" placeholder="Nouveau mot de passe (laisser vide pour conserver l'actuel)" />
       
       <div class="form-actions" style="flex-basis: 100%;">
-        <button type="submit" class="btn-primary">Save User Changes</button>
-        <button type="button" (click)="cancelEditUser()" class="btn-cancel">Cancel</button>
+        <button type="submit" class="btn-primary">Enregistrer les modifications</button>
+        <button type="button" (click)="cancelEditUser()" class="btn-cancel">Annuler</button>
       </div>
     </form>
 
-    <div *ngIf="usersLoading" class="loading-spinner">Loading users...</div>
-    <div *ngIf="!usersLoading && getFilteredUsers().length === 0" class="empty">No users found.</div>
+    <div *ngIf="usersLoading" class="loading-spinner">Chargement des utilisateurs...</div>
+    <div *ngIf="!usersLoading && getFilteredUsers().length === 0" class="empty">Aucun utilisateur trouvé.</div>
 
     <div class="table-container" *ngIf="!usersLoading && getFilteredUsers().length > 0">
       <table>
         <thead>
           <tr>
-            <th>Name</th>
+            <th>Nom</th>
             <th>Email</th>
-            <th>Phone</th>
-            <th>Role</th>
+            <th>Téléphone</th>
+            <th>Rôle</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -236,20 +236,20 @@
             <td>{{ u.phone || 'N/A' }}</td>
             <td>
               <span class="stock-badge" [ngStyle]="{'background': u.admin ? '#1b4332' : '#95a5a6'}">
-                {{ u.admin ? 'Admin' : 'Customer' }}
+                {{ u.admin ? 'Admin' : 'Client' }}
               </span>
             </td>
             <td style="display: flex; gap: 6px; flex-wrap: wrap;">
               <button class="btn-outline" (click)="toggleAdminRole(u)" style="padding: 4px 8px; font-size: 0.8rem;">
-                {{ u.admin ? 'Revoke Admin' : 'Make Admin' }}
+                {{ u.admin ? 'Révoquer Admin' : 'Nommer Admin' }}
               </button>
               
               <button class="btn-edit" (click)="startEditUser(u)" style="padding: 4px 8px; font-size: 0.8rem;">
-                Edit
+                Modifier
               </button>
 
               <button class="btn-delete" (click)="deleteUser(u.id)" style="padding: 4px 8px; font-size: 0.8rem;">
-                Delete
+                Supprimer
               </button>
             </td>
           </tr>
@@ -259,30 +259,30 @@
   </div>
 
   <div *ngIf="activeTab === 'sync'" class="sync-tab-container">
-    <h2>System Synchronization</h2>
-    <p>Sync the mongodb data with Google Sheets.</p>
+    <h2>Synchronisation du système</h2>
+    <p>Synchroniser les données MongoDB avec Google Sheets.</p>
     
     <div class="sync-actions-grid">
       <div class="sync-card">
-        <h3>📦 Stocks</h3>
-        <p>Push inventory updates</p>
+        <h3>📦 Produits</h3>
+        <p>Envoyer les mises à jour des stocks</p>
         <button class="btn-primary" (click)="syncProducts()" [disabled]="syncingProducts || syncingAll">
-          {{ syncingProducts ? 'Syncing...' : 'Sync Stocks' }}
+          {{ syncingProducts ? 'Synchronisation...' : 'Synchroniser les produits' }}
         </button>
       </div>
 
       <div class="sync-card">
-        <h3>🛒 Orders</h3>
-        <p>Push order history</p>
+        <h3>🛒 Commandes</h3>
+        <p>Envoyer l'historique des commandes</p>
         <button class="btn-primary" (click)="syncOrders()" [disabled]="syncingOrders || syncingAll">
-          {{ syncingOrders ? 'Syncing...' : 'Sync Orders' }}
+          {{ syncingOrders ? 'Synchronisation...' : 'Synchroniser les commandes' }}
         </button>
       </div>
     </div>
 
     <div class="sync-actions-large">
       <button class="btn-primary large-btn" (click)="syncAll()" [disabled]="syncingAll || syncingProducts || syncingOrders">
-        {{ syncingAll ? 'Syncing All Data...' : 'Sync All Services' }}
+        {{ syncingAll ? 'Synchronisation globale...' : 'Synchroniser tous les services' }}
       </button>
     </div>
 
@@ -295,37 +295,37 @@
 
 <div class="print-only receipt-print-container" *ngIf="selectedReceiptToPrint">
   <div class="receipt-header">
-    <h2>🛒 La signare - Épicerie du Monde</h2>
+    <h2>🛒 La Signare - Épicerie du Monde</h2>
     <p>LA SIGNARE - Épicerie Du Monde, 11 Rue de Bernières, 14000 Caen</p>
     <p> +33 6 36 02 23 91 </p>
-    <p>Receipt #: {{ selectedReceiptToPrint.id | slice:0:8 }}</p>
-    <p>Date: {{ selectedReceiptToPrint.createdAt | date:'short' }}</p>
-    <b *ngIf="selectedReceiptToPrint.customerName">Customer: {{ selectedReceiptToPrint.customerName }}</b>
+    <p>Ticket n° : {{ selectedReceiptToPrint.id | slice:0:8 }}</p>
+    <p>Date : {{ selectedReceiptToPrint.createdAt | date:'short' }}</p>
+    <b *ngIf="selectedReceiptToPrint.customerName">Client : {{ selectedReceiptToPrint.customerName }}</b>
   </div>
-  <p *ngIf="selectedReceiptToPrint.phone">Customer Phone Number: {{ selectedReceiptToPrint.phone }}</p>
+  <p *ngIf="selectedReceiptToPrint.phone">Téléphone : {{ selectedReceiptToPrint.phone }}</p>
   
   <table class="receipt-items">
     <thead>
       <tr>
-        <th style="text-align: left;">Item</th>
-        <th>Qty</th>
-        <th style="text-align: right;">Price</th>
+        <th style="text-align: left;">Article</th>
+        <th>Qté</th>
+        <th style="text-align: right;">Prix</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let item of getReceiptItems(selectedReceiptToPrint)">
-        <td style="text-align: left;">{{ item.name || 'Product' }}</td>
+        <td style="text-align: left;">{{ item.name || 'Produit' }}</td>
         <td style="text-align: center;">{{ item.quantity || 1 }}</td>
-        <td style="text-align: right;">${{ ((item.price || 0) * (item.quantity || 1)) | number:'1.2-2' }}</td>
+        <td style="text-align: right;">{{ ((item.price || 0) * (item.quantity || 1)) | number:'1.2-2' }} €</td>
       </tr>
     </tbody>
   </table>
 
   <div class="receipt-total" style="margin-top: 15px; text-align: right;">
-    <h3>TOTAL: ${{ selectedReceiptToPrint.total | number:'1.2-2' }}</h3>
+    <h3>TOTAL : {{ selectedReceiptToPrint.total | number:'1.2-2' }} €</h3>
   </div>
   
   <div class="receipt-footer" style="margin-top: 30px; text-align: center; font-size: 0.9em;">
-    <p>Thank you for shopping with us!</p>
+    <p>Merci de votre visite et à bientôt !</p>
   </div>
 </div>

@@ -42,22 +42,50 @@ export class CartService {
     this.cartSubject.next([...cart]);
   }
 
+  getCartValue(): any[] {
+    return this.cartSubject.value;
+  }
+
   addToCart(product: any, quantity = 1) {
     const cart = this.load();
     const existing = cart.find((i: any) => i.id === product.id);
-    if (existing) existing.quantity += quantity;
-    else cart.push({ ...product, quantity });
-    this.save(cart);
+    const currentQtyInCart = existing ? existing.quantity : 0;
 
+    // CRITICAL CHECK: Backend Stock vs (Cart Qty + New Qty)
+    // We check if adding this amount is near the physical stock, not below it
+    if (product.quantity - (currentQtyInCart + quantity) <= 5) {
+      throw new Error(`Stock insuffisant`);
+    }
+
+    if (existing) {
+      existing.quantity += quantity;
+    } else {
+      cart.push({
+        ...product,
+        quantity,
+        imageUrl: product.imageUrl || product.product?.imageUrl || 'assets/placeholder.jpg',
+      });
+    }
+
+    this.save(cart);
     this.itemAddedSource.next(product.name);
   }
 
-  updateQuantity(productId: string, quantity: number) {
+  updateQuantity(product: any, quantity: number) {
     const cart = this.load();
-    const idx = cart.findIndex((i: any) => i.id === productId);
+    const idx = cart.findIndex((i: any) => i.id === product.id);
+
     if (idx > -1) {
-      if (quantity <= 0) cart.splice(idx, 1);
-      else cart[idx].quantity = quantity;
+      if (quantity <= 0) {
+        cart.splice(idx, 1);
+      } else {
+        // Check stock before updating
+        if (product.quantity - quantity < 0) {
+          alert(`Action impossible : Seulement ${product.quantity} en stock.`);
+          return;
+        }
+        cart[idx].quantity = quantity;
+      }
       this.save(cart);
     }
   }

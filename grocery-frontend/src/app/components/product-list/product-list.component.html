@@ -2,39 +2,44 @@
 
   <section class="hero-banner">
     <div class="hero-content">
-      <h1><span class="highlight-yellow">Order Online</span> & Pay when you collect</h1>
-      <p class="subtitle">We will prepare your order</p>
+      <h1><span class="highlight-yellow">Commandez en ligne</span> & payez lors du retrait</h1>
+      <p class="subtitle">Nous préparons votre commande avec soin</p>
       <ul>
-        <li>✔️ Save Time</li>
+        <li>✔️ Gagnez du temps</li>
         <li>✔️ ------ </li>
       </ul>
-      <button class="hero-btn" (click)="goToAllProducts()">View our products</button>
+      <button class="hero-btn" (click)="goToAllProducts()">Voir nos produits</button>
     </div>
   </section>
 
   <section class="product-slider-section">
     <div class="slider-header">
-      <h2>New Arrivals</h2>
-      <a routerLink="/new-arrivals">See all ▾</a>
+      <h2>Nouveautés</h2>
+      <a routerLink="/new-arrivals">Voir tout ▾</a>
     </div>
     <div class="product-carousel">
       <div class="product-card empty-state-card" *ngIf="newArrivals.length === 0">
         <div class="empty-state-content">
-          <h3>No products yet</h3>
-          <p>Check back soon!</p>
+          <h3>Aucun produit pour l'instant</h3>
+          <p>Revenez bientôt !</p>
         </div>
       </div>
 
       <div class="product-card" *ngFor="let product of newArrivals" (click)="goToProduct(product.id)">
-        <div class="badge new">NEW</div>
+        <div class="badge new">NOUVEAU</div>
         <div class="img-container">
           <img [src]="product.imageUrl || 'assets/placeholder.jpg'" [alt]="product.name">
         </div>
         <div class="card-info">
           <span class="cat-label">{{ product.category | uppercase }}</span>
           <h3>{{ product.name }}</h3>
-          <p class="price"><strong>${{ product.price | number:'1.2-2' }}</strong></p>
-          <button class="add-btn" (click)="addToCart($event, product)">Add to cart</button>
+          <p class="price"><strong>{{ product.price | number:'1.2-2' }} €</strong></p>
+          <button class="add-btn" 
+                [ngClass]="{'out-of-stock': product.quantity < 5}" 
+                [disabled]="product.quantity < 5"
+                (click)="addToCart($event, product)">
+          {{ product.quantity < 5 ? 'Stock épuisé' : 'Ajouter au panier' }}
+        </button>
         </div>
       </div>
     </div>
@@ -42,7 +47,7 @@
 
   <section class="categories-section" *ngIf="categories.length > 0">
     <div class="section-header">
-      <h2>OUR PRODUCT CATEGORIES</h2>
+      <h2>NOS CATÉGORIES DE PRODUITS</h2>
       <p>___ ---- _____</p>
     </div>
         <div class="categories-grid">
@@ -51,21 +56,21 @@
         </div>
         
         <div class="cat-card all-products-card" (click)="goToAllProducts()">
-            <h3>ALL PRODUCTS ➔</h3>
+            <h3>TOUS LES PRODUITS ➔</h3>
         </div>
     </div>
   </section>
 
   <section class="product-slider-section">
     <div class="slider-header">
-      <h2>Best Sellers</h2>
-      <a routerLink="/best-sellers">See all ▾</a>
+      <h2>Meilleures Ventes</h2>
+      <a routerLink="/best-sellers">Voir tout ▾</a>
     </div>
     <div class="product-carousel">
       <div class="product-card empty-state-card" *ngIf="bestSellers.length === 0">
         <div class="empty-state-content">
-          <h3>No products yet</h3>
-          <p>Check back soon!</p>
+          <h3>Aucun produit pour l'instant</h3>
+          <p>Revenez bientôt !</p>
         </div>
       </div>
 
@@ -77,8 +82,13 @@
         <div class="card-info">
           <span class="cat-label">{{ product.category | uppercase }}</span>
           <h3>{{ product.name }}</h3>
-          <p class="price"><strong>${{ product.price | number:'1.2-2' }}</strong></p>
-          <button class="add-btn" (click)="addToCart($event, product)">Add to cart</button>
+          <p class="price"><strong>{{ product.price | number:'1.2-2' }} €</strong></p>
+          <button class="add-btn" 
+                [ngClass]="{'out-of-stock': product.quantity < 5}" 
+                [disabled]="product.quantity < 5"
+                (click)="addToCart($event, product)">
+          {{ product.quantity < 5 ? 'Stock épuisé' : 'Ajouter au panier' }}
+        </button>
         </div>
       </div>
     </div>

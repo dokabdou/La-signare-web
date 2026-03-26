@@ -13,7 +13,7 @@ import { PastOrdersComponent } from '../past-orders/past-orders.component';
   standalone: true,
   imports: [CommonModule, FormsModule, PastOrdersComponent],
   templateUrl: './checkout.component.html',
-  styleUrls: ['./checkout.component.css'],
+  styleUrls: ['./checkout.component.css', '../../../styles.css'],
 })
 export class CheckoutComponent implements OnInit {
   activeTab: 'cart' | 'past-orders' = 'cart';
@@ -77,6 +77,62 @@ export class CheckoutComponent implements OnInit {
     this.cartService.clearCart();
   }
 
+  generateReceiptHtml(order: any): string {
+    const itemsHtml = order.items
+      .map(
+        (item: any) => `
+      <tr>
+        <td>${item.name}</td>
+        <td style="text-align: center;">${item.quantity}</td>
+        <td style="text-align: right;">${(item.price * item.quantity).toFixed(2)} €</td>
+      </tr>
+    `,
+      )
+      .join('');
+
+    return `
+      <html>
+        <head>
+          <style>
+            body { font-family: 'Courier New', Courier, monospace; color: #000; max-width: 600px; margin: 0 auto; padding: 20px; background: #fff; }
+            .receipt-header, .receipt-footer { text-align: center; margin-bottom: 1rem; }
+            .receipt-header h2 { margin: 0; font-size: 1.2rem; }
+            .receipt-items { width: 100%; border-top: 1px dashed #000; border-bottom: 1px dashed #000; margin-bottom: 1rem; border-collapse: collapse; }
+            .receipt-items th, .receipt-items td { padding: 8px 0; border: none; font-size: 0.85rem; }
+            .receipt-total { margin-top: 15px; text-align: right; font-size: 0.95rem; font-weight: bold; }
+          </style>
+        </head>
+        <body>
+          <div class="receipt-header">
+            <h2>Ticket de Caisse</h2>
+            <h2>🛒 La signare - Épicerie du Monde</h2>
+            <p>LA SIGNARE - Épicerie Du Monde, 11 Rue de Bernières, 14000 Caen</p>
+            <p> +33 6 36 02 23 91 </p>
+            <p>Nous vous remercions pour votre commande, <b>${order.customerName}</b> !</p>
+          </div>
+          <table class="receipt-items">
+            <thead>
+              <tr>
+                <th style="text-align: left;">Article</th>
+                <th style="text-align: center;">Qté</th>
+                <th style="text-align: right;">Prix</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemsHtml}
+            </tbody>
+          </table>
+          <div class="receipt-total">
+            Total : ${order.total.toFixed(2)} €
+          </div>
+          <div class="receipt-footer">
+            <p>Date : ${new Date(order.createdAt).toLocaleString('fr-FR')}</p>
+          </div>
+        </body>
+      </html>
+    `;
+  }
+
   placeOrder(): void {
     this.orderError = false;
     this.orderSuccess = false;
@@ -94,26 +150,53 @@ export class CheckoutComponent implements OnInit {
     if (!this.currentUser || !this.currentUser.name || !this.currentUser.phone) {
       this.orderError = true;
       this.errorMessage =
-        'Please log in and ensure your profile has a phone number to place an order.';
+        'Veuillez vous connecter et vérifier que votre profil contient un numéro de téléphone pour passer commande.';
       return;
     }
 
     this.loading = true;
+	
+
+    const itemsToSave = this.cart.map((item) => ({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      quantity: item.quantity,
+      category: item.category,
+      imageUrl: item.imageUrl || item.product?.imageUrl || 'assets/placeholder.jpg',
+    }));
 
     const finalizedOrder = {
       customerName: this.currentUser.name,
       phone: this.currentUser.phone,
       email: this.currentUser.email,
-      items: this.cart,
+      items: itemsToSave, // Use the flattened items here
       total: this.total,
-      status: 'Pending', 
-      createdAt: new Date().toISOString(),
+      status: 'Pending',
     };
 
     this.orderService.createOrder(finalizedOrder).subscribe({
       next: (res) => {
         this.loading = false;
         this.orderSuccess = true;
+
+        // 1. Generate the HTML Receipt
+        const receiptHtml = this.generateReceiptHtml(finalizedOrder);
+
+        // 2. Send the email via your OrderService (or a dedicated EmailService)
+        // Ensure you have an endpoint in your backend to accept this and send via SMTP/SendGrid/etc.
+        const emailPayload = {
+          to: finalizedOrder.email,
+          subject: `Reçu de votre commande`,
+          htmlBody: receiptHtml,
+        };
+
+        // Note: You will need to add a 'sendEmail' method to your OrderService handling the HTTP POST.
+        if (this.orderService.sendEmail) {
+          this.orderService.sendEmail(emailPayload).subscribe({
+            error: (err) => console.error("Échec de l'envoi du reçu par email", err),
+          });
+        }
 
         this.cartService.clearCart();
 
@@ -125,7 +208,7 @@ export class CheckoutComponent implements OnInit {
       error: (err) => {
         this.loading = false;
         this.orderError = true;
-        this.errorMessage = err.error?.error || 'Error placing order. Please try again.';
+        this.errorMessage = err.error?.error || 'Erreur lors de la commande. Veuillez réessayer.';
       },
     });
   }

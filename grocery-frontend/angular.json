@@ -19,7 +19,10 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              }
+              },
+			  "src/Logo_Signare.ico",
+			  "src/assets/logo",
+			  "src/assets"
             ],
             "styles": ["src/styles.css"],
             "server": "src/main.server.ts",
@@ -86,7 +89,10 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              }
+              },
+              "src/Logo_Signare.ico",
+              "src/assets/logo",
+              "src/assets"
             ],
             "styles": [
               "src/styles.css"

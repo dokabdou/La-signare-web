@@ -4,16 +4,22 @@
     <div class="info-side">
       <h1>{{ product.name }}</h1>
       <p class="category">{{ product.category | titlecase }}</p>
-      <p class="price">${{ product.price | number:'1.2-2' }}</p>
+      <p class="price">{{ product.price | number:'1.2-2' }} €</p>
       <p class="desc">{{ product.description }}</p>
 
       <div class="purchase-actions">
         <div class="qty-control">
-          <button (click)="dec()">-</button>
+          <button (click)="dec()" [disabled]="product.quantity < 5">-</button>
           <span>{{ qty }}</span>
-          <button (click)="inc()">+</button>
+          <button (click)="inc()" [disabled]="product.quantity < 5">+</button>
         </div>
-        <button class="add-btn" (click)="addToCart(product)">Add to cart</button>
+        
+        <button class="add-btn" 
+                [ngClass]="{'out-of-stock': product.quantity < 5}" 
+                [disabled]="product.quantity < 5"
+                (click)="addToCart(product)">
+          {{ product.quantity < 5 ? 'Stock épuisé' : 'Ajouter au panier' }}
+        </button>
       </div>
     </div>
 
@@ -24,7 +30,7 @@
 
   <div class="related-section" *ngIf="(relatedProducts$ | async) as relatedProducts">
     <ng-container *ngIf="relatedProducts.length > 0">
-      <h2>You might also like</h2>
+      <h2>Vous aimerez aussi</h2>
       
       <div class="related-scroll">
         <div class="product-card" *ngFor="let rp of relatedProducts" (click)="goToProduct(rp.id)">
@@ -34,7 +40,7 @@
           <div class="card-body">
             <span class="card-cat">{{ rp.category | titlecase }}</span>
             <h3 class="card-name">{{ rp.name }}</h3>
-            <span class="card-price">${{ rp.price | number:'1.2-2' }}</span>
+            <span class="card-price">{{ rp.price | number:'1.2-2' }} €</span>
           </div>
         </div>
       </div>
@@ -46,8 +52,8 @@
 <ng-template #loadingOrError>
   <div class="loading-state">
     <div class="spinner"></div>
-    <p>Loading product...</p>
+    <p>Chargement du produit...</p>
     <br>
-    <button routerLink="/" style="margin-top: 20px; padding: 10px 20px; cursor: pointer;">Return to Store</button>
+    <button routerLink="/" style="margin-top: 20px; padding: 10px 20px; cursor: pointer;">Retour à la boutique</button>
   </div>
 </ng-template>

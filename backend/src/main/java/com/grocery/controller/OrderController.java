@@ -1,6 +1,8 @@
 package com.grocery.controller;
 
+import com.grocery.dto.EmailRequest;
 import com.grocery.model.Order;
+import com.grocery.service.EmailService;
 import com.grocery.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +18,11 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = {"http://localhost:4200", "https://lasignare.abdoudiallo.fr"}, allowCredentials = "true")
 public class OrderController {
     private final OrderService service;
+	private final EmailService emailService;
 
-    public OrderController(OrderService service) {
+    public OrderController(OrderService service, EmailService emailService) {
         this.service = service;
+		this.emailService = emailService;
     }
 
     private String getCurrentEmail() {
@@ -91,6 +95,29 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Order updateOrderStatus : Only admin can change order status"));
         }
         return ResponseEntity.ok(service.updateOrderStatus(id, status));
+    }
+
+
+	@PostMapping("/send-receipt")
+    public ResponseEntity<?> sendReceipt(@RequestBody EmailRequest request) {
+        if (!isAdmin() && !request.getTo().equals(getCurrentEmail())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Access Blocked"));
+        }
+
+        try {
+            emailService.sendHtmlEmail(request.getTo(), request.getSubject(), request.getHtmlBody());
+            
+            // 2. Send to the Admin (with a modified subject)
+            String adminSubject = "NOUVELLE COMMANDE - " + request.getTo();
+            emailService.sendHtmlEmail("abdoulaye.dllo2002@gmail.com", adminSubject, request.getHtmlBody());
+            
+            System.out.println("Emails sent for order: " + request.getSubject());
+            return ResponseEntity.ok(Map.of("message", "Receipts sent successfully"));
+        } catch (Exception e) {
+            e.printStackTrace(); 
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to send email receipt"));
+        }
     }
 
     @DeleteMapping("/{id}")

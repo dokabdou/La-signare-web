@@ -65,7 +65,7 @@ export class AuthService {
           this.currentUserSubject.next(response.user);
           return response.user;
         }
-        throw new Error('Invalid response from server');
+        throw new Error('Reponse invalide du serveur!');
       }),
     );
   }
@@ -107,7 +107,7 @@ export class AuthService {
   }
 
   deleteUser(id: string): Observable<any> {
-    return this.http.delete(`${this.customersUrl}/customers/${id}`);
+    return this.http.delete(`${this.customersUrl}/${id}`, { withCredentials: true });
   }
 
   logout() {
