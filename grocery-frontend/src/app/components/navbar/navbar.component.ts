@@ -36,6 +36,8 @@ export class NavbarComponent implements OnInit {
   authError = '';
   authLoading = false;
 
+  categoriesList: string[] = [];
+
   constructor(
     private productService: ProductService,
     private cartService: CartService,
@@ -52,6 +54,7 @@ export class NavbarComponent implements OnInit {
           ),
         ),
       );
+    this.categories$.subscribe((cats) => (this.categoriesList = cats));
   }
 
   ngOnInit() {
@@ -184,13 +187,20 @@ export class NavbarComponent implements OnInit {
   }
 
   goToLocation() {
-	this.dropdownOpen = false;
-  	this.router.navigate(['/location']);
+    this.dropdownOpen = false;
+    this.router.navigate(['/location']);
   }
 
   search(term: string) {
     if (term?.trim()) {
-      this.router.navigate(['/all-products'], { queryParams: { search: term } });
+      const normalizedTerm = term.trim().toLowerCase();
+      const matchedCategory = this.categoriesList.find((c) => c.toLowerCase() === normalizedTerm);
+
+      if (matchedCategory) {
+        this.router.navigate(['/category', matchedCategory]);
+      } else {
+        this.router.navigate(['/all-products'], { queryParams: { search: term.trim() } });
+      }
     } else {
       this.router.navigate(['/all-products']);
     }

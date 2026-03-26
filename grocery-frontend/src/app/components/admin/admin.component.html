@@ -240,15 +240,19 @@
               </span>
             </td>
             <td style="display: flex; gap: 6px; flex-wrap: wrap;">
-              <button class="btn-outline" (click)="toggleAdminRole(u)" style="padding: 4px 8px; font-size: 0.8rem;">
-                {{ u.admin ? 'Révoquer Admin' : 'Nommer Admin' }}
-              </button>
+              <button 
+					type="button" 
+					class="btn-outline" 
+					(click)="toggleAdminRole(u); $event.stopPropagation()" 
+					style="padding: 10px 12px; font-size: 0.9rem; cursor: pointer; touch-action: manipulation;">
+					{{ u.admin ? 'Révoquer Admin' : 'Nommer Admin' }}
+				</button>
               
-              <button class="btn-edit" (click)="startEditUser(u)" style="padding: 4px 8px; font-size: 0.8rem;">
+              <button class="btn-edit" (click)="startEditUser(u)" style="padding: 4px 8px; font-size: 0.8rem;touch-action: manipulation;">
                 Modifier
               </button>
 
-              <button class="btn-delete" (click)="deleteUser(u.id)" style="padding: 4px 8px; font-size: 0.8rem;">
+              <button class="btn-delete" (click)="deleteUser(u.id)" style="padding: 4px 8px; font-size: 0.8rem;touch-action: manipulation;">
                 Supprimer
               </button>
             </td>

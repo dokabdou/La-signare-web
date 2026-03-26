@@ -30,7 +30,9 @@
   </div>
   
   <div class="actions">
-    <input type="text" placeholder="Rechercher des produits..." #searchInput (keyup.enter)="search(searchInput.value)">
+	<form (ngSubmit)="search(searchInput.value)" action="javascript:void(0);" style="margin: 0; padding: 0; display: flex;">
+		<input type="search" placeholder="Rechercher des produits..." #searchInput>
+	</form>
     
     <button *ngIf="isLoggedIn" class="cart-btn" routerLink="/checkout">
       🛒 Panier <span *ngIf="cartCount > 0">({{ cartCount }})</span>
