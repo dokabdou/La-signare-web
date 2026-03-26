@@ -7,6 +7,8 @@ services:
     ports:
       - "8080:8080"
     restart: unless-stopped # THIS is what makes it run on server boot!
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - signare-network
 
