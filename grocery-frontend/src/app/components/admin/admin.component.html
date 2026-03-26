@@ -241,18 +241,19 @@
             </td>
             <td style="display: flex; gap: 6px; flex-wrap: wrap;">
               <button 
-					type="button" 
-					class="btn-outline" 
-					(click)="toggleAdminRole(u); $event.stopPropagation()" 
-					style="padding: 10px 12px; font-size: 0.9rem; cursor: pointer; touch-action: manipulation;">
-					{{ u.admin ? 'Révoquer Admin' : 'Nommer Admin' }}
-				</button>
+				type="button" 
+				class="btn-outline" 
+				(click)="toggleAdminRole(u)" 
+				(touchend)="toggleAdminRole(u); $event.preventDefault();" 
+				style="padding: 12px 16px; font-size: 0.9rem; cursor: pointer; position: relative; z-index: 10;">
+				{{ u.admin ? 'Révoquer Admin' : 'Nommer Admin' }}
+			  </button>
               
-              <button class="btn-edit" (click)="startEditUser(u)" style="padding: 4px 8px; font-size: 0.8rem;touch-action: manipulation;">
+              <button type="button" class="btn-edit" (click)="startEditUser(u); $event.preventDefault();" (touchend)="startEditUser(u)" style="padding: 12px 16px; font-size: 0.9rem; cursor: pointer; position: relative; z-index: 10;">
                 Modifier
               </button>
 
-              <button class="btn-delete" (click)="deleteUser(u.id)" style="padding: 4px 8px; font-size: 0.8rem;touch-action: manipulation;">
+              <button type="button" class="btn-delete" (click)="deleteUser(u.id); $event.preventDefault();" (touchend)="deleteUser(u.id)" style="padding: 12px 16px; font-size: 0.9rem; cursor: pointer; position: relative; z-index: 10;">
                 Supprimer
               </button>
             </td>

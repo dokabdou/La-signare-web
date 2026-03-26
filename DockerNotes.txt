@@ -4,3 +4,5 @@ locally it opens on : http://localhost:4205
 when only the frontend is modified : docker-compose build --no-cache frontend && docker-compose up -d
 
 restart everything : docker-compose down && docker-compose build --no-cache frontend && docker-compose up -d
+
+docker-compose down && docker-compose build --no-cache && docker-compose up -d
