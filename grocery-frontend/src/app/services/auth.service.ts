@@ -86,24 +86,24 @@ export class AuthService {
   }
 
   updateUser(id: string, updatedData: any): Observable<any> {
-    this.http
-      .put<any>(`${this.customersUrl}/${id}`, updatedData)
-      .pipe(catchError(() => of(null)))
-      .subscribe();
+    // Return the actual HTTP request observable
+    return this.http.put<any>(`${this.customersUrl}/${id}`, updatedData).pipe(
+      tap((response) => {
+        // This 'tap' only runs if the backend successfully responds with a 200 OK
 
-    const currentUser = this.currentUserSubject.value;
-    if (currentUser && currentUser.id === id) {
-      const newUserState = { ...currentUser, ...updatedData };
-      if (this.isBrowser) localStorage.setItem('currentUser', JSON.stringify(newUserState));
-      this.currentUserSubject.next(newUserState);
-    }
+        const currentUser = this.currentUserSubject.value;
+        if (currentUser && currentUser.id === id) {
+          const newUserState = { ...currentUser, ...updatedData };
+          if (this.isBrowser) localStorage.setItem('currentUser', JSON.stringify(newUserState));
+          this.currentUserSubject.next(newUserState);
+        }
 
-    const currentCustomers = this.customersSubject.value.map((c) =>
-      c.id === id ? { ...c, ...updatedData } : c,
+        const currentCustomers = this.customersSubject.value.map((c) =>
+          c.id === id ? { ...c, ...updatedData } : c,
+        );
+        this.customersSubject.next(currentCustomers);
+      }),
     );
-    this.customersSubject.next(currentCustomers);
-
-    return of(updatedData);
   }
 
   deleteUser(id: string): Observable<any> {

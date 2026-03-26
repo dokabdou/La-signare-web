@@ -443,15 +443,20 @@ export class AdminComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const updatedUser = { ...user, admin: isPromoting };
+    const updatedUser = {
+      ...user,
+      admin: isPromoting,
+    };
 
     this.auth.updateUser(user.id, updatedUser).subscribe({
       next: () => {
-        user.admin = isPromoting;
-        this.cdr.detectChanges();
+        // Success! The auth service has already updated the local subject,
+        // but we can refresh the user list from the backend to be 100% sure.
+        this.loadUsers();
       },
-      error: () => {
-        alert('La modification du rôle a échoué.');
+      error: (err) => {
+        console.error('Update failed:', err);
+        alert('La modification du rôle a échoué. Vérifiez la console.');
       },
     });
   }

@@ -35,30 +35,34 @@ public class CustomerService {
     }
 
     public Customer updateCustomer(String id, Customer updatedData) {
-		Optional<Customer> existingOpt = repository.findById(id);
+        Optional<Customer> existingOpt = repository.findById(id);
         if (existingOpt.isEmpty()) {
-            return null; // Customer doesn't exist
+            return null;
         }
-		Customer existingCustomer = existingOpt.get();
+        Customer existingCustomer = existingOpt.get();
 
-		String currentEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        boolean isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+        String currentEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        
+        boolean requesterIsAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
-		if (!isAdmin && !existingCustomer.getEmail().equals(currentEmail)) {
+        if (!requesterIsAdmin && !existingCustomer.getEmail().equals(currentEmail)) {
             throw new SecurityException("Access Denied: You can only edit your own profile.");
         }
 
-		if (updatedData.getName() != null) {
+        if (updatedData.getName() != null) {
             existingCustomer.setName(updatedData.getName());
         }
         if (updatedData.getPhone() != null) {
             existingCustomer.setPhone(updatedData.getPhone());
         }
-
-		if (updatedData.getPassword() != null && !updatedData.getPassword().trim().isEmpty()) {
+        if (updatedData.getPassword() != null && !updatedData.getPassword().trim().isEmpty()) {
             String hashedPassword = passwordEncoder.encode(updatedData.getPassword());
             existingCustomer.setPassword(hashedPassword);
+        }
+
+        if (requesterIsAdmin) {
+            existingCustomer.setAdmin(updatedData.isAdmin());
         }
 
         return repository.save(existingCustomer);
