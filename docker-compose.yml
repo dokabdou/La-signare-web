@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: signare-backend
+    ports:
+      - "8080:8080"
+    restart: unless-stopped # THIS is what makes it run on server boot!
+    networks:
+      - signare-network
+
+  frontend:
+    build: ./grocery-frontend
+    container_name: signare-frontend
+    ports:
+      - "4200:4200"
+    restart: unless-stopped # THIS is what makes it run on server boot!
+    depends_on:
+      - backend
+    networks:
+      - signare-network
+
+networks:
+  signare-network:
+    driver: bridge
