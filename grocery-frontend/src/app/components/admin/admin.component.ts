@@ -13,7 +13,7 @@ import { catchError } from 'rxjs/operators';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './admin.component.html',
-  styleUrls: ['./admin.component.css'],
+  styleUrls: ['./admin.component.css', '../../../styles.css'],
 })
 export class AdminComponent implements OnInit, OnDestroy {
   activeTab: 'stocks' | 'orders' | 'receipts' | 'users' | 'sync' = 'stocks';
@@ -118,10 +118,12 @@ export class AdminComponent implements OnInit, OnDestroy {
   applyMassUpdate() {
     if (this.selectedProductIds.size === 0) return;
     if (this.massEditPrice === null && this.massEditQuantity === null) {
-      alert('Please provide a new Price or Quantity to update.');
+      alert(
+        'Veuillez apporter une modification au prix ou à la quantité, ou bien annuler la modification.',
+      );
       return;
     }
-    if (!confirm(`Are you sure you want to update ${this.selectedProductIds.size} products?`))
+    if (!confirm(`Êtes-vous sûr de vouloir modifier ${this.selectedProductIds.size} produits ?`))
       return;
 
     this.massUpdating = true;
@@ -186,12 +188,13 @@ export class AdminComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        this.error = 'Failed to load products.';
+        this.error = "Échec, les produits n'ont pas pu être chargés.";
         this.loading = false;
         this.cdr.detectChanges();
       },
     });
   }
+
   extractCategories(products: any[]): void {
     const cats = Array.from(new Set(products.map((p) => p.category).filter(Boolean))).sort((a, b) =>
       a.localeCompare(b),
@@ -217,6 +220,8 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.category = product.category;
     this.imageUrl = product.imageUrl;
     this.quantity = product.quantity;
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   cancelEdit(): void {
@@ -247,7 +252,7 @@ export class AdminComponent implements OnInit, OnDestroy {
       });
     } else {
       if (!payload.name || !payload.price || !payload.category) {
-        this.error = 'Name, Price and Category are required.';
+        this.error = 'Le nom, le prix et la catégorie du produit sont obligatoires.';
         alert(this.error);
         return;
       }
@@ -261,12 +266,12 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   goToProduct(product: any) {
-    if (product.quantity < 10) return;
+    //if (product.quantity < 10) return;
     this.router.navigate(['/product', product.id]);
   }
 
   deleteProduct(id: string): void {
-    if (!confirm('Delete this product?')) return;
+    if (!confirm('Voulez-vous vraiment supprimer ce produit ?')) return;
     this.ps.deleteProduct(id).subscribe({
       next: () => this.loadProducts(),
     });
@@ -340,7 +345,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   deleteOrder(orderId: string): void {
-    if (confirm('Are you sure you want to delete this order?')) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette commande ?')) {
       this.os.deleteOrder(orderId).subscribe();
     }
   }
@@ -430,9 +435,11 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   toggleAdminRole(user: any) {
     const isPromoting = !user.admin;
-    const action = isPromoting ? 'make this user an admin' : 'revoke admin rights for this user';
+    const action = isPromoting
+      ? 'rendre cet utilisateur admin'
+      : 'retirer les droits admin de cet utilisateur';
 
-    if (!confirm(`Are you sure you want to ${action}?`)) {
+    if (!confirm(`Êtes-vous sûr de vouloir ${action} ?`)) {
       return;
     }
 
@@ -444,7 +451,7 @@ export class AdminComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       },
       error: () => {
-        alert('Failed to update user role.');
+        alert('La modification du rôle a échoué.');
       },
     });
   }
@@ -468,7 +475,7 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   saveUser() {
     if (!this.editUserEmail) {
-      alert('Email is required.');
+      alert("L'email est requis !");
       return;
     }
 
@@ -489,27 +496,31 @@ export class AdminComponent implements OnInit, OnDestroy {
         this.loadUsers();
       },
       error: (err) => {
-        alert(err.error?.error || 'Failed to update user.');
+        alert(err.error?.error || "La modification de l'utilisateur a échoué.");
       },
     });
   }
 
   deleteUser(userId: string) {
-    if (!confirm('Are you SURE you want to completely delete this user? This cannot be undone.'))
+    if (
+      !confirm(
+        'Êtes-vous SÛR de vouloir supprimer cet utilisateur ? La suppression est DÉFINITIVE.',
+      )
+    )
       return;
 
     this.auth.deleteUser(userId).subscribe({
       next: () => this.loadUsers(),
-      error: () => alert('Failed to delete user.'),
+      error: () => alert("La suppression de l'utilisateur a échoué."),
     });
   }
 
   syncProducts() {
     this.syncingProducts = true;
-    this.syncMessage = 'Syncing Stocks to Google Sheets...';
+    this.syncMessage = 'Synchronisation des produits avec Google Sheets...';
     this.ps.syncToGoogleSheets().subscribe(() => {
       this.syncingProducts = false;
-      this.syncMessage = 'Stocks successfully synced!';
+      this.syncMessage = 'Produits synchronisés avec succès !';
       setTimeout(() => (this.syncMessage = ''), 4000);
       this.cdr.detectChanges();
     });
@@ -517,10 +528,10 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   syncOrders() {
     this.syncingOrders = true;
-    this.syncMessage = 'Syncing Orders to Google Sheets...';
+    this.syncMessage = 'Synchronisation des commandes avec Google Sheets...';
     this.os.syncToGoogleSheets().subscribe(() => {
       this.syncingOrders = false;
-      this.syncMessage = 'Orders successfully synced!';
+      this.syncMessage = 'Commandes synchronisées avec succès !';
       setTimeout(() => (this.syncMessage = ''), 4000);
       this.cdr.detectChanges();
     });
@@ -528,14 +539,15 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   syncAll() {
     this.syncingAll = true;
-    this.syncMessage = 'Syncing all data (Stocks, Orders, Customers) to Google Sheets...';
+    this.syncMessage =
+      'Synchronisation de toutes les données (produits, commandes, clients) avec Google Sheets...';
     forkJoin([
       this.ps.syncToGoogleSheets().pipe(catchError(() => of(null))),
       this.os.syncToGoogleSheets().pipe(catchError(() => of(null))),
       this.auth.syncToGoogleSheets().pipe(catchError(() => of(null))),
     ]).subscribe(() => {
       this.syncingAll = false;
-      this.syncMessage = 'All services successfully synced!';
+      this.syncMessage = 'Toutes les données sont synchronisées.';
       setTimeout(() => (this.syncMessage = ''), 4000);
       this.cdr.detectChanges();
     });

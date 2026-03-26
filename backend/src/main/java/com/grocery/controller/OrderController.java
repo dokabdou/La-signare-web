@@ -100,18 +100,21 @@ public class OrderController {
 
 	@PostMapping("/send-receipt")
     public ResponseEntity<?> sendReceipt(@RequestBody EmailRequest request) {
-        // security check here to ensure the user is authorized to send emails
         if (!isAdmin() && !request.getTo().equals(getCurrentEmail())) {
-        	return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Access Blocked"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Access Blocked"));
         }
 
         try {
             emailService.sendHtmlEmail(request.getTo(), request.getSubject(), request.getHtmlBody());
-			emailService.sendHtmlEmail("abdoulaye.dllo2002@gmail.com", request.getSubject(), request.getHtmlBody());
-			System.out.println("email sent :  " + request.getSubject() + " -- " +  request.getHtmlBody());
-            return ResponseEntity.ok(Map.of("message", "Receipt sent successfully"));
+            
+            // 2. Send to the Admin (with a modified subject)
+            String adminSubject = "NOUVELLE COMMANDE - " + request.getTo();
+            emailService.sendHtmlEmail("abdoulaye.dllo2002@gmail.com", adminSubject, request.getHtmlBody());
+            
+            System.out.println("Emails sent for order: " + request.getSubject());
+            return ResponseEntity.ok(Map.of("message", "Receipts sent successfully"));
         } catch (Exception e) {
-            e.printStackTrace(); // Log the error on the server
+            e.printStackTrace(); 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Failed to send email receipt"));
         }

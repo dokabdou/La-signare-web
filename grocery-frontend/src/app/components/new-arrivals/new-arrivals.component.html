@@ -1,25 +1,30 @@
 <div class="page-container">
   <div class="page-header">
-    <h2>New Arrivals</h2>
-    <p>Discover our latest exotic products added to the store!</p>
+    <h2>Nouveautés</h2>
+    <p>Découvrez nos derniers produits exotiques ajoutés en boutique !</p>
   </div>
 
   <div class="product-grid" *ngIf="newArrivals.length > 0; else empty">
     <div class="product-card" *ngFor="let product of newArrivals" (click)="goToProduct(product.id)">
-      <div class="badge new">NEW</div>
+      <div class="badge new">NOUVEAU</div>
       <div class="img-container">
         <img [src]="product.imageUrl || 'assets/placeholder.jpg'" [alt]="product.name">
       </div>
       <div class="card-info">
         <span class="cat-label">{{ product.category | uppercase }}</span>
         <h3>{{ product.name }}</h3>
-        <p class="price"><strong>${{ product.price | number:'1.2-2' }}</strong></p>
-        <button class="add-btn" (click)="addToCart($event, product)">Add to cart</button>
+        <p class="price"><strong>{{ product.price | number:'1.2-2' }} €</strong></p>
+        <button class="add-btn" 
+                [ngClass]="{'out-of-stock': product.quantity < 5}" 
+                [disabled]="product.quantity < 5"
+                (click)="addToCart($event, product)">
+          {{ product.quantity < 5 ? 'Stock épuisé' : 'Ajouter au panier' }}
+        </button>
       </div>
     </div>
   </div>
 
   <ng-template #empty>
-    <div class="empty-state">Loading new arrivals...</div>
+    <div class="empty-state">Chargement des nouveautés...</div>
   </ng-template>
 </div>

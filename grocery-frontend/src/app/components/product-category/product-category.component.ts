@@ -26,7 +26,7 @@ export class ProductCategoryComponent implements OnInit, OnDestroy {
     private cartService: CartService,
     private cdr: ChangeDetectorRef,
     private router: Router,
-	public authService: AuthService,
+    public authService: AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -40,7 +40,7 @@ export class ProductCategoryComponent implements OnInit, OnDestroy {
 
           return this.productService.getProducts(this.category).pipe(
             catchError((err) => {
-              console.error('Backend error fetching category:', err);
+              console.error('Erreur backend lors de la récupération de la catégorie :', err);
               return of([]);
             }),
           );
@@ -62,12 +62,19 @@ export class ProductCategoryComponent implements OnInit, OnDestroy {
   }
 
   addToCart(event: Event, product: any): void {
-    event.stopPropagation();
-    if (!this.authService.isLoggedIn()) {
-      this.authService.openLoginModal();
-      return;
-    }
+  event.stopPropagation();
 
-    this.cartService.addToCart(product, 1);
+  if (product.quantity < 5) return;
+
+  if (!this.authService.isLoggedIn()) {
+    this.authService.openLoginModal();
+    return;
   }
+
+  try {
+    this.cartService.addToCart(product, 1);
+  } catch (error: any) {
+    alert(error.message);
+  }
+}
 }

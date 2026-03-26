@@ -12,7 +12,7 @@ import { map, switchMap, catchError, tap } from 'rxjs/operators';
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './product-page.component.html',
-  styleUrls: ['./product-page.component.css'],
+  styleUrls: ['./product-page.component.css', '../../../styles.css'],
 })
 export class ProductPageComponent implements OnInit {
   product$!: Observable<any>;
@@ -24,7 +24,7 @@ export class ProductPageComponent implements OnInit {
     private router: Router,
     private productService: ProductService,
     private cart: CartService,
-	public authService: AuthService,
+    public authService: AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -34,12 +34,12 @@ export class ProductPageComponent implements OnInit {
         if (!id) return of(null);
         return this.productService.getProductById(id).pipe(
           catchError((err) => {
-            console.error('Failed to load product:', err);
+            console.error('Échec du chargement du produit :', err);
             return of(null);
           }),
         );
       }),
-      tap(() => (this.qty = 1)), 
+      tap(() => (this.qty = 1)),
     );
 
     this.relatedProducts$ = this.product$.pipe(
@@ -81,11 +81,17 @@ export class ProductPageComponent implements OnInit {
   addToCart(product: any) {
     if (!product) return;
 
-	if (!this.authService.isLoggedIn()) {
-		this.authService.openLoginModal();
-		return;
-	}
-    this.cart.addToCart(product, this.qty);
-    this.qty = 1;
+    if (product.quantity < 5) return;
+
+    if (!this.authService.isLoggedIn()) {
+      this.authService.openLoginModal();
+      return;
+    }
+
+    try {
+      this.cart.addToCart(product, 1);
+    } catch (error: any) {
+      alert(error.message);
+    }
   }
 }

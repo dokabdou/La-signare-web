@@ -1,23 +1,23 @@
 <div class="checkout-container">
   
   <div class="checkout-tabs">
-    <button [class.active]="activeTab === 'cart'" (click)="switchTab('cart')">🛒 My Cart</button>
-    <button [class.active]="activeTab === 'past-orders'" (click)="switchTab('past-orders')">📦 Past Orders</button>
+    <button [class.active]="activeTab === 'cart'" (click)="switchTab('cart')">🛒 Mon Panier</button>
+    <button [class.active]="activeTab === 'past-orders'" (click)="switchTab('past-orders')">📦 Historique des commandes</button>
   </div>
 
   <div class="notification-banner success" *ngIf="orderSuccess">
     <div class="banner-icon">✓</div>
     <div class="banner-content">
-      <strong>Order Placed Successfully!</strong>
-      <p>Thank you for your purchase. We are preparing your order.</p>
+      <strong>Commande passée avec succès !</strong>
+      <p>Merci pour votre achat. Nous préparons votre commande.</p>
     </div>
   </div>
 
   <div class="notification-banner error" *ngIf="orderError">
     <div class="banner-icon">!</div>
     <div class="banner-content">
-      <strong>Oops! Something went wrong.</strong>
-      <p>{{ errorMessage || 'Please check that you have inputed your phone number in your account info' }}</p>
+      <strong>Oups ! Un problème est survenu.</strong>
+      <p>{{ errorMessage || 'Veuillez vérifier que vous avez renseigné votre numéro de téléphone dans les informations de votre compte.' }}</p>
     </div>
     <button class="close-banner" (click)="orderError = false">×</button>
   </div>
@@ -25,26 +25,26 @@
   <div class="notification-banner error" *ngIf="emptyCartError">
     <div class="banner-icon">!</div>
     <div class="banner-content">
-      <strong>Cart is Empty!</strong>
-      <p>Please add items to your cart before placing an order.</p>
+      <strong>Votre panier est vide !</strong>
+      <p>Veuillez ajouter des articles à votre panier avant de passer commande.</p>
     </div>
     <button class="close-banner" (click)="emptyCartError = false">×</button>
   </div>
 
   <div *ngIf="activeTab === 'cart'">
-    <h2>Your Cart</h2>
+    <h2>Votre Panier</h2>
     
     <div class="cart-wrapper">
       <div class="cart-section">
         <div class="cart-header">
-          <div class="col-info">Product Info</div>
-          <div class="col-qty">Quantity</div>
-          <div class="col-price">Price</div>
+          <div class="col-info">Produit</div>
+          <div class="col-qty">Quantité</div>
+          <div class="col-price">Prix</div>
           <div class="col-total">Total</div>
         </div>
 
         <div class="empty" *ngIf="cart?.length === 0">
-          Your cart is empty.
+          Votre panier est vide.
         </div>
 
         <div class="cart-items" *ngIf="cart.length > 0">
@@ -65,11 +65,11 @@
               </div>
             </div>
 
-            <div class="col-price">${{ item.price | number:'1.2-2' }}</div>
+            <div class="col-price">{{ item.price | number:'1.2-2' }} €</div>
 
             <div class="col-total">
-              <span class="amount">${{ (item.price * item.quantity) | number:'1.2-2' }}</span>
-              <button class="remove-btn" (click)="removeFromCart(item.id)">Remove</button>
+              <span class="amount">{{ (item.price * item.quantity) | number:'1.2-2' }} €</span>
+              <button class="remove-btn" (click)="removeFromCart(item.id)">Retirer</button>
             </div>
           </div>
         </div>
@@ -77,24 +77,24 @@
 
       <div class="cart-summary">
         <div class="summary-card">
-          <h3>Order Summary</h3>
+          <h3>Résumé de la commande</h3>
           <div class="summary-row">
-            <span>Items in cart:</span>
+            <span>Articles dans le panier :</span>
             <strong>{{ cart.length }}</strong>
           </div>
           <div class="summary-divider"></div>
           <div class="summary-total">
-            <span>Total Price:</span>
-            <strong>${{ total | number:'1.2-2' }}</strong>
+            <span>Prix Total :</span>
+            <strong>{{ total | number:'1.2-2' }} €</strong>
           </div>
 
           <form (ngSubmit)="placeOrder()" class="checkout-form">
             <button type="submit" class="confirm-btn" [disabled]="loading">
-              {{ loading ? 'Processing...' : 'Confirm Order' }}
+              {{ loading ? 'Traitement...' : 'Confirmer la commande' }}
             </button>
           </form>
 
-          <button type="button" class="clear-cart-btn" (click)="clearCart()" *ngIf="cart.length > 0">Clear Cart</button>
+          <button type="button" class="clear-cart-btn" (click)="clearCart()" *ngIf="cart.length > 0">Vider le panier</button>
         </div>
       </div>
     </div>

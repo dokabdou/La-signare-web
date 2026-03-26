@@ -8,11 +8,11 @@
   <router-outlet></router-outlet>
 </div>
 
-<button class="scroll-to-top-btn no-print" *ngIf="showScrollBtn" (click)="scrollToTop()" title="Go to top">↑</button>
+<button class="scroll-to-top-btn no-print" *ngIf="showScrollBtn" (click)="scrollToTop()" title="Retour en haut">↑</button>
 
 <footer class="main-footer no-print">
   <div class="footer-col">
-    <h3>🛒 La signare - Épicerie du Monde</h3>
+    <h3>🛒 La Signare - Épicerie du Monde</h3>
     <p>📞 +33 6 36 02 23 91</p>
     <p>✉️ email@example.com</p>
     <p>
@@ -27,7 +27,7 @@
   </div>
   
   <div class="footer-col">
-    <h3>Our Products</h3>
+    <h3>Nos produits</h3>
     <ul *ngIf="categories$ | async as cats">
       <li *ngFor="let cat of cats | slice:0:6">
         <a (click)="goToCategory(cat)" style="cursor:pointer">{{ cat | titlecase }}</a>
@@ -36,12 +36,12 @@
   </div>
   
   <div class="footer-col">
-    <h3>Learn More</h3>
+    <h3>En savoir plus</h3>
     <ul>
-      <li><a routerLink="/">Contact Us</a></li>
-      <li><a routerLink="/">Legal Notice</a></li>
-      <li><a routerLink="/">Delivery</a></li>
-      <li><a routerLink="/">Terms & Conditions</a></li>
+      <li><a routerLink="/">Nous contacter</a></li>
+      <li><a routerLink="/">Mentions légales</a></li>
+      <li><a routerLink="/">Livraison</a></li>
+      <li><a routerLink="/">Conditions générales de vente</a></li>
     </ul>
   </div>
 </footer>

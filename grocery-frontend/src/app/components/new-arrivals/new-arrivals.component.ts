@@ -23,7 +23,7 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
     private cartService: CartService,
     private cdr: ChangeDetectorRef,
     private router: Router,
-	public authService: AuthService,
+    public authService: AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -32,7 +32,7 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.destroy$),
         catchError((err) => {
-          console.error('Failed to load products:', err);
+          console.error('Le chargement des produits a échoué.', err);
           return of([]);
         }),
       )
@@ -53,12 +53,19 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
   }
 
   addToCart(event: Event, product: any): void {
-    event.stopPropagation();
-    if (!this.authService.isLoggedIn()) {
-      this.authService.openLoginModal();
-      return;
-    }
+  event.stopPropagation();
 
-    this.cartService.addToCart(product, 1);
+  if (product.quantity < 5) return;
+
+  if (!this.authService.isLoggedIn()) {
+    this.authService.openLoginModal();
+    return;
   }
+
+  try {
+    this.cartService.addToCart(product, 1);
+  } catch (error: any) {
+    alert(error.message);
+  }
+}
 }

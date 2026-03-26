@@ -14,7 +14,7 @@ import { map } from 'rxjs/operators';
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.css'],
+  styleUrls: ['./navbar.component.css', '../../../styles.css'],
 })
 export class NavbarComponent implements OnInit {
   cartCount = 0;
@@ -131,12 +131,12 @@ export class NavbarComponent implements OnInit {
       this.authService.register(newUser).subscribe({
         next: () => {
           this.authLoading = false;
-          this.closeModal();// force reload
+          this.closeModal(); // force reload
           window.location.reload();
         },
         error: (err) => {
           const serverErrorMessage = err.error?.error || err.error?.message;
-          this.authError = serverErrorMessage || 'Registration failed. Try again.';
+          this.authError = serverErrorMessage || "L'inscription a échoué. Veuillez réessayer.";
           this.authLoading = false;
           this.cdr.detectChanges();
         },
@@ -149,7 +149,8 @@ export class NavbarComponent implements OnInit {
           window.location.reload();
         },
         error: (err) => {
-          this.authError = err.error?.error || "Email/password incorrect or user doesn't exist.";
+          this.authError =
+            err.error?.error || "Email ou mot de passe incorrect, ou l'utilisateur n'existe pas.";
           this.authLoading = false;
           this.cdr.detectChanges();
         },

@@ -1,15 +1,15 @@
 <div class="account-container">
   <div class="account-card">
-    <h2>My Account</h2>
-    <p class="subtitle">Update your personal information.</p>
+    <h2>Mon Compte</h2>
+    <p class="subtitle">Modifier mes informations. </p>
 
     <div class="info-group">
-      <label>Full Name</label>
+      <label>Prénom Nom</label>
       <input type="text" [value]="user?.name" disabled class="disabled-input">
     </div>
 
     <div class="info-group">
-      <label>Email Address</label>
+      <label>Adresse Mail</label>
       <input type="text" [value]="user?.email" disabled class="disabled-input">
     </div>
 
@@ -18,26 +18,26 @@
 
     <form (ngSubmit)="save()">
       <div class="info-group">
-        <label>Phone Number</label>
+        <label>Numéro de téléphone</label>
         <input type="text" [(ngModel)]="phone" name="phone" placeholder="Enter phone number" required>
       </div>
 
       <div class="info-group">
-        <label>New Password</label>
+        <label>Nouveau mot de passe</label>
         <input type="password" [(ngModel)]="password" name="password" placeholder="Min. 8 characters" required>
       </div>
 
       <div class="info-group">
-        <label>Confirm Password</label>
+        <label>Confirmer le nouveau mot de passe</label>
         <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" placeholder="Repeat your password" required>
         
         <small *ngIf="confirmPassword && password !== confirmPassword" style="color: #c0392b; font-size: 0.8rem; margin-top: 4px; display: block;">
-          Passwords do not match.
+          Les mots de passe ne sont pas pareille. Veuillez réessayer.
         </small>
       </div>
 
       <button type="submit" class="save-btn" [disabled]="loading || !isFormValid">
-        {{ loading ? 'Saving Changes...' : 'Save Changes' }}
+        {{ loading ? 'Sauvegarde des modifications' : 'Sauvegarder' }}
       </button>
     </form>
   </div>

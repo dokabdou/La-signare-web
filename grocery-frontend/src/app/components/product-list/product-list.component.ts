@@ -12,7 +12,7 @@ import { Subject, of } from 'rxjs';
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './product-list.component.html',
-  styleUrls: ['./product-list.component.css'],
+  styleUrls: ['./product-list.component.css', '../../../styles.css'],
 })
 export class ProductListComponent implements OnInit, OnDestroy {
   products: any[] = [];
@@ -44,7 +44,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
 
           return this.productService.getProducts('', search).pipe(
             catchError((err) => {
-              console.error('Backend error fetching products:', err);
+              console.error('Erreur backend lors de la récupération des produits :', err);
               return of([]);
             }),
           );
@@ -95,13 +95,19 @@ export class ProductListComponent implements OnInit, OnDestroy {
   }
 
   addToCart(event: Event, product: any): void {
-    event.stopPropagation();
+  event.stopPropagation();
 
-    if (!this.authService.isLoggedIn()) {
-      this.authService.openLoginModal();
-      return;
-    }
+  if (product.quantity < 5) return;
 
-    this.cartService.addToCart(product, 1);
+  if (!this.authService.isLoggedIn()) {
+    this.authService.openLoginModal();
+    return;
   }
+
+  try {
+    this.cartService.addToCart(product, 1);
+  } catch (error: any) {
+    alert(error.message);
+  }
+}
 }
