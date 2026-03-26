@@ -1,28 +1,3 @@
-<<<<<<< HEAD
-com/grocery/repository/ProductRepository.class
-com/grocery/repository/CustomerRepository.class
-com/grocery/controller/CustomerController.class
-com/grocery/model/Category.class
-com/grocery/controller/SyncController.class
-com/grocery/controller/ProductController.class
-com/grocery/repository/OrderRepository.class
-com/grocery/service/CategoryService.class
-com/grocery/model/Customer.class
-com/grocery/security/JwtUtil.class
-com/grocery/security/AuthController.class
-com/grocery/dto/UserDTO.class
-com/grocery/service/OrderService.class
-com/grocery/repository/CategoryRepository.class
-com/grocery/model/OrderItem.class
-com/grocery/service/ProductService.class
-com/grocery/controller/OrderController.class
-com/grocery/model/Product.class
-com/grocery/model/Order.class
-com/grocery/GroceryApplication.class
-com/grocery/security/SecurityConfig.class
-com/grocery/service/CustomerService.class
-com/grocery/security/JwtFilter.class
-=======
 com\grocery\service\OrderService.class
 com\grocery\model\Product.class
 com\grocery\service\CategoryService.class
@@ -48,4 +23,3 @@ com\grocery\dto\EmailRequest.class
 com\grocery\model\Category.class
 com\grocery\service\ProductService.class
 com\grocery\service\CustomerService.class
->>>>>>> 5195a3c00c20f782d12ecbf031616d934e57e0c4

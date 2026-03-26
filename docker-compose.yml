@@ -1,23 +1,44 @@
-version: '3.8'
-
 services:
+  # NEW: Local MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: signare-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-local-data:/data/db
+    networks:
+      - signare-network
+
   backend:
     build: ./backend
     container_name: signare-backend
     ports:
       - "8080:8080"
     restart: unless-stopped # THIS is what makes it run on server boot!
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    depends_on:
+      - mongodb
+    # This environment variable overrides whatever is in your application.yml!
+    # It tells Spring Boot to look for the container named "mongodb"
+    environment:
+      # This tells Docker: "Wait for the bash script to give me this value!"
+      - SPRING_DATA_MONGODB_URI=${MONGO_URI}
     networks:
       - signare-network
 
   frontend:
     build: ./grocery-frontend
     container_name: signare-frontend
+    expose:
+      - "4200"
     ports:
-      - "4200:4200"
-    restart: unless-stopped # THIS is what makes it run on server boot!
+      - "4205:4200"
+    environment:
+      - NODE_OPTIONS=--max-old-space-size=4096
+      - HOST=0.0.0.0
+      - PORT=4200
+      # THIS FIXES SSR HANGS:
+      - API_URL=http://signare-backend:8080/api 
     depends_on:
       - backend
     networks:
@@ -26,3 +47,7 @@ services:
 networks:
   signare-network:
     driver: bridge
+
+# This ensures your database doesn't wipe itself if you restart Docker
+volumes:
+  mongo-local-data:

@@ -42,6 +42,7 @@ public class OrderService {
                     
                     System.out.println("Af realProduct quantity " + realProduct.getQuantity() );
 
+                    // Alert Admin on Low Stock
                     if (realProduct.getQuantity() < 10) {
                         try {
                             String subject = "⚠️ ALERTE STOCK FAIBLE : " + realProduct.getName();
@@ -53,7 +54,7 @@ public class OrderService {
                             emailService.sendHtmlEmail("abdoulaye.dllo2002@gmail.com", subject, body);
                             System.out.println("Alerte de stock envoyée pour : " + realProduct.getName());
                         } catch (Exception e) {
-                            // We catch the exception so that if the email fails, it doesn't crash the user's checkout!
+                            // catch the exception so that if the email fails, it doesn't crash the user's checkout!
                             System.err.println("Erreur lors de l'envoi de l'alerte de stock: " + e.getMessage());
                         }
                     }
@@ -62,7 +63,6 @@ public class OrderService {
                 }
 
                 item.setPrice(realProduct.getPrice());
-
                 realTotal += (realProduct.getPrice() * item.getQuantity());
             }
         }
@@ -117,8 +117,15 @@ public class OrderService {
     public Order updateOrderStatus(String id, String status) {
         return repository.findById(id)
                 .map(existing -> {
+                    String oldStatus = existing.getStatus();
                     existing.setStatus(status);
-                    return repository.save(existing);
+                    Order savedOrder = repository.save(existing);
+                    
+                    if (status != null && !status.equals(oldStatus)) {
+                        sendStatusUpdateEmail(savedOrder);
+                    }
+                    
+                    return savedOrder;
                 })
                 .orElse(null);
     }
@@ -128,18 +135,53 @@ public class OrderService {
                 .map(existing -> {
                     validatePricesAndDeductStock(updated, false);
 
+                    String oldStatus = existing.getStatus();
+
                     existing.setCustomerName(updated.getCustomerName());
                     existing.setPhone(updated.getPhone());
                     existing.setEmail(updated.getEmail());
                     existing.setItems(updated.getItems());
                     existing.setTotal(updated.getTotal());
                     existing.setStatus(updated.getStatus()); 
-                    return repository.save(existing);
+                    
+                    Order savedOrder = repository.save(existing);
+                    
+                    if (updated.getStatus() != null && !updated.getStatus().equals(oldStatus)) {
+                        sendStatusUpdateEmail(savedOrder);
+                    }
+
+                    return savedOrder;
                 })
                 .orElse(null);
     }
 
     public void deleteOrder(String id) {
         repository.deleteById(id);
+    }
+
+    private void sendStatusUpdateEmail(Order order) {
+        if (order.getEmail() == null || order.getEmail().isEmpty()) {
+            return; // Don't try to send if there is no email
+        }
+
+        try {
+            String subject = "Mise à jour de votre commande - La Signare";
+            String body = "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;'>" +
+                          "<h2>🛒 Mise à jour de votre commande</h2>" +
+                          "<p>Bonjour <b>" + order.getCustomerName() + "</b>,</p>" +
+                          "<p>Nous vous informons que le statut de votre commande a été mis à jour.</p>" +
+                          "<div style='background-color: #f4f4f4; padding: 15px; border-radius: 5px; margin: 20px 0;'>" +
+                          "  <p style='margin: 0; font-size: 1.1rem;'>Nouveau statut : <strong style='color: #2c3e50;'>" + order.getStatus() + "</strong></p>" +
+                          "</div>" +
+                          "<p>Si vous avez des questions, n'hésitez pas à nous contacter.</p>" +
+                          "<p>Merci de votre confiance !<br><b>L'équipe La Signare</b></p>" +
+                          "</div>";
+
+            emailService.sendHtmlEmail(order.getEmail(), subject, body);
+            System.out.println("Email de statut (" + order.getStatus() + ") envoyé à : " + order.getEmail());
+            
+        } catch (Exception e) {
+            System.err.println("Erreur lors de l'envoi de l'email de statut à " + order.getEmail() + ": " + e.getMessage());
+        }
     }
 }

@@ -108,7 +108,9 @@ export class CheckoutComponent implements OnInit {
             <h2>🛒 La signare - Épicerie du Monde</h2>
             <p>LA SIGNARE - Épicerie Du Monde, 11 Rue de Bernières, 14000 Caen</p>
             <p> +33 6 36 02 23 91 </p>
-            <p>Nous vous remercions pour votre commande, <b>${order.customerName}</b> !</p>
+            <p>Nous vous remercions pour votre commande, <br> 
+				<b>${order.customerName}</b> (${order.phone})
+			!</p>
           </div>
           <table class="receipt-items">
             <thead>

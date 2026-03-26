@@ -69,12 +69,8 @@ app.use((req, res, next) => {
  */
 if (isMainModule(import.meta.url) || process.env['pm_id']) {
   const port = process.env['PORT'] || 4000;
-  app.listen(port, (error) => {
-    if (error) {
-      throw error;
-    }
-
-    console.log(`Node Express server listening on http://localhost:${port}`);
+  app.listen(Number(port), '0.0.0.0', () => {
+    console.log(`Node Express server listening on http://0.0.0.0:${port}`);
     console.log(`Strict Content-Security-Policy with Nonce is ACTIVE.`);
   });
 }
