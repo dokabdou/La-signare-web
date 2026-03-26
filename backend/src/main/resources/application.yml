@@ -5,7 +5,7 @@ server:
 spring:
   data:
     mongodb:
-      uri: mongodb://localhost:27017/grocerydb
+      uri: mongodb://host.docker.internal:27017/grocery
   mail:
     host: smtp.gmail.com
     port: 587
