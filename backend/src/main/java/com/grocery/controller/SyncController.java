@@ -11,7 +11,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/sync")
-@CrossOrigin(origins = {"http://localhost:4200", "https://lasignare.abdoudiallo.fr"})
+@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4205", "https://lasignare.abdoudiallo.fr"})
 public class SyncController {
 
     @Value("${google.sheets.url}")

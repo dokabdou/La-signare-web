@@ -1,6 +1,8 @@
 #!/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
 
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
+
 cd ~/La-signare-web || exit
 
 git fetch origin
@@ -14,6 +16,9 @@ if [ "$LOCAL" != "$REMOTE" ]; then
     
     # Pull the new code
     git pull origin main
+
+	# OVERWRITE MONGODB ENV FOR PROXMOX (Adjust IP if necessary)
+    export MONGO_URI="mongodb://10.10.10.6:27017/grocery"
     
     # Rebuild and restart the Docker containers in the background
     docker-compose up -d --build >> ~/deploy.log 2>&1

@@ -1,28 +1,3 @@
-<<<<<<< HEAD
-/root/La-signare-web/backend/src/main/java/com/grocery/GroceryApplication.java
-/root/La-signare-web/backend/src/main/java/com/grocery/model/Category.java
-/root/La-signare-web/backend/src/main/java/com/grocery/repository/OrderRepository.java
-/root/La-signare-web/backend/src/main/java/com/grocery/service/CategoryService.java
-/root/La-signare-web/backend/src/main/java/com/grocery/repository/ProductRepository.java
-/root/La-signare-web/backend/src/main/java/com/grocery/security/JwtFilter.java
-/root/La-signare-web/backend/src/main/java/com/grocery/security/AuthController.java
-/root/La-signare-web/backend/src/main/java/com/grocery/model/Customer.java
-/root/La-signare-web/backend/src/main/java/com/grocery/service/ProductService.java
-/root/La-signare-web/backend/src/main/java/com/grocery/security/JwtUtil.java
-/root/La-signare-web/backend/src/main/java/com/grocery/controller/SyncController.java
-/root/La-signare-web/backend/src/main/java/com/grocery/model/Product.java
-/root/La-signare-web/backend/src/main/java/com/grocery/dto/UserDTO.java
-/root/La-signare-web/backend/src/main/java/com/grocery/model/Order.java
-/root/La-signare-web/backend/src/main/java/com/grocery/service/CustomerService.java
-/root/La-signare-web/backend/src/main/java/com/grocery/repository/CustomerRepository.java
-/root/La-signare-web/backend/src/main/java/com/grocery/security/SecurityConfig.java
-/root/La-signare-web/backend/src/main/java/com/grocery/controller/CustomerController.java
-/root/La-signare-web/backend/src/main/java/com/grocery/service/OrderService.java
-/root/La-signare-web/backend/src/main/java/com/grocery/controller/OrderController.java
-/root/La-signare-web/backend/src/main/java/com/grocery/model/OrderItem.java
-/root/La-signare-web/backend/src/main/java/com/grocery/repository/CategoryRepository.java
-/root/La-signare-web/backend/src/main/java/com/grocery/controller/ProductController.java
-=======
 C:\Users\Abdou\Documents\Codes\La-signare-web\backend\src\main\java\com\grocery\model\Customer.java
 C:\Users\Abdou\Documents\Codes\La-signare-web\backend\src\main\java\com\grocery\service\OrderService.java
 C:\Users\Abdou\Documents\Codes\La-signare-web\backend\src\main\java\com\grocery\service\CategoryService.java
@@ -48,4 +23,3 @@ C:\Users\Abdou\Documents\Codes\La-signare-web\backend\src\main\java\com\grocery\
 C:\Users\Abdou\Documents\Codes\La-signare-web\backend\src\main\java\com\grocery\service\CustomerService.java
 C:\Users\Abdou\Documents\Codes\La-signare-web\backend\src\main\java\com\grocery\controller\OrderController.java
 C:\Users\Abdou\Documents\Codes\La-signare-web\backend\src\main\java\com\grocery\service\ProductService.java
->>>>>>> 5195a3c00c20f782d12ecbf031616d934e57e0c4

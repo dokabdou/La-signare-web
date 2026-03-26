@@ -15,7 +15,10 @@ COPY --from=build /app/dist ./dist
 ENV HOST=0.0.0.0
 ENV PORT=4200
 
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+
 EXPOSE 4200
 
 # Start the Angular SSR server
-ENTRYPOINT ["node", "dist/grocery-frontend/server/server.mjs"]
+# Force the memory limit directly in the execution command
+ENTRYPOINT ["node", "--max-old-space-size=4096", "dist/grocery-frontend/server/server.mjs"]

@@ -14,6 +14,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity
@@ -32,7 +33,13 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .cors(Customizer.withDefaults())
+			.exceptionHandling(exception -> exception
+				.authenticationEntryPoint((request, response, authException) -> {
+					response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
+				})
+			)
             .formLogin(form -> form.disable()) 
+			.httpBasic(basic -> basic.disable()) // Disable basic auth popup
 			.headers(headers -> headers
                 .contentSecurityPolicy(csp -> csp
                     .policyDirectives("default-src 'none'; img-src 'self'; frame-ancestors 'none'; sandbox;")

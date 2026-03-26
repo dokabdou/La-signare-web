@@ -54,7 +54,7 @@ app.use((req, res, next) => {
       // attach the strict Content-Security-Policy header
 	  secureResponse.headers.set(
       'Content-Security-Policy',
-      `default-src 'self'; script-src 'self' 'nonce-${nonce}'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com https://serif.com; img-src 'self' data:; connect-src 'self' http://localhost:8080 http://192.168.1.47:8080 https://api.lasignare.abdoudiallo.fr;`,
+      `default-src 'self'; script-src 'self' 'nonce-${nonce}' 'unsafe-hashes' 'sha256-MhtPZXr7+LpJUY5qtMutB+qWfQtMaPccfe7QXtCcEYc='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com https://serif.com; img-src 'self' data:; connect-src 'self' http://localhost:8080 http://192.168.1.47:8080 https://api.lasignare.abdoudiallo.fr http://signare-backend:8080;`,
     );
 
       //  Let Angular's built-in helper send the secure response to the browser!
@@ -69,12 +69,8 @@ app.use((req, res, next) => {
  */
 if (isMainModule(import.meta.url) || process.env['pm_id']) {
   const port = process.env['PORT'] || 4000;
-  app.listen(port, (error) => {
-    if (error) {
-      throw error;
-    }
-
-    console.log(`Node Express server listening on http://localhost:${port}`);
+  app.listen(Number(port), '0.0.0.0', () => {
+    console.log(`Node Express server listening on http://0.0.0.0:${port}`);
     console.log(`Strict Content-Security-Policy with Nonce is ACTIVE.`);
   });
 }
