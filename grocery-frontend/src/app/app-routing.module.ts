@@ -10,6 +10,7 @@ import { NewArrivalsComponent } from './components/new-arrivals/new-arrivals.com
 import { BestSellersComponent } from './components/best-sellers/best-sellers.component';
 import { AccountComponent } from './components/account/account.component';
 import { AllProductsComponent } from './components/all-products/all-products.component';
+import { StoreLocationComponent } from './components/store-location/store-location.component';
 import { adminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
@@ -26,6 +27,7 @@ export const routes: Routes = [
   { path: 'best-sellers', component: BestSellersComponent },
   { path: 'account', component: AccountComponent },
   { path: 'all-products', component: AllProductsComponent },
+  { path: 'location', component: StoreLocationComponent },
   { path: '**', redirectTo: '' },
 ];
 

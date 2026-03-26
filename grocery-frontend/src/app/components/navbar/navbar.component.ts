@@ -183,6 +183,11 @@ export class NavbarComponent implements OnInit {
     this.router.navigate(['/']);
   }
 
+  goToLocation() {
+	this.dropdownOpen = false;
+  	this.router.navigate(['/location']);
+  }
+
   search(term: string) {
     if (term?.trim()) {
       this.router.navigate(['/all-products'], { queryParams: { search: term } });

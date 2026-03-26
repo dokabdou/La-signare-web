@@ -45,11 +45,18 @@
       
       <div class="dropdown-menu account-menu" *ngIf="accountDropdownOpen" (clickOutside)="accountDropdownOpen = false">
         <a routerLink="/account" class="dropdown-item" (click)="accountDropdownOpen = false">👤 Mon Compte</a>
+		<a routerLink="/location" class="dropdown-item" (click)="accountDropdownOpen = false">📍 Localisation</a>
         <a (click)="logout(); accountDropdownOpen = false" class="dropdown-item logout-item">🚪 Se déconnecter</a>
       </div>
     </div>
 
-    <button *ngIf="!isLoggedIn" class="admin-btn login-btn" (click)="authService.openLoginModal()">Connexion</button>
+	<div *ngIf="!isLoggedIn" style="display: flex; align-items: center; gap: 1rem;">
+		<a routerLink="/location" class="cat-link" style="margin-right: 5px; border: 1px solid var(--brand-gold);">
+		📍 Localisation
+		</a>
+		
+		<button class="admin-btn login-btn" (click)="authService.openLoginModal()">Connexion</button>
+	</div>
   </div>
 </nav>
 
