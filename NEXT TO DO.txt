@@ -46,17 +46,15 @@ npm run build && git add dist/ -f && git commit -m "Forced commit dist" && git p
 access mongodb in terminal : 
 
 mongosh -> enter shell
-use grocerydb  -> enter db
+use grocerydb/grocery  -> enter db
 show collections -> shows tables
 db.customers.find() -> view all customers
 db.customers.find().pretty()  -> append .pretty() to make it format nicely like standard JSON!
 
 sets user to admin : 
-db.customers.updateOne(
-  { email: "abdou@1203" }, 
-  { $set: { isAdmin: true } }
-)
+db.customers.updateOne({ email: "abdou0@gmail.com" },{ $set: { isAdmin: true } })
 = should reply with { acknowledged: true, modifiedCount: 1 }
+abdou0@gmail.com
 
 add customer in db : but password would be an issue
 db.customers.insertOne({
