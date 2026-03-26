@@ -15,7 +15,7 @@ if [ "$LOCAL" != "$REMOTE" ]; then
     git pull origin main
     
     # Rebuild and restart the Docker containers in the background
-    docker compose up -d --build >> ~/deploy.log 2>&1
+    docker-compose up -d --build >> ~/deploy.log 2>&1
     
     # Clean up old, unused Docker images so your server's hard drive doesn't fill up!
     docker image prune -f >> ~/deploy.log 2>&1
