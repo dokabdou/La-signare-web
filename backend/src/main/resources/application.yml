@@ -5,7 +5,8 @@ server:
 spring:
   data:
     mongodb:
-      uri: mongodb://localhost:27017/grocerydb
+      #uri: mongodb://localhost:27017/grocerydb #locally
+      uri: mongodb://host.docker.internal:27017/grocery #proxmox
   mail:
     host: smtp.gmail.com
     port: 587
