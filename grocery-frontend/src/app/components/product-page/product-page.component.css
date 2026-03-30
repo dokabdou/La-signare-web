@@ -1,79 +1,79 @@
-.product-page { 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: center; 
-  max-width: 1200px; 
-  margin: 3rem auto; 
-  padding: 0 2rem; 
-  font-family: 'Poppins', sans-serif; 
+.product-page {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 3rem auto;
+  padding: 0 2rem;
+  font-family: 'Poppins', sans-serif;
 }
 
-.info-side { 
-  flex-basis: 45%; 
-  background: var(--white); 
-  padding: 2rem; 
-  border-radius: 16px; 
-  box-shadow: 0 8px 30px rgba(60, 42, 33, 0.04); 
+.info-side {
+  flex-basis: 45%;
+  background: var(--white);
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(60, 42, 33, 0.04);
 }
 
 .image-side { flex-basis: 50%; display: flex; justify-content: flex-end; }
-.image-side img { 
-  width: 100%; 
+.image-side img {
+  width: 100%;
   max-height: 400px;
-  height: auto; 
-  border-radius: 20px; 
-  object-fit: contain; 
-  box-shadow: 0 12px 40px rgba(60, 42, 33, 0.1); 
+  height: auto;
+  border-radius: 20px;
+  object-fit: contain;
+  box-shadow: 0 12px 40px rgba(60, 42, 33, 0.1);
   background-color: #fff;
 }
 
 .info-side h1 { margin: 0 0 8px 0; font-size: 2.2rem; color: var(--brand-brown); line-height: 1.2; }
-.info-side .category { 
-  color: var(--brand-gold); 
-  font-weight: 700; 
-  text-transform: uppercase; 
-  letter-spacing: 1px; 
-  font-size: 0.85rem; 
-  margin-bottom: 1rem; 
+.info-side .category {
+  color: var(--brand-gold);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
 }
 
-.info-side .price { 
-  font-size: 1.8rem; 
-  color: var(--brand-brown); 
-  margin: 0 0 1.5rem 0; 
-  font-weight: 800; 
+.info-side .price {
+  font-size: 1.8rem;
+  color: var(--brand-brown);
+  margin: 0 0 1.5rem 0;
+  font-weight: 800;
 }
 
 .info-side .desc { color: var(--gray-text); line-height: 1.6; margin-bottom: 2rem; font-size: 1.05rem; }
 
 .purchase-actions { display: flex; gap: 1rem; align-items: center; }
 
-.qty-control { 
-  display: flex; 
-  align-items: center; 
-  gap: 8px; 
-  background: var(--brand-cream); 
-  padding: 4px; 
-  border-radius: 10px; 
-  border: 1px solid var(--border-color); 
+.qty-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--brand-cream);
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
 }
 
-.qty-control button { 
-  width: 40px; 
-  height: 40px; 
-  border-radius: 8px; 
-  border: none; 
-  background: var(--white); 
-  font-size: 1.4rem; 
-  color: var(--brand-brown); 
-  cursor: pointer; 
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
-  transition: all 0.2s; 
+.qty-control button {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: none;
+  background: var(--white);
+  font-size: 1.4rem;
+  color: var(--brand-brown);
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  transition: all 0.2s;
 }
 
-.qty-control button:hover:not(:disabled) { 
-  background: var(--brand-brown); 
-  color: var(--white); 
+.qty-control button:hover:not(:disabled) {
+  background: var(--brand-brown);
+  color: var(--white);
 }
 
 .qty-control span { min-width: 30px; text-align: center; font-weight: 700; font-size: 1.1rem; color: var(--brand-brown); }
@@ -84,16 +84,16 @@
 .related-scroll { display: flex; overflow-x: auto; gap: 1.5rem; padding-bottom: 1.5rem; scroll-snap-type: x mandatory; scrollbar-width: none; }
 .related-scroll::-webkit-scrollbar { display: none; }
 
-.product-card { 
-  flex: 0 0 240px; 
-  scroll-snap-align: start; 
-  background: var(--white); 
-  border-radius: 12px; 
-  overflow: hidden; 
-  box-shadow: 0 4px 15px rgba(60, 42, 33, 0.05); 
-  cursor: pointer; 
-  transition: transform 0.2s, box-shadow 0.2s; 
-  border: 1px solid var(--border-color); 
+.product-card {
+  flex: 0 0 240px;
+  scroll-snap-align: start;
+  background: var(--white);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(60, 42, 33, 0.05);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid var(--border-color);
 }
 
 .product-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(60, 42, 33, 0.1); }
@@ -102,21 +102,26 @@
 
 .card-body { padding: 1rem; }
 .card-cat { font-size: 0.75rem; color: var(--brand-gold); font-weight: 700; text-transform: uppercase; }
-.card-name { font-size: 1rem; color: var(--brand-brown); margin: 4px 0 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.card-price { font-weight: 800; color: var(--brand-red); font-size: 1.1rem; }
+.card-header { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
+.card-name { font-size: 1rem; color: var(--brand-brown); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card-price { font-weight: 800; color: var(--brand-red); font-size: 1.1rem; white-space: nowrap; }
+.add-btn { background: var(--brand-red); color: var(--white); border: none; padding: 0.5rem 1rem; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.9rem; transition: all 0.2s ease; width: 100%; }
+.add-btn:hover:not(:disabled) { filter: brightness(0.9); transform: translateY(-2px); }
+.add-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.add-btn.out-of-stock { background: #ccc; }
 
 /* Loading States */
-.spinner { 
-  width: 40px; height: 40px; margin: 0 auto 1rem; 
-  border: 4px solid var(--brand-cream); 
-  border-top: 4px solid var(--brand-gold); 
-  border-radius: 50%; 
-  animation: spin 1s linear infinite; 
+.spinner {
+  width: 40px; height: 40px; margin: 0 auto 1rem;
+  border: 4px solid var(--brand-cream);
+  border-top: 4px solid var(--brand-gold);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
 @media (max-width: 900px) {
   .product-page { flex-direction: column; gap: 2rem; }
-  .image-side { order: -1; } 
+  .image-side { order: -1; }
   .info-side, .image-side { flex-basis: 100%; width: 100%; justify-content: center; }
   .purchase-actions { flex-direction: column; align-items: stretch; }
   .qty-control { justify-content: space-between; }

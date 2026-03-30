@@ -39,6 +39,7 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
       .subscribe((products) => {
         this.newArrivals = [...(products || [])].reverse();
         this.cdr.detectChanges();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       });
   }
 

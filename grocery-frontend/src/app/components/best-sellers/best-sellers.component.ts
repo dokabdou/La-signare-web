@@ -48,6 +48,9 @@ export class BestSellersComponent implements OnInit, OnDestroy {
         }
         this.bestSellers = topProducts;
         this.cdr.detectChanges();
+        setTimeout(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 100);
       });
   }
 

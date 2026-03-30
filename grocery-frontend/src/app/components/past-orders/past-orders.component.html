@@ -1,5 +1,5 @@
 <div class="past-orders-container">
-  
+
   <div *ngIf="!selectedOrder">
     <h2>Votre Historique de Commandes</h2>
 
@@ -14,22 +14,27 @@
             <span class="order-date">{{ order.createdAt | date:'medium' }}</span>
           </div>
           <div class="order-status-wrap">
-            <span class="status-badge" [ngClass]="'status-' + (order.status | lowercase)">
-              {{ order.status || 'En attente' }}
+            <span class="status-badge"
+                  [ngClass]="'status-' + (order.status | lowercase)"
+                  [ngSwitch]="(order.status || 'Pending') | lowercase">
+              <ng-container *ngSwitchCase="'unprocessed'">Non confirmée</ng-container>
+              <ng-container *ngSwitchCase="'ready'">Prête</ng-container>
+              <ng-container *ngSwitchCase="'cancelled'">Annulée</ng-container>
+              <ng-container *ngSwitchDefault>En attente</ng-container>
             </span>
           </div>
         </div>
-        
+
         <div class="order-body">
           <div class="order-total">
             Total : <strong>{{ order.total | number:'1.2-2' }} €</strong>
             <span class="items-count">({{ getOrderItems(order).length }} article(s))</span>
           </div>
-          
+
           <div class="order-actions">
-            <button 
-              *ngIf="(order.status | lowercase) === 'pending'" 
-              class="cancel-btn" 
+            <button
+              *ngIf="(order.status | lowercase) === 'pending'"
+              class="cancel-btn"
               (click)="cancelOrder(order, $event)">
               Annuler la commande
             </button>
@@ -45,29 +50,35 @@
 
   <div *ngIf="selectedOrder" class="order-details-view">
     <button class="back-btn" (click)="backToList()">← Retour aux commandes</button>
-    
+
     <div class="details-header">
         <div>
         <h2>Détails de la commande</h2>
         <p class="order-id">n° {{ selectedOrder.id }}</p>
         <p class="order-date">Passée le : {{ selectedOrder.createdAt | date:'medium' }}</p>
         </div>
-        <div class="status-badge large" [ngClass]="'status-' + (selectedOrder.status | lowercase)">
-        {{ selectedOrder.status || 'En attente' }}
+
+        <div class="status-badge large"
+             [ngClass]="'status-' + (selectedOrder.status | lowercase)"
+             [ngSwitch]="(selectedOrder.status || 'Pending') | lowercase">
+            <ng-container *ngSwitchCase="'unprocessed'">Non confirmée</ng-container>
+            <ng-container *ngSwitchCase="'ready'">Prête</ng-container>
+            <ng-container *ngSwitchCase="'cancelled'">Annulée</ng-container>
+            <ng-container *ngSwitchDefault>En attente</ng-container>
         </div>
     </div>
 
     <div class="details-items">
       <div class="item-row" *ngFor="let item of getOrderItems(selectedOrder)">
         <img [src]="item.imageUrl" [alt]="item.name" class="item-img" />
-        
+
         <div class="item-info">
           <h4>{{ item.name }}</h4>
           <p>{{ item.category }}</p>
         </div>
-        
+
         <div class="item-qty">Qté : {{ item.quantity }}</div>
-        
+
         <div class="item-actions">
           <div class="item-price">{{ (item.price * item.quantity) | number:'1.2-2' }} €</div>
           <button class="reorder-item-btn" (click)="reorderItem(item)" title="Ajouter cet article au panier">
@@ -85,9 +96,9 @@
         </div>
 
         <div class="details-actions">
-        <button 
-            *ngIf="(selectedOrder.status | lowercase) === 'pending'" 
-            class="cancel-btn large-btn" 
+        <button
+            *ngIf="(selectedOrder.status | lowercase) === 'pending'"
+            class="cancel-btn large-btn"
             (click)="cancelOrder(selectedOrder)">
             Annuler cette commande
         </button>

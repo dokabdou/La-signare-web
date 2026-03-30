@@ -30,17 +30,12 @@ public class OrderService {
                 Product realProduct = productRepository.findById(item.getId())
                         .orElseThrow(() -> new IllegalArgumentException("Product not found: " + item.getId()));
 
-                System.out.println("realProduct  " + realProduct.getAllInfo() );
                 if (isNewOrder) {
                     if (realProduct.getQuantity() < item.getQuantity()) {
                         throw new IllegalArgumentException("Not enough stock for: " + realProduct.getName() + ". Only " + realProduct.getQuantity() + " left.");
                     }
-                    System.out.println("item quantity " + item.getQuantity() );
-                    System.out.println("B realProduct quantity " + realProduct.getQuantity() );
                     
                     realProduct.setQuantity(realProduct.getQuantity() - item.getQuantity());
-                    
-                    System.out.println("Af realProduct quantity " + realProduct.getQuantity() );
 
                     // Alert Admin on Low Stock
                     if (realProduct.getQuantity() < 10) {
@@ -52,9 +47,7 @@ public class OrderService {
                                           "<p>Pensez à réapprovisionner vos stocks !</p>";
                                           
                             emailService.sendHtmlEmail("abdoulaye.dllo2002@gmail.com", subject, body);
-                            System.out.println("Alerte de stock envoyée pour : " + realProduct.getName());
                         } catch (Exception e) {
-                            // catch the exception so that if the email fails, it doesn't crash the user's checkout!
                             System.err.println("Erreur lors de l'envoi de l'alerte de stock: " + e.getMessage());
                         }
                     }
@@ -62,7 +55,11 @@ public class OrderService {
                     productRepository.save(realProduct);
                 }
 
+                // SECURITY & DATA FIX: Sync the exact data from the database to the Order Item
                 item.setPrice(realProduct.getPrice());
+                item.setImageUrl(realProduct.getImageUrl());   // <-- FIX: Save the image URL!
+                item.setCategory(realProduct.getCategory());   // <-- FIX: Save the category!
+
                 realTotal += (realProduct.getPrice() * item.getQuantity());
             }
         }

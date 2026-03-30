@@ -94,4 +94,23 @@ export class ProductPageComponent implements OnInit {
       alert(error.message);
     }
   }
+
+  addToCartRelated(event: Event, product: any) {
+    event.stopPropagation();
+
+    if (!product) return;
+
+    if (product.quantity < 5) return;
+
+    if (!this.authService.isLoggedIn()) {
+      this.authService.openLoginModal();
+      return;
+    }
+
+    try {
+      this.cart.addToCart(product, 1);
+    } catch (error: any) {
+      alert(error.message);
+    }
+  }
 }

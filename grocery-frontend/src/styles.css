@@ -1,10 +1,10 @@
 :root {
   /* La Signare Official Palette; only have to update these colors to update website color theme */
-  --brand-brown: #3C2A21;   
-  --brand-red: #D32F2F;     
-  --brand-gold: #E9A139;    
-  --brand-cream: #FFF9F2;   
-  
+  --brand-brown: #3C2A21;
+  --brand-red: #D32F2F;
+  --brand-gold: #E9A139;
+  --brand-cream: #FFF9F2;
+
   --white: #ffffff;
   --gray-text: #666666;
   --gray-light: #999999;
@@ -47,10 +47,31 @@
 
 .main-footer { background: var(--brand-brown); color: var(--white); padding: 4rem 2rem 2rem; display: flex; flex-wrap: wrap; justify-content: space-around; gap: 2rem; }
 .footer-col h3 { color: var(--brand-gold); margin-bottom: 1.5rem; font-size: 1.2rem; }
-.footer-col p { color: #bbb; line-height: 1.6; font-size: 0.9rem; }
-.footer-col ul li a { color: #bbb; text-decoration: none; transition: color 0.2s; }
-.footer-col ul li a:hover { color: var(--brand-gold); }
-.map-link:hover { color: var(--brand-gold); }
+.footer-col p {
+  color: #bbb;
+  line-height: 1.6;
+  font-size: 0.9rem;
+}
+
+.footer-col ul li a {
+  color: #bbb;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-col ul li a:hover {
+  color: var(--brand-gold);
+}
+
+.map-link {
+  color: #bbb;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.map-link:hover {
+  color: var(--brand-gold);
+}
 
 @media (max-width: 850px) {
   .scroll-to-top-btn { bottom: 20px; right: 20px; width: 45px; height: 45px; }

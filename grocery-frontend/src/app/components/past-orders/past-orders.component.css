@@ -1,59 +1,56 @@
-/* 1. Container & Typography */
 .past-orders-container { width: 100%; }
 
-h2 { 
-  color: var(--brand-brown); 
-  text-align: center; 
-  margin-bottom: 2rem; 
+h2 {
+  color: var(--brand-brown);
+  text-align: center;
+  margin-bottom: 2rem;
 }
 
-.empty { 
-  text-align: center; 
-  color: var(--gray-light); 
-  font-style: italic; 
-  padding: 2rem; 
+.empty {
+  text-align: center;
+  color: var(--gray-light);
+  font-style: italic;
+  padding: 2rem;
 }
 
-/* 2. Order List & Cards */
 .orders-list { display: flex; flex-direction: column; gap: 16px; max-width: 800px; margin: 0 auto; }
 
-.order-card { 
-  background: var(--white); 
-  border-radius: 12px; 
-  padding: 1.5rem; 
-  box-shadow: 0 4px 15px rgba(60, 42, 33, 0.04); 
-  border: 1px solid var(--border-color); 
-  cursor: pointer; 
-  transition: transform 0.2s ease, box-shadow 0.2s ease; 
+.order-card {
+  background: var(--white);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 15px rgba(60, 42, 33, 0.04);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.order-card:hover { 
-  transform: translateY(-3px); 
-  box-shadow: 0 8px 20px rgba(60, 42, 33, 0.08); 
-  border-color: var(--brand-gold); 
+.order-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(60, 42, 33, 0.08);
+  border-color: var(--brand-gold);
 }
 
-.order-header { 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: flex-start; 
-  border-bottom: 1px solid var(--border-color); 
-  padding-bottom: 12px; 
-  margin-bottom: 12px; 
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 12px;
+  margin-bottom: 12px;
 }
 
 .order-meta { display: flex; flex-direction: column; gap: 4px; }
 .order-id { font-weight: 700; color: var(--brand-brown); font-size: 1.1rem; }
 .order-date { font-size: 0.85rem; color: var(--gray-text); }
 
-/* 3. Status Badges (Themed) */
-.status-badge { 
-  padding: 6px 12px; 
-  border-radius: 6px; 
-  font-size: 0.85rem; 
-  font-weight: 700; 
-  text-transform: uppercase; 
-  letter-spacing: 0.5px; 
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .status-badge.large { font-size: 1rem; padding: 8px 16px; }
@@ -63,89 +60,85 @@ h2 {
 .status-cancelled { background: #fee2e2; color: var(--brand-red); }
 .status-delivered { background: #e0f2fe; color: #0369a1; } /* Sky blue for finished */
 
-/* 4. Order Body & Totals */
 .order-body { display: flex; justify-content: space-between; align-items: center; }
 .order-total { font-size: 1.1rem; color: var(--gray-text); }
 .order-total strong { color: var(--brand-brown); font-size: 1.2rem; }
 .items-count { font-size: 0.9rem; color: var(--gray-light); margin-left: 8px; }
 
-/* 5. Action Buttons */
 .cancel-btn, .reorder-btn { border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; padding: 8px 16px; }
 
-.cancel-btn { 
-  background: var(--white); 
-  color: var(--brand-red); 
-  border: 1px solid var(--brand-red); 
+.cancel-btn {
+  background: var(--white);
+  color: var(--brand-red);
+  border: 1px solid var(--brand-red);
 }
 .cancel-btn:hover { background: var(--brand-red); color: var(--white); }
 
-.reorder-btn { 
-  background: var(--brand-cream); 
-  color: var(--brand-brown); 
-  border: 1px solid var(--brand-gold); 
+.reorder-btn {
+  background: var(--brand-cream);
+  color: var(--brand-brown);
+  border: 1px solid var(--brand-gold);
 }
-.reorder-btn:hover { 
-  background: var(--brand-brown); 
-  color: var(--white); 
-  border-color: var(--brand-brown); 
-  transform: translateY(-2px); 
-}
-
-/* 6. Order Details View */
-.order-details-view { 
-  max-width: 800px; 
-  margin: 0 auto; 
-  background: var(--white); 
-  border-radius: 12px; 
-  padding: 2rem; 
-  box-shadow: 0 6px 20px rgba(60, 42, 33, 0.05); 
+.reorder-btn:hover {
+  background: var(--brand-brown);
+  color: var(--white);
+  border-color: var(--brand-brown);
+  transform: translateY(-2px);
 }
 
-.back-btn { 
-  background: none; 
-  border: none; 
-  color: var(--brand-gold); 
-  font-weight: 700; 
-  font-size: 1rem; 
-  cursor: pointer; 
-  padding: 0; 
-  margin-bottom: 1.5rem; 
-  transition: color 0.2s; 
+.order-details-view {
+  max-width: 800px;
+  margin: 0 auto;
+  background: var(--white);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 6px 20px rgba(60, 42, 33, 0.05);
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: var(--brand-gold);
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 1.5rem;
+  transition: color 0.2s;
 }
 .back-btn:hover { color: var(--brand-brown); text-decoration: underline; }
 
-.details-header { 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: flex-start; 
-  border-bottom: 2px solid var(--brand-cream); 
-  padding-bottom: 1.5rem; 
-  margin-bottom: 1.5rem; 
+.details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 2px solid var(--brand-cream);
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .details-header h2 { margin: 0 0 5px 0; text-align: left; }
 
-/* 7. Item Rows */
-.item-row { 
-  display: flex; 
-  align-items: center; 
-  justify-content: space-between; 
-  gap: 15px; 
-  padding: 12px; 
-  background: var(--brand-cream); 
-  border-radius: 8px; 
-  border: 1px solid var(--border-color); 
+.item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 12px;
+  background: var(--brand-cream);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
 }
 
-.item-img { 
-  width: 60px; 
-  height: 60px; 
-  object-fit: cover; 
-  border-radius: 8px; 
-  flex-shrink: 0; 
+.item-img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
   background-color: var(--white);
   border: 1px solid var(--border-color);
-  display: block; 
+  display: block;
 }
 
 .item-row:hover .item-img {
@@ -159,38 +152,37 @@ h2 {
 .item-qty { font-weight: 600; color: var(--gray-text); width: 60px; text-align: center; }
 .item-price { font-weight: 700; color: var(--brand-brown); min-width: 60px; text-align: right; }
 
-.reorder-item-btn { 
-  background: var(--white); 
-  color: var(--brand-brown); 
-  border: 1px solid var(--brand-gold); 
-  padding: 6px 12px; 
-  border-radius: 6px; 
-  font-size: 0.85rem; 
-  font-weight: 700; 
-  cursor: pointer; 
-  transition: all 0.2s ease; 
+.reorder-item-btn {
+  background: var(--white);
+  color: var(--brand-brown);
+  border: 1px solid var(--brand-gold);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
-.reorder-item-btn:hover { 
-  background: var(--brand-gold); 
-  color: var(--white); 
-  transform: translateY(-2px); 
-  box-shadow: 0 4px 8px rgba(233, 161, 57, 0.15); 
+.reorder-item-btn:hover {
+  background: var(--brand-gold);
+  color: var(--white);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(233, 161, 57, 0.15);
 }
 
-/* 8. Details Footer */
-.details-footer { 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: center; 
-  border-top: 2px solid var(--brand-cream); 
-  padding-top: 1.5rem; 
+.details-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 2px solid var(--brand-cream);
+  padding-top: 1.5rem;
 }
 
 .total-block span { font-size: 1.1rem; color: var(--gray-light); }
-.total-block h2 { 
-  margin: 5px 0 0 0; 
-  font-size: 2rem; 
-  color: var(--brand-red); /* Prices stand out in red */
+.total-block h2 {
+  margin: 5px 0 0 0;
+  font-size: 2rem;
+  color: var(--brand-red);
 }
 
 .order-actions, .details-actions { display: flex; align-items: center; gap: 10px; }

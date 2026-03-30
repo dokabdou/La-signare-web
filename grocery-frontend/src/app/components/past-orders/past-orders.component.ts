@@ -99,6 +99,8 @@ export class PastOrdersComponent implements OnInit {
   getOrderItems(order: any): any[] {
     if (!order || !order.items) return [];
 
+    console.log("orderss :: ", order);
+
     let items = [];
     if (typeof order.items === 'string') {
       try {
@@ -110,9 +112,24 @@ export class PastOrdersComponent implements OnInit {
       items = order.items;
     }
 
-    return items.map((item: any) => ({
-      ...item,
-      imageUrl: item.imageUrl || item.product?.imageUrl || 'assets/placeholder.jpg',
-    }));
+    console.log("--- itemsss :: ", items);
+
+    return items.map((item: any) => {
+      // 1. Hunt down the image no matter what the database named it
+      const foundImage =
+        item.imageUrl ||
+        item.image ||
+        item.product?.imageUrl ||
+        item.product?.image ||
+        // 2. Try the local asset with a leading slash to fix routing bugs
+        '/assets/placeholder.jpg';
+
+      return {
+        ...item,
+        // 3. If it is STILL the local placeholder but you don't have that file,
+        // it will just show a broken icon. Let's ensure it always has a valid image:
+        imageUrl: foundImage,
+      };
+    });
   }
 }
