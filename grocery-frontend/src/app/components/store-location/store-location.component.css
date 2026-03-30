@@ -25,7 +25,7 @@
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 8px 25px rgba(60, 42, 33, 0.1);
-  background-color: var(--brand-cream); 
+  background-color: var(--brand-cream);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -140,7 +140,7 @@
   .location-section {
     padding: 3rem 1rem;
   }
-  
+
   .location-container {
     grid-template-columns: 1fr;
     gap: 2.5rem;

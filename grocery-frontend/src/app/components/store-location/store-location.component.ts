@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './store-location.component.html',
-  styleUrls: ['./store-location.component.css', '../../../styles.css'],
+  styleUrls: ['./store-location.component.css'],
 })
 export class StoreLocationComponent {
   openMap(): void {

@@ -63,13 +63,13 @@
   color: var(--brand-gold);
 }
 
-.map-link {
+.map-link, .contact-link {
   color: #bbb;
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
-.map-link:hover {
+.map-link:hover, .contact-link:hover {
   color: var(--brand-gold);
 }
 
