@@ -1,5 +1,5 @@
 <div class="checkout-container">
-  
+
   <div class="checkout-tabs">
     <button [class.active]="activeTab === 'cart'" (click)="switchTab('cart')">🛒 Mon Panier</button>
     <button [class.active]="activeTab === 'past-orders'" (click)="switchTab('past-orders')">📦 Historique des commandes</button>
@@ -33,7 +33,7 @@
 
   <div *ngIf="activeTab === 'cart'">
     <h2>Votre Panier</h2>
-    
+
     <div class="cart-wrapper">
       <div class="cart-section">
         <div class="cart-header">
@@ -57,18 +57,18 @@
               </div>
             </div>
 
-            <div class="col-qty">
-              <div class="qty-control">
-                <button (click)="updateQty(item.id, item.quantity - 1)">−</button>
-                <span>{{ item.quantity }}</span>
-                <button (click)="updateQty(item.id, item.quantity + 1)">+</button>
-              </div>
+            <div class="qty-control">
+              <button type="button" (click)="updateQty(item, item.cartQuantity - 1)">−</button>
+
+              <span>{{ item.cartQuantity }}</span>
+
+              <button type="button" (click)="updateQty(item, item.cartQuantity + 1)">+</button>
             </div>
 
             <div class="col-price">{{ item.price | number:'1.2-2' }} €</div>
 
             <div class="col-total">
-              <span class="amount">{{ (item.price * item.quantity) | number:'1.2-2' }} €</span>
+              <span class="amount">{{ (item.price * item.cartQuantity) | number:'1.2-2' }} €</span>
               <button class="remove-btn" (click)="removeFromCart(item.id)">Retirer</button>
             </div>
           </div>

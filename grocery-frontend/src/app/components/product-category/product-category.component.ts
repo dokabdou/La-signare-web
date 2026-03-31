@@ -62,19 +62,20 @@ export class ProductCategoryComponent implements OnInit, OnDestroy {
   }
 
   addToCart(event: Event, product: any): void {
-  event.stopPropagation();
+    // 1. Stop the click from navigating to the product page
+    event.stopPropagation();
 
-  if (product.quantity < 5) return;
+    if (!product) return;
 
-  if (!this.authService.isLoggedIn()) {
-    this.authService.openLoginModal();
-    return;
-  }
+    // 2. Check if the user is logged in
+    if (!this.authService.isLoggedIn()) {
+      this.authService.openLoginModal();
+      return;
+    }
 
-  try {
+    // 3. Delegate the entire check and the addition to the CartService!
+    // The CartService will automatically calculate the 5-item buffer,
+    // display the alert if it fails, and save the item if it succeeds.
     this.cartService.addToCart(product, 1);
-  } catch (error: any) {
-    alert(error.message);
   }
-}
 }

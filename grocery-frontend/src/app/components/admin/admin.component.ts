@@ -64,6 +64,9 @@ export class AdminComponent implements OnInit, OnDestroy {
   private ordersSubscription!: Subscription;
   private productsSubscription!: Subscription;
 
+  selectedOrderIds: Set<string> = new Set();
+  selectedReceiptIds: Set<string> = new Set();
+
   constructor(
     private ps: ProductService,
     private os: OrderService,
@@ -265,6 +268,34 @@ export class AdminComponent implements OnInit, OnDestroy {
     }
   }
 
+  deleteSelectedProducts() {
+    if (this.selectedProductIds.size === 0) return;
+
+    if (
+      !confirm(
+        `Êtes-vous sûr de vouloir supprimer DÉFINITIVEMENT ${this.selectedProductIds.size} produit(s) ?`,
+      )
+    ) {
+      return;
+    }
+
+    this.massUpdating = true;
+
+    const deleteRequests = Array.from(this.selectedProductIds).map((id) =>
+      this.ps.deleteProduct(id).pipe(catchError(() => of(null))),
+    );
+
+    forkJoin(deleteRequests).subscribe(() => {
+      this.massUpdating = false;
+      this.selectedProductIds.clear();
+      this.massEditPrice = null;
+      this.massEditQuantity = null;
+      setTimeout(() => {
+        this.loadProducts();
+      }, 1000);
+    });
+  }
+
   goToProduct(product: any) {
     //if (product.quantity < 10) return;
     this.router.navigate(['/product', product.id]);
@@ -274,6 +305,48 @@ export class AdminComponent implements OnInit, OnDestroy {
     if (!confirm('Voulez-vous vraiment supprimer ce produit ?')) return;
     this.ps.deleteProduct(id).subscribe({
       next: () => this.loadProducts(),
+    });
+  }
+
+  toggleOrderSelection(orderId: string) {
+    if (this.selectedOrderIds.has(orderId)) {
+      this.selectedOrderIds.delete(orderId);
+    } else {
+      this.selectedOrderIds.add(orderId);
+    }
+  }
+
+  toggleSelectAllOrders() {
+    const displayedOrders = this.getFilteredOrders();
+    if (this.selectedOrderIds.size === displayedOrders.length && displayedOrders.length > 0) {
+      this.selectedOrderIds.clear();
+    } else {
+      displayedOrders.forEach((o) => this.selectedOrderIds.add(o.id));
+    }
+  }
+
+  deleteSelectedOrders() {
+    if (this.selectedOrderIds.size === 0) return;
+
+    if (
+      !confirm(
+        `Êtes-vous sûr de vouloir supprimer DÉFINITIVEMENT ${this.selectedOrderIds.size} commande(s) ?`,
+      )
+    ) {
+      return;
+    }
+
+    this.ordersLoading = true;
+
+    const deleteRequests = Array.from(this.selectedOrderIds).map((id) =>
+      this.os.deleteOrder(id).pipe(catchError(() => of(null))),
+    );
+
+    forkJoin(deleteRequests).subscribe(() => {
+      this.selectedOrderIds.clear();
+      setTimeout(() => {
+        this.loadOrders();
+      }, 1000);
     });
   }
 
@@ -393,6 +466,48 @@ export class AdminComponent implements OnInit, OnDestroy {
         }
       }
     }, 200);
+  }
+
+  toggleReceiptSelection(receiptId: string) {
+    if (this.selectedReceiptIds.has(receiptId)) {
+      this.selectedReceiptIds.delete(receiptId);
+    } else {
+      this.selectedReceiptIds.add(receiptId);
+    }
+  }
+
+  toggleSelectAllReceipts() {
+    const displayedReceipts = this.getFilteredReceipts();
+    if (this.selectedReceiptIds.size === displayedReceipts.length && displayedReceipts.length > 0) {
+      this.selectedReceiptIds.clear();
+    } else {
+      displayedReceipts.forEach((r) => this.selectedReceiptIds.add(r.id));
+    }
+  }
+
+  deleteSelectedReceipts() {
+    if (this.selectedReceiptIds.size === 0) return;
+
+    if (
+      !confirm(
+        `Êtes-vous sûr de vouloir supprimer DÉFINITIVEMENT ${this.selectedReceiptIds.size} ticket(s) de caisse ?`,
+      )
+    ) {
+      return;
+    }
+
+    this.ordersLoading = true;
+
+    const deleteRequests = Array.from(this.selectedReceiptIds).map((id) =>
+      this.os.deleteOrder(id).pipe(catchError(() => of(null))),
+    );
+
+    forkJoin(deleteRequests).subscribe(() => {
+      this.selectedReceiptIds.clear();
+      setTimeout(() => {
+        this.loadOrders();
+      }, 1000);
+    });
   }
 
   getReceiptItems(receipt: any): any[] {

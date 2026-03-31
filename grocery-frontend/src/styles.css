@@ -1,3 +1,32 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Force the Angular root to fill the body */
+app-root {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Force your wrapper to fill the app-root */
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Force the content to grow and push the footer down */
+.main-content {
+  flex: 1;
+}
+
 :root {
   /* La Signare Official Palette; only have to update these colors to update website color theme */
   --brand-brown: #3C2A21;
@@ -45,7 +74,17 @@
 .scroll-to-top-btn { position: fixed; bottom: 40px; right: 40px; width: 50px; height: 50px; background-color: rgba(60, 42, 33, 0.5); color: var(--white); border: none; border-radius: 50%; font-size: 1.5rem; font-weight: bold; cursor: pointer; z-index: 9999; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); transition: background-color 0.3s ease, transform 0.2s ease; }
 .scroll-to-top-btn:hover { background-color: var(--brand-brown); transform: translateY(-3px); }
 
-.main-footer { background: var(--brand-brown); color: var(--white); padding: 4rem 2rem 2rem; display: flex; flex-wrap: wrap; justify-content: space-around; gap: 2rem; }
+.main-footer {
+  background: var(--brand-brown);
+  color: var(--white);
+  padding: 4rem 2rem 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 2rem;
+
+  margin-top: auto;
+}
 .footer-col h3 { color: var(--brand-gold); margin-bottom: 1.5rem; font-size: 1.2rem; }
 .footer-col p {
   color: #bbb;

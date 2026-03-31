@@ -55,7 +55,7 @@
         <div>
         <h2>Détails de la commande</h2>
         <p class="order-id">n° {{ selectedOrder.id }}</p>
-        <p class="order-date">Passée le : {{ selectedOrder.createdAt | date:'medium' }}</p>
+        <p class="order-date">Passée le : {{ (selectedOrder.createdAt) | date:'medium' }}</p>
         </div>
 
         <div class="status-badge large"

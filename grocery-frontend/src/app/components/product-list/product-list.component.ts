@@ -95,19 +95,19 @@ export class ProductListComponent implements OnInit, OnDestroy {
   }
 
   addToCart(event: Event, product: any): void {
-  event.stopPropagation();
+    event.stopPropagation();
 
-  if (product.quantity < 5) return;
+    if (product.quantity < 5) return;
 
-  if (!this.authService.isLoggedIn()) {
-    this.authService.openLoginModal();
-    return;
+    if (!this.authService.isLoggedIn()) {
+      this.authService.openLoginModal();
+      return;
+    }
+
+    try {
+      this.cartService.addToCart(product, 1);
+    } catch (error: any) {
+      alert(error.message);
+    }
   }
-
-  try {
-    this.cartService.addToCart(product, 1);
-  } catch (error: any) {
-    alert(error.message);
-  }
-}
 }

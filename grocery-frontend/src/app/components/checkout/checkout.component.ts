@@ -58,14 +58,14 @@ export class CheckoutComponent implements OnInit {
   }
 
   calculateTotal() {
-    this.total = this.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    this.total = this.cart.reduce((sum, item) => sum + item.price * item.cartQuantity, 0);
   }
 
-  updateQty(id: string, qty: number): void {
-    if (qty > 0) {
-      this.cartService.updateQuantity(id, qty);
+  updateQty(product: any, targetQty: number): void {
+    if (targetQty > 0) {
+      this.cartService.updateQuantity(product, targetQty);
     } else {
-      this.removeFromCart(id);
+      this.removeFromCart(product.id);
     }
   }
 
@@ -108,7 +108,7 @@ export class CheckoutComponent implements OnInit {
             <h2>🛒 La signare - Épicerie du Monde</h2>
             <p>LA SIGNARE - Épicerie Du Monde, 11 Rue de Bernières, 14000 Caen</p>
             <p> +33 6 36 02 23 91 </p>
-            <p>Nous vous remercions pour votre commande, <br> 
+            <p>Nous vous remercions pour votre commande, <br>
 				<b>${order.customerName}</b> (${order.phone})
 			!</p>
           </div>
@@ -157,13 +157,12 @@ export class CheckoutComponent implements OnInit {
     }
 
     this.loading = true;
-	
 
     const itemsToSave = this.cart.map((item) => ({
       id: item.id,
       name: item.name,
       price: item.price,
-      quantity: item.quantity,
+      quantity: item.cartQuantity,
       category: item.category,
       imageUrl: item.imageUrl || item.product?.imageUrl || 'assets/placeholder.jpg',
     }));

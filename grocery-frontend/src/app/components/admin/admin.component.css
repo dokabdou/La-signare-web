@@ -6,34 +6,34 @@ html, body {
 * { box-sizing: border-box; }
 
 .admin-container {
-  max-width: 1200px; 
-  margin: 2.5rem auto; 
+  max-width: 1200px;
+  margin: 2.5rem auto;
   padding: 1.5rem;
-  background: var(--white); 
+  background: var(--white);
   border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(60, 42, 33, 0.04); 
+  box-shadow: 0 8px 30px rgba(60, 42, 33, 0.04);
   font-family: 'Poppins', sans-serif;
 }
 
 .admin-container h2 { margin: 0 0 1.5rem; color: var(--brand-brown); font-size: 1.5rem; }
 .admin-container h3 { margin: 2rem 0 1rem; color: var(--brand-brown); font-size: 1.1rem; }
 
-.empty { 
-    color: var(--gray-light); 
-    padding: 2rem; 
-    text-align: center; 
-    font-style: italic; 
+.empty {
+    color: var(--gray-light);
+    padding: 2rem;
+    text-align: center;
+    font-style: italic;
 }
 
 .add-form {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px; 
-  align-items: flex-start; 
+  gap: 12px;
+  align-items: flex-start;
   margin-bottom: 1.5rem;
-  padding: 1.5rem; 
-  background: var(--brand-cream); 
-  border-radius: 10px; 
+  padding: 1.5rem;
+  background: var(--brand-cream);
+  border-radius: 10px;
   border: 1px solid var(--brand-gold);
   transition: opacity 0.3s;
 }
@@ -44,7 +44,7 @@ html, body {
 }
 
 .add-form input {
-  flex: 1 1 160px; 
+  flex: 1 1 160px;
 }
 
 .add-form input:focus, .mass-inputs input:focus, .order-search-input:focus {
@@ -94,7 +94,7 @@ html, body {
 
 .btn-primary, .btn-cancel, .btn-edit, .btn-delete, .btn-outline {
   border: none; border-radius: 8px; cursor: pointer;
-  font-weight: 700; transition: all 0.2s;
+  font-weight: 700; transition: all 0.2s; margin: 0.25rem;
 }
 
 .btn-primary { padding: 10px 16px; background: var(--brand-brown); color: var(--white); }

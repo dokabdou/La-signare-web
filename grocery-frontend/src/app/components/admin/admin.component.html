@@ -4,7 +4,7 @@
   <button [class.active]="activeTab === 'receipts'" (click)="switchTab('receipts')">Tickets de caisse</button>
   <button [class.active]="activeTab === 'users'" (click)="switchTab('users')">Utilisateurs</button>
   <button [class.active]="activeTab === 'sync'" (click)="switchTab('sync')">Synchronisation</button>
-  
+
   <button class="btn-refresh" (click)="refreshData()" style="margin-left: auto; background: #E9A139; color: #3C2A21; font-weight: bold; display: flex; align-items: center; gap: 5px;">
     <span style="font-size: 1.2rem; line-height: 1;">↻</span> Actualiser les données
   </button>
@@ -14,7 +14,7 @@
 
   <div *ngIf="activeTab === 'stocks'">
     <h2>Gestion des stocks</h2>
-    
+
     <form class="add-form" (ngSubmit)="save()" *ngIf="selectedProductIds.size === 0">
       <input [(ngModel)]="name" name="name" placeholder="Nom" required />
       <input [(ngModel)]="description" name="description" placeholder="Description" />
@@ -22,7 +22,7 @@
       <input [(ngModel)]="quantity" name="quantity" type="number" placeholder="Quantité" step="1" />
       <input [(ngModel)]="category" name="category" placeholder="Catégorie" />
       <input type="file" (change)="onFileSelected($event)" accept=".png, .jpg, .jpeg, image/png, image/jpeg" class="file-input" />
-      
+
       <div class="image-preview" *ngIf="imageUrl">
         <img [src]="imageUrl" alt="Aperçu" />
       </div>
@@ -34,17 +34,22 @@
     </form>
 
     <div class="mass-edit-panel" *ngIf="selectedProductIds.size > 0">
-      <h3>Modification groupée ({{ selectedProductIds.size }} sélectionnés)</h3>
+      <h3>Action groupée ({{ selectedProductIds.size }} sélectionnés)</h3>
       <div class="mass-inputs">
         <input [(ngModel)]="massEditPrice" name="massEditPrice" type="number" placeholder="Nouveau prix (Optionnel)" step="0.1" />
         <input [(ngModel)]="massEditQuantity" name="massEditQuantity" type="number" placeholder="Nouvelle quantité (Optionnel)" step="1" />
-        
+
         <button class="btn-primary" (click)="applyMassUpdate()" [disabled]="massUpdating">
-          {{ massUpdating ? 'Mise à jour...' : 'Appliquer à la sélection' }}
+          {{ massUpdating ? 'Traitement...' : 'Appliquer la modification' }}
         </button>
-        <button class="btn-cancel" (click)="cancelMassEdit()">Annuler</button>
+
+        <button class="btn-delete" (click)="deleteSelectedProducts()" [disabled]="massUpdating" style="padding: 10px 16px; font-size: 0.95rem;">
+          Supprimer la sélection
+        </button>
+
+        <button class="btn-cancel" (click)="cancelMassEdit()" [disabled]="massUpdating">Annuler</button>
       </div>
-      <p class="mass-hint">* Laissez un champ vide pour conserver les valeurs d'origine.</p>
+      <p class="mass-hint">* Laissez un champ vide pour conserver les valeurs d'origine lors d'une modification.</p>
     </div>
 
     <div class="list-header-row">
@@ -70,11 +75,11 @@
       </div>
 
       <div class="product-list">
-        <div class="product-row" 
-             *ngFor="let p of getDisplayedProducts(products)" 
+        <div class="product-row"
+             *ngFor="let p of getDisplayedProducts(products)"
              [class.low-stock]="p.quantity < 10"
              [class.selected]="selectedProductIds.has(p.id)">
-          
+
           <div class="checkbox-wrapper">
             <input type="checkbox" [checked]="selectedProductIds.has(p.id)" (change)="toggleSelection(p.id)" />
           </div>
@@ -83,18 +88,18 @@
             <img [src]="p.imageUrl || 'assets/placeholder.jpg'" [alt]="p.name" />
             <div class="meta">
               <div class="name">
-                {{ p.name }} 
+                {{ p.name }}
                 <span class="stock-badge" *ngIf="p.quantity < 10">Stock faible. Veuillez remplir le stock. </span>
               </div>
               <div class="cat">{{ p.category }}</div>
               <div class="desc">{{ p.description }}</div>
             </div>
           </div>
-          
+
           <div class="right">
             <div class="qty-display">Qté : <strong>{{ p.quantity || 0 }}</strong></div>
             <div class="price">{{ p.price | number:'1.2-2' }} €</div>
-            
+
             <div class="actions-wrapper">
               <button (click)="startEdit(p)" class="btn-edit">Modifier</button>
               <button (click)="deleteProduct(p.id)" class="btn-delete">Supprimer</button>
@@ -105,12 +110,23 @@
     </ng-container>
   </div>
 
-  <div *ngIf="activeTab === 'orders'">
+<div *ngIf="activeTab === 'orders'">
     <div class="order-header-row">
       <h2>Gestion des commandes</h2>
-      <input type="text" [(ngModel)]="orderSearchTerm" placeholder="Rechercher par nom, email, téléphone ou date..." class="order-search-input">
+
+      <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+        <button class="btn-outline" (click)="toggleSelectAllOrders()" *ngIf="!ordersLoading && getFilteredOrders().length > 0">
+          {{ selectedOrderIds.size === getFilteredOrders().length ? 'Tout désélectionner' : 'Tout sélectionner' }}
+        </button>
+
+        <button class="btn-delete" *ngIf="selectedOrderIds.size > 0" (click)="deleteSelectedOrders()">
+          Supprimer la sélection ({{ selectedOrderIds.size }})
+        </button>
+
+        <input type="text" [(ngModel)]="orderSearchTerm" placeholder="Rechercher par nom, email, téléphone ou date..." class="order-search-input">
+      </div>
     </div>
-    
+
     <div *ngIf="ordersLoading" class="loading-spinner">Chargement des commandes...</div>
     <div *ngIf="!ordersLoading && getFilteredOrders().length === 0" class="empty">Aucune commande trouvée.</div>
 
@@ -118,6 +134,12 @@
       <table>
         <thead>
           <tr>
+            <th style="width: 40px; text-align: center;">
+              <input type="checkbox"
+                     (change)="toggleSelectAllOrders()"
+                     [checked]="selectedOrderIds.size === getFilteredOrders().length && getFilteredOrders().length > 0"
+                     style="cursor: pointer; width: 16px; height: 16px; accent-color: var(--brand-red);">
+            </th>
             <th>N° de Commande</th>
             <th>Date</th>
             <th>Client</th>
@@ -128,11 +150,19 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let order of getFilteredOrders()">
+          <tr *ngFor="let order of getFilteredOrders()" [class.selected]="selectedOrderIds.has(order.id)">
+
+            <td style="text-align: center;">
+              <input type="checkbox"
+                     [checked]="selectedOrderIds.has(order.id)"
+                     (change)="toggleOrderSelection(order.id)"
+                     style="cursor: pointer; width: 16px; height: 16px; accent-color: var(--brand-red);">
+            </td>
+
             <td style="font-size: 0.8rem; color: #666;">{{ order.id | slice:0:8 }}...</td>
             <td>{{ order.createdAt | date:'short' }}</td>
-            <td>{{ order.customerName || 'N/A' }}<br><small>{{ order.phone }}</small></td> 
-            <td>{{ order.email || 'N/A' }}</td> 
+            <td>{{ order.customerName || 'N/A' }}<br><small>{{ order.phone }}</small></td>
+            <td>{{ order.email || 'N/A' }}</td>
             <td>
               <select [ngModel]="order.status || 'Pending'" (ngModelChange)="updateOrderStatus(order.id, $event)" class="status-select">
                 <option value="UnProcessed">Non confirmée</option>
@@ -156,7 +186,18 @@
   <div *ngIf="activeTab === 'receipts'">
     <div class="order-header-row">
       <h2>Commandes terminées (Tickets de caisse)</h2>
-      <input type="text" [(ngModel)]="receiptSearchTerm" placeholder="Rechercher par nom, email, téléphone ou date..." class="order-search-input">
+
+      <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+        <button class="btn-outline" (click)="toggleSelectAllReceipts()" *ngIf="!ordersLoading && getFilteredReceipts().length > 0">
+          {{ selectedReceiptIds.size === getFilteredReceipts().length ? 'Tout désélectionner' : 'Tout sélectionner' }}
+        </button>
+
+        <button class="btn-delete" *ngIf="selectedReceiptIds.size > 0" (click)="deleteSelectedReceipts()">
+          Supprimer la sélection ({{ selectedReceiptIds.size }})
+        </button>
+
+        <input type="text" [(ngModel)]="receiptSearchTerm" placeholder="Rechercher par nom, email, téléphone ou date..." class="order-search-input">
+      </div>
     </div>
 
     <div *ngIf="ordersLoading" class="loading-spinner">Chargement des tickets...</div>
@@ -166,6 +207,12 @@
       <table>
         <thead>
           <tr>
+            <th style="width: 40px; text-align: center;">
+              <input type="checkbox"
+                     (change)="toggleSelectAllReceipts()"
+                     [checked]="selectedReceiptIds.size === getFilteredReceipts().length && getFilteredReceipts().length > 0"
+                     style="cursor: pointer; width: 16px; height: 16px; accent-color: var(--brand-red);">
+            </th>
             <th>N° de Commande</th>
             <th>Date</th>
             <th>Client</th>
@@ -175,7 +222,15 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let receipt of getFilteredReceipts()">
+          <tr *ngFor="let receipt of getFilteredReceipts()" [class.selected]="selectedReceiptIds.has(receipt.id)">
+
+            <td style="text-align: center;">
+              <input type="checkbox"
+                     [checked]="selectedReceiptIds.has(receipt.id)"
+                     (change)="toggleReceiptSelection(receipt.id)"
+                     style="cursor: pointer; width: 16px; height: 16px; accent-color: var(--brand-red);">
+            </td>
+
             <td style="font-size: 0.8rem; color: #666;">{{ receipt.id | slice:0:8 }}...</td>
             <td>{{ receipt.createdAt | date:'short' }}</td>
             <td>{{ receipt.customerName || 'N/A' }}<br><small>{{ receipt.phone }}</small></td>
@@ -203,12 +258,12 @@
 
     <form class="add-form" (ngSubmit)="saveUser()" *ngIf="editingUserId" style="background: #eaf4f4; border-color: #bee1e6;">
       <h3 style="flex-basis: 100%; margin-top: 0;">Modification de l'utilisateur</h3>
-      
+
       <input [(ngModel)]="editUserName" name="editUserName" placeholder="Nom complet" />
       <input [(ngModel)]="editUserEmail" name="editUserEmail" type="email" placeholder="Adresse email" required />
       <input [(ngModel)]="editUserPhone" name="editUserPhone" placeholder="Numéro de téléphone" />
       <input [(ngModel)]="editUserPassword" name="editUserPassword" type="password" placeholder="Nouveau mot de passe (laisser vide pour conserver l'actuel)" />
-      
+
       <div class="form-actions" style="flex-basis: 100%;">
         <button type="submit" class="btn-primary">Enregistrer les modifications</button>
         <button type="button" (click)="cancelEditUser()" class="btn-cancel">Annuler</button>
@@ -240,15 +295,15 @@
               </span>
             </td>
             <td style="display: flex; gap: 6px; flex-wrap: wrap;">
-              <button 
-				type="button" 
-				class="btn-outline" 
-				(click)="toggleAdminRole(u)" 
-				(touchend)="toggleAdminRole(u); $event.preventDefault();" 
+              <button
+				type="button"
+				class="btn-outline"
+				(click)="toggleAdminRole(u)"
+				(touchend)="toggleAdminRole(u); $event.preventDefault();"
 				style="padding: 12px 16px; font-size: 0.9rem; cursor: pointer; position: relative; z-index: 10;">
 				{{ u.admin ? 'Révoquer Admin' : 'Nommer Admin' }}
 			  </button>
-              
+
               <button type="button" class="btn-edit" (click)="startEditUser(u); $event.preventDefault();" (touchend)="startEditUser(u)" style="padding: 12px 16px; font-size: 0.9rem; cursor: pointer; position: relative; z-index: 10;">
                 Modifier
               </button>
@@ -266,7 +321,7 @@
   <div *ngIf="activeTab === 'sync'" class="sync-tab-container">
     <h2>Synchronisation du système</h2>
     <p>Synchroniser les données MongoDB avec Google Sheets.</p>
-    
+
     <div class="sync-actions-grid">
       <div class="sync-card">
         <h3>📦 Produits</h3>
@@ -308,7 +363,7 @@
     <b *ngIf="selectedReceiptToPrint.customerName">Client : {{ selectedReceiptToPrint.customerName }}</b>
   </div>
   <p *ngIf="selectedReceiptToPrint.phone">Téléphone : {{ selectedReceiptToPrint.phone }}</p>
-  
+
   <table class="receipt-items">
     <thead>
       <tr>
@@ -329,7 +384,7 @@
   <div class="receipt-total" style="margin-top: 15px; text-align: right;">
     <h3>TOTAL : {{ selectedReceiptToPrint.total | number:'1.2-2' }} €</h3>
   </div>
-  
+
   <div class="receipt-footer" style="margin-top: 30px; text-align: center; font-size: 0.9em;">
     <p>Merci de votre visite et à bientôt !</p>
   </div>

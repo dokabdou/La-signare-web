@@ -9,9 +9,11 @@
 
       <div class="purchase-actions">
         <div class="qty-control">
-          <button (click)="dec()" [disabled]="product.quantity < 5">-</button>
+          <button (click)="dec()" [disabled]="qty <= 1">-</button>
+
           <span>{{ qty }}</span>
-          <button (click)="inc()" [disabled]="product.quantity < 5">+</button>
+
+          <button (click)="inc(product)" [disabled]="(product.quantity - qty) <= 5">+</button>
         </div>
 
         <button class="add-btn"

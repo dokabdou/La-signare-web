@@ -81,25 +81,38 @@ export class PastOrdersComponent implements OnInit {
     if (event) event.stopPropagation();
 
     const items = this.getOrderItems(order);
+    let addedCount = 0;
 
     if (items.length > 0) {
       items.forEach((item) => {
-        this.cartService.addToCart(item, item.quantity);
+        try {
+          // Pass the item, but ensure quantity is treated as a number
+          this.cartService.addToCart(item, Number(item.quantity));
+          addedCount++;
+        } catch (error: any) {
+          console.error("Erreur lors de l'ajout :", error.message);
+        }
       });
 
-      alert('🛒 Les articles de cette commande ont été ajoutés à votre panier !');
+      if (addedCount > 0) {
+        alert('🛒 Les articles de cette commande ont été ajoutés à votre panier !');
+      } else {
+        alert("⚠️ Impossible d'ajouter ces articles au panier.");
+      }
     }
   }
 
   reorderItem(item: any) {
-    this.cartService.addToCart(item, item.quantity);
-    alert(`🛒 ${item.quantity}x ${item.name} ajouté(s) à votre panier !`);
+    try {
+      this.cartService.addToCart(item, Number(item.quantity));
+      alert(`🛒 ${item.quantity}x ${item.name} ajouté(s) à votre panier !`);
+    } catch (error: any) {
+      alert(`⚠️ Erreur : ${error.message}`);
+    }
   }
 
   getOrderItems(order: any): any[] {
     if (!order || !order.items) return [];
-
-    console.log("orderss :: ", order);
 
     let items = [];
     if (typeof order.items === 'string') {
@@ -111,8 +124,6 @@ export class PastOrdersComponent implements OnInit {
     } else {
       items = order.items;
     }
-
-    console.log("--- itemsss :: ", items);
 
     return items.map((item: any) => {
       // 1. Hunt down the image no matter what the database named it

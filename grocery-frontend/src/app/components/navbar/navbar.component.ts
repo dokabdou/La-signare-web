@@ -59,7 +59,7 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit() {
     this.cartService.cart$.subscribe(
-      (c) => (this.cartCount = c.reduce((s, i) => s + i.quantity, 0)),
+      (c) => (this.cartCount = c.reduce((s, i) => s + i.cartQuantity, 0)),
     );
 
     this.authService.currentUser$.subscribe((user) => {

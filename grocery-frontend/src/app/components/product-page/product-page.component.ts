@@ -23,7 +23,7 @@ export class ProductPageComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private productService: ProductService,
-    private cart: CartService,
+    public cart: CartService,
     public authService: AuthService,
   ) {}
 
@@ -39,7 +39,12 @@ export class ProductPageComponent implements OnInit {
           }),
         );
       }),
-      tap(() => (this.qty = 1)),
+      tap(() => {
+        this.qty = 1;
+        if (typeof window !== 'undefined') {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }),
     );
 
     this.relatedProducts$ = this.product$.pipe(
@@ -67,21 +72,23 @@ export class ProductPageComponent implements OnInit {
 
   goToProduct(id: string) {
     this.router.navigate(['/product', id]);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  inc() {
-    this.qty++;
+
+  inc(product: any) {
+    if (this.cart.checkQuantity(product, this.qty + 1)) {
+      this.qty++;
+    }
   }
 
   dec() {
-    if (this.qty > 1) this.qty--;
+    if (this.qty > 1) {
+      this.qty--;
+    }
   }
 
   addToCart(product: any) {
     if (!product) return;
-
-    if (product.quantity < 5) return;
 
     if (!this.authService.isLoggedIn()) {
       this.authService.openLoginModal();
@@ -89,7 +96,8 @@ export class ProductPageComponent implements OnInit {
     }
 
     try {
-      this.cart.addToCart(product, 1);
+      this.cart.addToCart(product, this.qty);
+      this.qty = 1;
     } catch (error: any) {
       alert(error.message);
     }
@@ -97,10 +105,7 @@ export class ProductPageComponent implements OnInit {
 
   addToCartRelated(event: Event, product: any) {
     event.stopPropagation();
-
     if (!product) return;
-
-    if (product.quantity < 5) return;
 
     if (!this.authService.isLoggedIn()) {
       this.authService.openLoginModal();

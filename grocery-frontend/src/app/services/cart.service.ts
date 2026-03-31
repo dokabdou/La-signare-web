@@ -46,46 +46,83 @@ export class CartService {
     return this.cartSubject.value;
   }
 
+  getCartQty(productId: string): number {
+    const currentCart = this.getCartValue();
+    const existingItem = currentCart.find((i: any) => i.id === productId);
+/*     console.log('getCartQty :: ', currentCart);
+    console.log('existingItem :: ', existingItem);
+ */    return existingItem ? existingItem.cartQuantity : 0;
+  }
+
+  checkQuantity(product: any, quantity: number): boolean {
+    if (!product) return false;
+
+    const inCart = this.getCartQty(product.id);
+    const proposedTotal = inCart + quantity;
+
+    /* console.log('inCart :: ', inCart);
+    console.log('proposedTotal :: ', proposedTotal);
+    console.log('product QTY : ', product.quantity) */;
+
+    // Check: Database Stock - (In Cart + Selected)
+    if (product.quantity - proposedTotal < 5) {
+      alert(`Stock insuffisant. Vous avez déjà ${inCart} unité(s) dans votre panier.`);
+      return false;
+    }
+    return true;
+  }
+
   addToCart(product: any, quantity = 1) {
     const cart = this.load();
     const existing = cart.find((i: any) => i.id === product.id);
-    const currentQtyInCart = existing ? existing.quantity : 0;
 
-    // CRITICAL CHECK: Backend Stock vs (Cart Qty + New Qty)
-    // We check if adding this amount is near the physical stock, not below it
-    if (product.quantity - (currentQtyInCart + quantity) <= 5) {
-      throw new Error(`Stock insuffisant`);
+    if (!this.checkQuantity(product, quantity)) {
+      return;
     }
 
     if (existing) {
-      existing.quantity += quantity;
+      existing.cartQuantity += quantity;
     } else {
       cart.push({
         ...product,
-        quantity,
-        imageUrl: product.imageUrl || product.product?.imageUrl || 'assets/placeholder.jpg',
+        cartQuantity: quantity,
       });
     }
+
+    /* console.log('addToCART :: ', cart);
+    console.log('exisTING == ', existing); */
 
     this.save(cart);
     this.itemAddedSource.next(product.name);
   }
 
-  updateQuantity(product: any, quantity: number) {
+  updateQuantity(product: any, targetQuantity: number) {
     const cart = this.load();
     const idx = cart.findIndex((i: any) => i.id === product.id);
 
     if (idx > -1) {
-      if (quantity <= 0) {
+      const existing = cart[idx];
+      const currentQty = existing.cartQuantity;
+
+      const delta = targetQuantity - currentQty;
+
+      if (targetQuantity <= 0) {
         cart.splice(idx, 1);
       } else {
-        // Check stock before updating
-        if (product.quantity - quantity < 0) {
-          alert(`Action impossible : Seulement ${product.quantity} en stock.`);
-          return;
+        //console.log('updateQty target : ', targetQuantity);
+        if (delta > 0) {
+          // We are INCREASING the quantity.
+          // Pass the delta (amount to add) into checkQuantity.
+          if (this.checkQuantity(product, delta)) {
+            existing.cartQuantity = targetQuantity;
+          }
+        } else if (delta < 0) {
+          // We are DECREASING the quantity.
+          // No stock check needed, just apply the reduction.
+          existing.cartQuantity = targetQuantity;
         }
-        cart[idx].quantity = quantity;
       }
+
       this.save(cart);
     }
   }
