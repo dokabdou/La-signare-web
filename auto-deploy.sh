@@ -23,12 +23,12 @@ if [ "$LOCAL" != "$REMOTE" ]; then
     # Rebuild and restart the Docker containers in the background
     docker-compose up -d --build >> ~/deploy.log 2>&1
     
-    # Clean up old, unused Docker images so your server's hard drive doesn't fill up!
+    # Clean up old, unused Docker images so the server's hard drive doesn't fill up!
     docker image prune -f >> ~/deploy.log 2>&1
     
     echo "$(date): Deployment complete." >> ~/deploy.log
 else
-    # Uncomment the line below if you want a log entry every single day, even when nothing happens
+    # Uncomment the line below for a log entry every single day, even when nothing happens
     echo "$(date): No new code. Skipping deployment." >> ~/deploy.log
     true
 fi

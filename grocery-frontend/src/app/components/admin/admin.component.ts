@@ -565,8 +565,6 @@ export class AdminComponent implements OnInit, OnDestroy {
 
     this.auth.updateUser(user.id, updatedUser).subscribe({
       next: () => {
-        // Success! The auth service has already updated the local subject,
-        // but we can refresh the user list from the backend to be 100% sure.
         this.loadUsers();
       },
       error: (err) => {

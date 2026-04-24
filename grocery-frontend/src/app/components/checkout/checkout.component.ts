@@ -181,18 +181,14 @@ export class CheckoutComponent implements OnInit {
         this.loading = false;
         this.orderSuccess = true;
 
-        // 1. Generate the HTML Receipt
         const receiptHtml = this.generateReceiptHtml(finalizedOrder);
 
-        // 2. Send the email via your OrderService (or a dedicated EmailService)
-        // Ensure you have an endpoint in your backend to accept this and send via SMTP/SendGrid/etc.
         const emailPayload = {
           to: finalizedOrder.email,
           subject: `Reçu de votre commande`,
           htmlBody: receiptHtml,
         };
 
-        // Note: You will need to add a 'sendEmail' method to your OrderService handling the HTTP POST.
         if (this.orderService.sendEmail) {
           this.orderService.sendEmail(emailPayload).subscribe({
             error: (err) => console.error("Échec de l'envoi du reçu par email", err),
